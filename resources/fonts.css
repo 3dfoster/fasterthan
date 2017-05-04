@@ -1,0 +1,19 @@
+@font-face {
+    font-family: Montserrat;
+    src: url(../fonts/Montserrat-Regular.otf);
+}
+
+@font-face {
+    font-family: Montserrat Light;
+    src: url(../fonts/Montserrat-Light.otf);
+}
+
+@font-face {
+    font-family: Montserrat Ultralight;
+    src: url(../fonts/Montserrat-UltraLight.otf);
+}
+
+@font-face {
+    font-family: Roboto Light;
+    src: url(../fonts/Roboto-Light.ttf);
+}
