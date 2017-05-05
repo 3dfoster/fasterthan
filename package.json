@@ -1,0 +1,19 @@
+{
+  "name": "fasterthan",
+  "version": "0.1.0",
+  "description": "My own personal homepage <3 f >",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fasterthan/fasterthan.git"
+  },
+  "author": "David Foster",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fasterthan/fasterthan/issues"
+  },
+  "homepage": "https://github.com/fasterthan/fasterthan#readme"
+}

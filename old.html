@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>SinglePageSignup</title>
+
+    <script src="https://use.fontawesome.com/6adfc93334.js"></script>
+    <link rel="icon" type="img/ico" href="favicon.ico">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="A simple Node.js app to inform future customers and gather emails for your next big project.">
+    <meta name="google-site-verification" content="" />
+
+    <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+    <![endif]-->
+    <script type="text/javascript">
+      function formData() {
+        var httpRequest = new XMLHttpRequest()
+
+        // Retrieve data in email input field and convert to lower case
+        var email = document.getElementById('email').value.toLowerCase()
+        // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
+        httpRequest.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            // Disable submit button after email has successfully been sent
+            document.getElementById('submit_button').disabled = true
+            document.getElementById('email_form').reset()
+            document.getElementById('response_box').innerHTML = this.response
+          }
+        }
+        httpRequest.open('POST', '/')
+        // Setting request header is required
+        httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+        // Send JSON object to server
+        httpRequest.send('email=' + email)
+      }
+    </script>
+    <style type="text/css">
+      h1, h2 {
+        margin: 0px;
+        padding: 0px;
+      }
+      a {
+        color: #444;
+      }
+      body {
+        margin: 0px auto;
+        max-width: 960px;
+        font-family: sans-serif;
+        color: #444;
+      }
+      .flair {
+        color: #4D688C;
+      }
+      header {
+        height: 64px;
+        border-bottom: 1px solid #444;
+      }
+      header #logo {
+        float: left;
+        width: 64px;
+        height: 64px;
+        background-color: #888;
+      }
+      header h1 {
+        color: #666;
+        text-align: center;
+        line-height: 64px;
+        letter-spacing: 2px;
+      }
+      @media screen and (min-width: 360px) {
+        #title {
+          margin-left: -64px;
+          font-weight: lighter;
+        }
+      }
+      @media screen and (max-width: 360px) {
+        #title {
+          margin-left: -48px;
+        }
+      }
+      #introduction {
+        margin: 64px 0px;
+      }
+      #introduction p {
+        margin: 32px;
+        font-size: 20px;
+        line-height: 150%;
+      }
+      #introduction p a {
+        color: #4D688C;
+      }
+      #introduction p i {
+        font-size: 32px;
+        vertical-align: middle;
+        width: 48px;
+      }
+       hr {
+          display: block;
+          height: 1px;
+          border: 0;
+          border-top: 1px solid #4D688C;
+          margin: 64px;
+          padding: 0; 
+      }
+      body > h1 {
+        padding: 24px;
+        font-size: 32px;
+        text-align: center;
+        border-top: 1px solid #4D688C;
+        border-bottom: 1px solid #4D688C;
+        font-weight: lighter;
+      }
+      #contact {
+        margin: 64px 0px;
+        text-align: center;
+      }
+      #contact h2 {
+        text-align: center;
+        margin: 0px;
+      }
+      #contact p {
+        margin: 0px 16px;
+      }
+      .icon {
+        text-decoration: none;
+        color: #444;
+        width: 64px;
+        font-size: 64px;
+        margin: 32px;
+      }
+      .icon:hover {
+        color: #4D688C;
+      }
+      form {
+        text-align: center;
+        margin: 24px 0px;
+      }
+      #response_box {
+        height: 12px;
+        margin-top: 16px;
+        font-size: 12px;
+        color: #ab1818;
+      }
+      #big_logo {
+        display: block;
+        margin: 64px auto;
+      }
+
+      .noselect {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        cursor: default;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="noselect">      
+      <h1><div id="logo" src="logo.png" alt="TrimWorks logo"></div><span id="title">SinglePageSignup</span></h1>
+    </header>
+    
+    <section id="introduction">
+      <p><i class="fa fa-flask" aria-hidden="true"></i><span class="flair">TrimWorks</span> is an app being developed by a team of engineering students at <a href="http://ucdavis.edu">UC Davis</a>.</p>
+      <p><i class="fa fa-check" aria-hidden="true"></i>We've heard growers have a <span class="flair">problem</span> finding trustworthy, reliable workers to trim their cannabis for them, and we think we might have a <span class="flair">solution</span>.</p>
+      <p><i class="fa fa-handshake-o" aria-hidden="true"></i>TrimWorks is a web application that connects growers with  <span class="flair">safe</span>, <span class="flair">dependable</span> trimmers.</p>
+      <p><i class="fa fa-cogs" aria-hidden="true"></i>It uses <span class="flair">software</span> to weed out lazy applicants, so growers only <span class="flair">connect</span> with trimmigrants who want to work.</p>
+      <p><i class="fa fa-wrench" aria-hidden="true"></i>We're collecting feedback from <span class="flair">growers</span> so we can develop our software to suit their needs.</p>
+    </section>
+
+    <h1>If you are a grower we'd like to hear from you</h1>
+    <section id="contact">
+      <h2>Complete an <a href="https://goo.gl/forms/lXz9c37fCQeHdOOu2" target="_blank">online survey</a></h2>
+      <a class="fa fa-pencil-square-o icon" href="https://goo.gl/forms/lXz9c37fCQeHdOOu2" target="_blank"></a>
+      <p>We can gather lots of valueable data with just 10 minutes of your time, and it's completely anonymous.</p>
+      <hr>
+      <h2>Follow us on Instagram at <a href="https://instagram.com/">@instagram</a> or send us an email at <a href="mailto:support@trimworks.io?subject=Feedback for TrimWorks App">an@email.com</a></h2>
+      <a class="fa fa-instagram icon" href="https://instagram.com/trimworks.io" aria-hidden="true"></a>
+      <a class="fa fa-envelope-o icon" href="mailto:support@trimworks.io?subject=Feedback for TrimWorks App" aria-hidden="true"></a>
+      <p>Tell us about the problems you encounter finding good work. Hearing your stories will help us build an app you'd want to use.</p>
+      <hr>
+      <h2>Sign up for updates</h2>
+      <i class="fa fa-exclamation-circle icon" aria-hidden="true"></i>
+      <p>We will send you an email when the app is ready. We will <b>not</b> spam your inbox.</p>
+      <form id="email_form" action="javascript:formData()">
+        <input type="email" id="email" maxlength="32" placeholder="Email address">
+        <input type="submit" id="submit_button" value="Sign Up">
+        <div id="response_box"></div>
+      </form>
+      <hr>
+    </section>
+  </body>
+</html>

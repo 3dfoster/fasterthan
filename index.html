@@ -1,26 +1,175 @@
 <!DOCTYPE html>
-<html><head>
+<html>
+<head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>Whitewolf</title>
+    <title>Faster Than Me</title>
+    <!--<meta name="description" content="">-->
 
     <link rel="stylesheet" href="resources/fa/css/font-awesome.min.css">
     <link rel="stylesheet" href="resources/style.css">
     <link rel="stylesheet" href="resources/fonts.css">
 
+    <script src="https://use.fontawesome.com/6adfc93334.js"></script>
     <script src="resources/fittext.js"></script>
     <!--[if lt IE 9]> <script src="resources/html5shiv.js"></script> <![endif]-->
-</head><body>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            margin: 0 auto;
+            font-family: Helvetica, Arial, sans-serif;
+            color: #666;
+        }
+        
+        body {
+            max-width: 800px;
+        }
+        /* HTML5 Support for older browsers */
+        
+        header,
+        section,
+        footer,
+        aside,
+        nav,
+        main,
+        article,
+        figure {
+            display: block;
+        }
+        
+        a {
+            color: #444;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #4f506f;
+        }
+        
+        h1 {
+            margin: 0;
+        }
+        
+        header {
+            height: 64px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        header h1 {
+            text-align: center;
+            line-height: 64px;
+        }
+        
+        header h1 a {
+            margin-left: -64px;
+            color: #4d6394;
+        }
+        
+        #logo {
+            float: left;
+            height: 100%;
+        }
+        
+        #overflow {
+            overflow: hidden;
+            border-bottom: 2px solid #cfcfd6;
+        }
+        
+        nav {
+            width: 100%;
+            overflow-x: scroll;
+            text-align: center;
+            white-space: nowrap;
+        }
+        
+        nav::-webkit-scrollbar {
+            display: none;
+        }
+        
+        nav a {
+            width: 128px;
+            line-height: 40px;
+            color: #4d6394;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-block;
+        }
+        
+        nav a:hover {
+            color: #4d6394;
+        }
+        
+        #responsive_headline {
+            color: #555;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        main {
+            padding: 48px 16px;
+        }
+        
+        footer {
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-top: 2px solid #babac4;
+        }
+        
+        footer a {
+            color: #4d6394;
+            margin: 0 24px;
+        }
+        
+        #bio a {
+            color: #4d6394;
+        }
+        
+        #bio h2 {
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        
+        #bio h2 span {
+            display: inline-block;
+            padding: 0 8px;
+        }
+        
+        @media screen and (min-width: 640px) {
+            #separator {
+                background-color: #4d6394;
+                display: inline-block;
+                width: 2px;
+                height: 16px;
+                margin: 0 8px;
+            }
+        }
+        
+        #bio h3 {
+            padding-left: 8px;
+            margin-top: 48px;
+            border-bottom: 1px solid #bbb;
+        }
+        
+        #bio ul {
+            list-style-type: none;
+        }
+    </style>
+</head>
 
+<body>
 <header>
-    <img id="logo" src="resources/whitewolf.png">
-    <h1><a href="/">white<span style="color: #cfcfd6">|</span>wolf</a></h1>
+    <img id="logo" src="resources/avatar.png">
+    <h1><a href="/">f <span style="color: #cfcfd6">></span></a></h1>
 </header>
 
 <div id="overflow">
     <nav>
         <a href="/blog">
-        Poetry</a><a href="/projects">
+        Blog</a><a href="/projects">
         Projects</a><a href="/about">
         Resume</a>
     </nav>
@@ -69,12 +218,13 @@
 
     <h3>Present</h3>
     <ul>
-        <li>- Computer Science Student @ <a href="https://www.ucdavis.edu">UCD</a></li>
-        <li>- Production Management Intern @ <a href="http://arts.ucdavis.edu/theatre-and-dance">UCD Theatre &amp; Dance</a></li>
+        <li>- Site administrator at <a href="http://fruitsandnuts.ucdavis.edu">FNRIC</a>
+        <li>- Computer Science Student at <a href="https://www.ucdavis.edu">UCD</a></li>
     </ul>
 
     <h3>Past</h3>
     <ul>
+        <li>- Production Management Intern @ <a href="http://arts.ucdavis.edu/theatre-and-dance">UCD Theatre &amp; Dance</a></li>
         <li><a href="http://www.msjc.edu/SI/Pages">- Student Aid</a> for computer science @ <a href="http://www.msjc.edu">MSJC</a></li>
         <li>- Founder / President of 1<sup>st</sup> <a href="http://nerdsquad.msjc.edu">computer science club</a> @ MSJC</li>
         <li>- 1<sup>st</sup> Place Champion @ Cal State LA <a href="http://progfest.calstatela.edu:8080/progfest/scoreboard.html">Progfest 2016</a></li>
@@ -86,8 +236,8 @@
 <footer>
     <a target="_blank" href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a>
     <a target="_blank" href="https://www.instagram.com/the.t.u.r.n" class="fa fa-fw fa-instagram"></a>
-    <a target="_blank" href="https://www.facebook.com/reachthesea" class="fa fa-fw fa-facebook"></a>
     <a target="_blank" href="https://gitlab.com/u/dfoster" class="fa fa-fw fa-gitlab"></a>
+    <a target="_blank" href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>    
 </footer>
 
 </body></html>
