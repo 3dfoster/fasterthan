@@ -4,7 +4,9 @@ var fs = require('fs')
 
 var server = http.createServer()
 var avatar = fs.readFileSync('resources/avatar.png')
-var page = fs.readFileSync('index.html')
+var header = fs.readFileSync('resources/partials/header.html')
+var home = fs.readFileSync('resources/partials/index.html')
+var footer = fs.readFileSync('resources/partials/footer.html')
 
 // Define the document schema for Mongoose
 // var Schema = mongoose.Schema
@@ -40,8 +42,10 @@ server.on('request', (req, res) => {
       switch (req.url) {
         case '/':
           res.writeHead(200, { 'Content-Type': 'text/html' })
-          // Set HTTP header information
-          res.end(page)
+          res.write(header)
+          res.write(home)
+          res.write(footer)
+          res.end()
         break
 
         case '/resources/avatar.png':
@@ -68,7 +72,10 @@ server.on('request', (req, res) => {
 
         default:
           res.writeHead(404, { 'Content-Type': 'text/html' })
-          res.end("<h1>404</h1><p>The page you're requesting doesn't exist.</p>")
+          res.write(header)
+          res.write("<h1>404</h1><p>The page you're requesting doesn't exist.</p>")
+          res.write(footer)
+          res.end()
         break
       }
     }
