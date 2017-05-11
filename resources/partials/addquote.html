@@ -1,0 +1,29 @@
+<script>
+  function formData() {
+    var httpRequest = new XMLHttpRequest()
+
+    // Retrieve data in quote input field and convert to lower case
+    var quote = document.getElementById('quote').value
+    // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
+    httpRequest.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        // Disable submit button after quote has successfully been sent
+        document.getElementById('submit_button').disabled = true
+        document.getElementById('quoteform').reset()
+        document.getElementById('quote').placeholder = this.response
+      }
+    }
+    httpRequest.open('POST', '/quotes/new')
+    // Setting request header is required
+    httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+    // Send quote to server
+    httpRequest.send(quote)
+  }
+</script>
+
+<main>
+  <form id="quoteform" action="javascript:formData()">
+    <input type="text" id="quote" maxlength="128" placeholder="What's burning a hole in your mind?">
+    <input type="submit" id="submit_button" value="Add">
+  </form>
+</main>
