@@ -5,9 +5,11 @@ var fs = require('fs')
 var server = http.createServer()
 var avatar = fs.readFileSync('resources/avatar.png')
 var header = fs.readFileSync('resources/partials/header.html')
-var home = fs.readFileSync('resources/partials/index.html')
+var ticker = fs.readFileSync('resources/partials/ticker.html')
 var footer = fs.readFileSync('resources/partials/footer.html')
+var home = fs.readFileSync('resources/partials/index.html')
 
+var poetry = "<main><h1>Born Too Soon</h1><p>We were born 200 years later, cowboys in space. We ride spaceships to planets like they were cars and we were people 200 years ago driving to another state. Born to a different father, unshackled by demons. You float along a passageway aboard our ship, looking at me as you make your way towards me. I see your face the same as I remember it, and it makes me happy to think about. We were born too soon, to a world not ready for us.</p></main>"
 // Define the document schema for Mongoose
 // var Schema = mongoose.Schema
 // var bookSchema = new Schema({
@@ -43,15 +45,22 @@ server.on('request', (req, res) => {
         case '/':
           res.writeHead(200, { 'Content-Type': 'text/html' })
           res.write(header)
+          res.write(ticker)
           res.write(home)
           res.write(footer)
           res.end()
         break
 
         case '/resources/avatar.png':
-          // Set HTTP header information
           res.writeHead(200, { 'Content-Type': 'image/png' })
           res.end(avatar)
+        break
+
+        case '/poetry':
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+          res.write(header)
+          res.write(poetry)
+          res.write(footer)
         break
 
         // case '/books':
@@ -122,6 +131,6 @@ server.on('request', (req, res) => {
     console.log('Request Body: \t' + body)
     console.log('===================================')
   })
-}).listen(process.env.PORT)
+}).listen(8000)
 
 console.log("Server started at http://localhost:" + server.address().port)
