@@ -157,6 +157,6 @@ server.on('request', (req, res) => {
     console.log('Request Body: \t' + body)
     console.log('===================================')
   })
-}).listen(8000)
+}).listen(env.process.PORT)
 
 console.log("Server started at http://localhost:" + server.address().port)
