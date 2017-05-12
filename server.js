@@ -7,7 +7,7 @@ let app = fs.readFileSync('resources/partials/app.html')
 let resume = fs.readFileSync('resources/partials/resume.html')
 let addquote = fs.readFileSync('resources/partials/addquote.html')
 
-let poetry = "<main><h1>Born Too Soon</h1><p>We were born 200 years later, cowboys in space. We ride spaceships to planets like they were cars and we were people 200 years ago driving to another state. Born to a different father, unshackled by demons. You float along a passageway aboard our ship, looking at me as you make your way towards me. I see your face the same as I remember it, and it makes me happy to think about. We were born too soon, to a world not ready for us.</p></main>"
+let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 
 let Schema = mongoose.Schema
 let quoteSchema = new Schema({
@@ -23,7 +23,7 @@ let blogSchema = new Schema({
   date: { type: Date, default: Date.now }
 })
 
-// Initialize our mongoDB
+// Initialize mongoDB
 let db
 
 server.on('request', (req, res) => {
@@ -54,7 +54,7 @@ server.on('request', (req, res) => {
               mongoose.disconnect()
               
               res.write(app.toString()
-              .replace('<!--NAV-ENTRY-->', '<em>' + quote.quote + '</em><a href="/quotes">&rarr;</a>')
+              .replace('<!--NAV-ENTRY-->', '<em>' + quote.quote + '</em> <a href="/quotes">&rarr;</a>')
               .replace('<!--MAIN-ENTRY-->', resume))
               res.end()
             })
@@ -79,7 +79,7 @@ server.on('request', (req, res) => {
               if (err) return console.error(err)
               mongoose.disconnect()
 
-              let str
+              let str = ""
               for (var i = quotes.length - 1; i >= 0; i--)
                 str += '<p>' + JSON.parse(JSON.stringify(quotes[i].quote)) + '</p>'
 
@@ -92,7 +92,7 @@ server.on('request', (req, res) => {
 
         default:
           res.writeHead(404, { 'Content-Type': 'text/html' })
-          res.write(app.toString().replace('<!--MAIN-ENTRY-->', "<h1>404</h1><p>The page you're requesting doesn't exist</p>"))
+          res.write(app.toString().replace('<!--MAIN-ENTRY-->', _404))
           res.end()
         break
       }
@@ -117,7 +117,7 @@ server.on('request', (req, res) => {
             // Store our user's email in the database
             quote.save( (err, quote) => {
               if (err) {
-                res.end("There was an error connecting to our database :(")
+                res.end(app.toString().replace('<!--MAIN-ENTRY-->', '<p>You encountered an error</p>'))
                 return console.error(err)
               }
               mongoose.disconnect()
