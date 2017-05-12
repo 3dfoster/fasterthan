@@ -3,12 +3,9 @@ let http = require('http')
 let fs = require('fs')
 
 let server = http.createServer()
-let header = fs.readFileSync('resources/partials/header.html')
-let footer = fs.readFileSync('resources/partials/footer.html')
-let home = fs.readFileSync('resources/partials/index.html')
-
+let app = fs.readFileSync('resources/partials/app.html')
+let resume = fs.readFileSync('resources/partials/resume.html')
 let addquote = fs.readFileSync('resources/partials/addquote.html')
-let ticker = fs.readFileSync('resources/partials/ticker.html')
 
 let poetry = "<main><h1>Born Too Soon</h1><p>We were born 200 years later, cowboys in space. We ride spaceships to planets like they were cars and we were people 200 years ago driving to another state. Born to a different father, unshackled by demons. You float along a passageway aboard our ship, looking at me as you make your way towards me. I see your face the same as I remember it, and it makes me happy to think about. We were born too soon, to a world not ready for us.</p></main>"
 
@@ -26,19 +23,19 @@ let blogSchema = new Schema({
   date: { type: Date, default: Date.now }
 })
 
+// Initialize our mongoDB
 let db
 
 server.on('request', (req, res) => {
   let userAgent = req.headers['user-agent']
   let body = []
 
+  // Parsing request body
   req.on('error', () => {
     console.error(err)
-    // Parsing chunks of data in a POST request...
   }).on('data', chunk => {
     body.push(chunk)
   }).on('end', () => {
-    // The body of a POST request
     body = Buffer.concat(body).toString()
 
     // GET Router
@@ -46,7 +43,6 @@ server.on('request', (req, res) => {
       switch (req.url) {
         case '/':
           res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(header)
 
           mongoose.connect('mongodb://localhost/quotes')
           db = mongoose.connection
@@ -56,10 +52,10 @@ server.on('request', (req, res) => {
             Quote.findOne().sort({date: -1}).exec( (err, quote) => {
               if (err) return console.error(err)
               mongoose.disconnect()
-
-              res.write(ticker.toString().replace(/{{quote}}/i, quote.quote))
-              res.write(home)
-              res.write(footer)
+              
+              res.write(app.toString()
+              .replace('<!--NAV-ENTRY-->', '<em>' + quote.quote + '</em><a href="/quotes">&rarr;</a>')
+              .replace('<!--MAIN-ENTRY-->', resume))
               res.end()
             })
           })
@@ -67,15 +63,12 @@ server.on('request', (req, res) => {
 
         case '/poetry':
           res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(header)
-          res.write(poetry)
-          res.write(footer)
+          res.write(app.toString().replace('<!--MAIN-ENTRY-->', poetry))
           res.end()
         break
 
         case '/quotes':
           res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(header)
 
           mongoose.connect('mongodb://localhost/quotes')
           db = mongoose.connection
@@ -86,30 +79,20 @@ server.on('request', (req, res) => {
               if (err) return console.error(err)
               mongoose.disconnect()
 
-              for (var i = quotes.length - 1; i >= 0; i--) {
-                res.write('<p>' + JSON.stringify(quotes[i].quote) + '</p>')
-              }
+              let str
+              for (var i = quotes.length - 1; i >= 0; i--)
+                str += '<p>' + JSON.parse(JSON.stringify(quotes[i].quote)) + '</p>'
 
-              res.write('<a href="/quotes/new">Add new</a>')
-              res.write(footer)
+              res.write(app.toString().replace('<!--NAV-ENTRY-->', addquote)
+              .replace('<!--MAIN-ENTRY-->', str))
               res.end()
             })
           })
         break
 
-        case '/quotes/new':
-          res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(header)
-          res.write(addquote)
-          res.write(footer)
-          res.end()
-        break
-
         default:
           res.writeHead(404, { 'Content-Type': 'text/html' })
-          res.write(header)
-          res.write("<h1>404</h1><p>The page you're requesting doesn't exist</p>")
-          res.write(footer)
+          res.write(app.toString().replace('<!--MAIN-ENTRY-->', "<h1>404</h1><p>The page you're requesting doesn't exist</p>"))
           res.end()
         break
       }
@@ -157,6 +140,6 @@ server.on('request', (req, res) => {
     console.log('Request Body: \t' + body)
     console.log('===================================')
   })
-}).listen(process.env.PORT)
+}).listen(8080)
 
 console.log("Server started at http://localhost:" + server.address().port)
