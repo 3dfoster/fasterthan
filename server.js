@@ -1,6 +1,8 @@
 let mongoose = require('mongoose')
 let http = require('http')
 let fs = require('fs')
+let Filter = require('bad-words')
+filter = new Filter()
 
 let server = http.createServer()
 let app = fs.readFileSync('resources/partials/app.html')
@@ -103,7 +105,7 @@ server.on('request', (req, res) => {
       switch (req.url) {
         case '/quotes/new':
           // Create a new mongoose model with the quote our user submitted 
-          let quote = new Quote({ quote: body })
+          let quote = new Quote({ quote: filter.clean(body) })
 
           // Connect to MongoDB
           mongoose.connect('mongodb://localhost/quotes')
