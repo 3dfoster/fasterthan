@@ -4,10 +4,13 @@ let fs = require('fs')
 let Filter = require('bad-words')
 filter = new Filter()
 
+let password = "gener8c0s"
+
 let server = http.createServer()
 let app = fs.readFileSync('resources/partials/app.html')
 let resume = fs.readFileSync('resources/partials/resume.html')
 let addquote = fs.readFileSync('resources/partials/addquote.html')
+let login = fs.readFileSync('resources/partials/login.html')
 
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 
@@ -92,6 +95,12 @@ server.on('request', (req, res) => {
           })
         break
 
+        case '/login':
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+          res.write(app.toString().replace('<!--NAV-ENTRY-->', login)
+          .replace('<!--MAIN-ENTRY-->', resume))
+          res.end()
+
         default:
           res.writeHead(404, { 'Content-Type': 'text/html' })
           res.write(app.toString().replace('<!--MAIN-ENTRY-->', _404))
@@ -128,6 +137,14 @@ server.on('request', (req, res) => {
               res.end("< Quote added >")
             })
           })
+        break
+
+        case '/login':
+          if (body === password) {
+            res.writeHead(200, { 'Content-Type': 'text/plain' })
+            res.end("Authentication successful")
+          }
+          else res.end("Authentication failed")
         break
       }
     }

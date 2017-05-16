@@ -1,11 +1,11 @@
 <script>
-  function addQuote() {
+  function login() {
     var main = document.getElementsByTagName('main')[0]
-    var quote = document.getElementById('input')
-    var quoteForm = document.getElementById('form')
+    var input = document.getElementById('input')
+    var form = document.getElementById('form')
 
-    if (!quote.value)
-      quote.placeholder = "Write something..."
+    if (!input.value)
+      input.placeholder = "Enter the pass code"
 
     else {
       var httpRequest = new XMLHttpRequest()
@@ -15,25 +15,21 @@
       httpRequest.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           // Disable submit button after quote has successfully been sent
-          var newQuote = document.createElement('p')
-          newQuote.innerHTML = quote.value
-
-          main.insertBefore(newQuote, main.firstChild)
-          quoteForm.reset()
+          form.reset()
           document.getElementById('submit_button').disabled = true
-          quote.placeholder = this.response
+          input.placeholder = this.response
         }
       }
-      httpRequest.open('POST', '/quotes/new')
+      httpRequest.open('POST', '/login')
       // Setting request header is required
       httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
       // Send quote to server
-      httpRequest.send(quote.value)
+      httpRequest.send(input.value)
     }
   }
 </script>
 
-<form id="form" action="javascript:addQuote()">
-  <input type="text" id="input" maxlength="128" placeholder="What thought burns a hole through your mind?">
-  <input type="submit" id="submit_button" value="Add">
+<form id="form" action="javascript:login()">
+  <input type="text" id="input" maxlength="16" placeholder="Enter the pass code">
+  <input type="submit" id="submit_button" value="Go">
 </form>
