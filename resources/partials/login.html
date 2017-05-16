@@ -16,7 +16,7 @@
         if (this.readyState == 4 && this.status == 200) {
           // Disable submit button after quote has successfully been sent
           form.reset()
-          document.getElementById('submit_button').disabled = true
+          // document.getElementById('submit_button').disabled = true
           input.placeholder = this.response
         }
       }
@@ -30,6 +30,6 @@
 </script>
 
 <form id="form" action="javascript:login()">
-  <input type="text" id="input" maxlength="16" style="min-width: 80px;">
+  <input type="password" id="input" maxlength="16" style="min-width: 80px;">
   <input type="submit" id="submit_button" value="Go">
 </form>

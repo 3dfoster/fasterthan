@@ -100,6 +100,7 @@ server.on('request', (req, res) => {
           res.write(app.toString().replace('<!--NAV-ENTRY-->', login)
           .replace('<!--MAIN-ENTRY-->', resume))
           res.end()
+        break
 
         default:
           res.writeHead(404, { 'Content-Type': 'text/html' })
