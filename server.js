@@ -92,12 +92,21 @@ server.on('request', (req, res) => {
               if (err) return console.error(err)
               mongoose.disconnect()
 
-              let str = ""
-              for (var i = quotes.length - 1; i >= 0; i--)
-                str += '<p>' + JSON.parse(JSON.stringify(quotes[i].quote)) + '</p>'
+              let quotesInDatabase = ""
+              let j = quotes.length - 1
 
-              res.write(app.toString().replace('<!--NAV-ENTRY-->', addquote)
-              .replace('<!--MAIN-ENTRY-->', str))
+              let mostRecentQuote = quotes[j].quote
+
+              while (j > 0) {
+                j--
+                quotesInDatabase += '<p>' + quotes[j].quote + '</p>'
+              }
+              // for (var i = quotes.length - 1; i >= 0; i--)
+              //   quotesInDatabase += '<p>' + JSON.parse(JSON.stringify(quotes[i].quote)) + '</p>'
+
+              res.write(app.toString().replace('<!--FOOTER-ENTRY-->', addquote)
+              .replace('<!--MAIN-ENTRY-->', quotesInDatabase)
+              .replace('<!--NAV-ENTRY-->', '<em>' + mostRecentQuote + '</em> <a href="/quotes">&rarr;</a>'))
               res.end()
             })
           })
@@ -107,6 +116,13 @@ server.on('request', (req, res) => {
           res.writeHead(200, { 'Content-Type': 'text/html' })
           res.write(app.toString().replace('<!--NAV-ENTRY-->', login)
           .replace('<!--MAIN-ENTRY-->', resume))
+          res.end()
+        break
+
+        case '/interface':
+          res.write(app.toString().replace('<!--FOOTER-ENTRY-->', addquote)
+          .replace('<!--MAIN-ENTRY-->', resume)
+          .replace('<!--NAV-ENTRY-->', '<em>' + "YOLO guides me. YOLO sets me free." + '</em> <a href="/quotes">&rarr;</a>'))
           res.end()
         break
 
@@ -168,6 +184,6 @@ server.on('request', (req, res) => {
     console.log('Request Body: \t' + body)
     console.log('===================================')
   })
-}).listen(8000)
+}).listen(8080)
 
 console.log("Server started at http://localhost:" + server.address().port)

@@ -83,14 +83,24 @@
         font-weight: lighter;
         text-transform: uppercase;
     }
+    #footer-wrapper {
+        max-width: 640px;
+        margin: 0px auto;
+    }
     footer {
-        height: 40px;
+        position: fixed;
+        bottom: 0;
+        height: 80px;
         line-height: 40px;
-        border-top: 2px solid #e3e3e8;
+        min-width: 640px;
+        background-color: white;
     }
     footer a {
         color: #4d6394;
         margin: 0 24px;
+    }
+    main {
+        margin-bottom: 88px;
     }
     main a {
         color: #4d6394;
@@ -129,7 +139,21 @@
         min-width: 256px;
     }
     #form {
-        line-height: 40px;
+        border-top: 1px solid #eee;
+    }
+    #external-links-wrapper {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+    }
+    #external-links {
+        max-width: 640px;
+        margin: 0px auto;
+        border-top: 2px solid #e3e3e8;
+    }
+    #external-links-wrapper li {
+        display: inline-block;
     }
   </style>
 </head>
@@ -174,10 +198,17 @@
 <main>
     <!--MAIN-ENTRY-->
 </main>
+<div id="footer-wrapper">
 <footer>
-    <a target="_blank" href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a>
-    <a target="_blank" href="https://www.instagram.com/the.t.u.r.n" class="fa fa-fw fa-instagram"></a>
-    <a target="_blank" href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a>
-    <a target="_blank" href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>    
+    <!--FOOTER-ENTRY-->
+    <div id="external-links-wrapper">
+        <ul id="external-links">
+            <li><a target="_blank" href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a></li>
+            <li><a target="_blank" href="https://www.instagram.com/the.t.u.r.n" class="fa fa-fw fa-instagram"></a></li>
+            <li><a target="_blank" href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a></li>
+            <li><a target="_blank" href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a></li>
+        </ul>
+    </div>
 </footer>
+</div>
 </body></html>
