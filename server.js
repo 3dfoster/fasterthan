@@ -1,26 +1,37 @@
+// Library Imports
 let mongoose = require('mongoose')
 let http = require('http')
 let fs = require('fs')
 let Filter = require('bad-words')
-filter = new Filter()
 
-let password = "gener8c0s"
-
-let server = http.createServer()
+// Load static HTML files into memory
 let app = fs.readFileSync('resources/partials/app.html')
 let resume = fs.readFileSync('resources/partials/resume.html')
 let addquote = fs.readFileSync('resources/partials/addquote.html')
 let login = fs.readFileSync('resources/partials/login.html')
 
+// Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
+let password = "gener8c0s"
+filter = new Filter()
 
+
+// Database ORM model creation
+
+// Initialize mongoDB
+let db
+
+// Initialize Schema
 let Schema = mongoose.Schema
+
+// Build Quote ORM model
 let quoteSchema = new Schema({
   quote: { type: String, maxlength: 128 },
   date: { type: Date, default: Date.now }
 })
 let Quote = mongoose.model('Quote', quoteSchema)
 
+// Build blog ORM model
 let blogSchema = new Schema({
   title:  { type: String, maxlength: 2500 },
   author: String,
@@ -28,9 +39,11 @@ let blogSchema = new Schema({
   date: { type: Date, default: Date.now }
 })
 
-// Initialize mongoDB
-let db
 
+// Create Server
+let server = http.createServer()
+
+// Function call for incoming HTTP request
 server.on('request', (req, res) => {
   let userAgent = req.headers['user-agent']
   let body = []
@@ -46,6 +59,7 @@ server.on('request', (req, res) => {
     // GET Router
     if (req.method == 'GET') {
       switch (req.url) {
+
         case '/':
           res.writeHead(200, { 'Content-Type': 'text/html' })
 
@@ -64,12 +78,6 @@ server.on('request', (req, res) => {
               res.end()
             })
           })
-        break
-
-        case '/poetry':
-          res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(app.toString().replace('<!--MAIN-ENTRY-->', poetry))
-          res.end()
         break
 
         case '/quotes':
