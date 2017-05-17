@@ -141,6 +141,9 @@
     }
     #form {
         border-top: 1px solid #eee;
+        position: fixed;
+        left: 0;
+        width: 100%;
     }
     #external-links-wrapper {
         position: fixed;
@@ -197,30 +200,49 @@
   }
 </script>
 <main>
-    <h1>David Alexander Foster</h1>
-
-<h2>
-    <span>AS in Mathematics</span><div id="separator"></div><span>AA in Humanities</span>
-</h2>
-
-<h3>Present</h3>
-<ul>
-    <li>- Site administrator at <a href="http://fruitsandnuts.ucdavis.edu">FNRIC</a>
-    <li>- Computer Science Student at <a href="https://www.ucdavis.edu">UCD</a></li>
-</ul>
-
-<h3>Past</h3>
-<ul>
-    <li>- Production Management Intern @ <a href="http://arts.ucdavis.edu/theatre-and-dance">UCD Theatre &amp; Dance</a></li>
-    <li><a href="http://www.msjc.edu/SI/Pages">- Student Aid</a> for computer science @ <a href="http://www.msjc.edu">MSJC</a></li>
-    <li>- Founder / President of 1<sup>st</sup> <a href="http://nerdsquad.msjc.edu">computer science club</a> @ MSJC</li>
-    <li>- 1<sup>st</sup> Place Champion @ Cal State LA <a href="http://progfest.calstatela.edu:8080/progfest/scoreboard.html">Progfest 2016</a></li>
-    <li>- Web Developer @ <a href="http://robosubucr.gitlab.io">robosubucr.com</a></li>
-</ul>
+    <p>{"pin":"4321","quote":"1234"}</p><p>{"pin":"1234","quote":"4321"}</p><p>{"pin":"4312","quote":"asdf"}</p><p>{"pin":"4321","quote":"fdsadf"}</p><p>{"pin":"1234","quote":"1234"}</p><p>{"pin":"1234","quote":"asdf"}</p><p>{"pin":"4480","quote":"Together as one"}</p><p>{"pin":"2931","quote":"Warn"}</p><p>My last exhale is purple smoke, waves crash down on velvet robes</p><p>warn</p><p>shut your ******* face uncle *******</p><p>warn</p><p>******* tongue my ****</p><p>your mom's ***** burns a hole through my hard ****</p><p>shut your ******* face uncle *******</p><p>this is a ************* profanity filter *******!</p><p>******</p><p>This is a string (I hope it strings)</p><p>goose</p><p>Unite the tribes. There's strength in numbers</p><p>warn</p><p>warn</p><p>tacos</p><p>the turn</p><p>warn</p><p>let's add some text!</p><p>Should I stay or should I go?</p><p>This is a really long string I really it strings fmem comparo WARN WARN</p><p>butts</p><p>I can't put whatever I want here</p><p>Tacos</p><p>[object HTMLInputElement]</p><p>[object HTMLInputElement]</p><p>[object HTMLInputElement]</p><p>[object HTMLInputElement]</p><p>[object HTMLInputElement]</p><p>asdf</p><p>asdf</p><p></p><p>tacos</p><p></p><p></p><p>I'm burnin' for you</p><p>Unite the tribes. There's strength in numbers</p><p>this is a string</p><p>df</p><p>fda</p><p>asdf</p><p>asdf</p><p>tac</p><p>warn</p><p>Tacos for life</p><p>imalumberjack</p><p>But i'm a married spud</p><p>Unite the tribes. There's strength in numbers</p><p>YOLO guides me. YOLO sets me free</p><p>tac</p><p>Speak to me freely, I am listening</p>
 </main>
 <div id="footer-wrapper">
 <footer>
-    <!--FOOTER-ENTRY-->
+    <script>
+  function addQuote() {
+    var main = document.getElementsByTagName('main')[0]
+    var quote = document.getElementById('input')
+    var quoteForm = document.getElementById('form')
+
+    if (!quote.value)
+      quote.placeholder = "Write something..."
+
+    else {
+      var httpRequest = new XMLHttpRequest()
+
+      // Retrieve data in quote input field and convert to lower case
+      // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
+      httpRequest.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          // Disable submit button after quote has successfully been sent
+          var newQuote = document.createElement('p')
+          newQuote.innerHTML = quote.value
+
+          main.insertBefore(newQuote, main.firstChild)
+          quoteForm.reset()
+          document.getElementById('submit_button').disabled = true
+          quote.placeholder = this.response
+        }
+      }
+      httpRequest.open('POST', '/quotes/new')
+      // Setting request header is required
+      httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+      // Send quote to server
+      httpRequest.send(quote.value)
+    }
+  }
+</script>
+
+<form id="form" action="javascript:addQuote()">
+  <input type="text" id="input" maxlength="128" placeholder="What thought burns a hole through your mind?">
+  <input type="submit" id="submit_button" value="Add">
+</form>
     <div id="external-links-wrapper">
         <ul id="external-links">
             <li><a target="_blank" href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a></li>

@@ -131,23 +131,25 @@
     li {
         text-align: left;
     }
-    input {
-        text-align: center;
-    }
     #input {
         font-size: 12px;
         min-width: 256px;
+        text-align: center;
     }
     #form {
+        max-width: 640px;
         border-top: 1px solid #eee;
-        position: fixed;
-        left: 0;
-        width: 100%;
+        margin: 0px auto;
     }
     #external-links-wrapper {
         position: fixed;
         left: 0;
         bottom: 0;
+        width: 100%;
+    }
+    #footer-entry-wrapper {
+        position: fixed;
+        left: 0;
         width: 100%;
     }
     #external-links {
@@ -157,6 +159,9 @@
     }
     #external-links-wrapper li {
         display: inline-block;
+    }
+    #external-links-wrapper ul {
+        padding: 0px;
     }
   </style>
 </head>
@@ -201,15 +206,18 @@
 <main>
     <!--MAIN-ENTRY-->
 </main>
+
 <div id="footer-wrapper">
 <footer>
-    <!--FOOTER-ENTRY-->
+    <div id="footer-entry-wrapper">
+        <!--FOOTER-ENTRY-->
+    </div>
     <div id="external-links-wrapper">
         <ul id="external-links">
-            <li><a target="_blank" href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a></li>
-            <li><a target="_blank" href="https://www.instagram.com/the.t.u.r.n" class="fa fa-fw fa-instagram"></a></li>
-            <li><a target="_blank" href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a></li>
-            <li><a target="_blank" href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a></li>
+            <li><a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a></li>
+            <li><a href="https://www.instagram.com/the.t.u.r.n" class="fa fa-fw fa-instagram"></a></li>
+            <li><a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a></li>
+            <li><a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a></li>
         </ul>
     </div>
 </footer>
