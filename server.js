@@ -186,10 +186,6 @@ server.on('request', (req, res) => {
     console.log('Request Body: \t' + body)
     console.log('===================================')
   })
-<<<<<<< HEAD
 }).listen(8080)
-=======
-}).listen(8080)
->>>>>>> textbox
 
 console.log("Server started at http://localhost:" + server.address().port)
