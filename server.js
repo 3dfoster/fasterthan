@@ -5,16 +5,16 @@ let http = require('http')
 let fs = require('fs')
 
 // Load static HTML files into memory
-let app = fs.readFileSync('resources/partials/app.html')
-let resume = fs.readFileSync('resources/partials/resume.html')
-let addquote = fs.readFileSync('resources/partials/addquote.html')
-let login = fs.readFileSync('resources/partials/login.html')
+let app = fs.readFileSync('resources/views/app.html')
+let resume = fs.readFileSync('resources/views/resume.html')
+let addquote = fs.readFileSync('resources/views/addquote.html')
+let login = fs.readFileSync('resources/views/login.html')
 
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 let password = "gener8c0s"
 let mostRecentQuote = "Taco taco taco taco taco, izquierda!"
-filter = new Filter()
+let filter = new Filter({ placeHolder: '&#128520;'})
 
 
 // Database ORM model creation
@@ -99,11 +99,11 @@ server.on('request', (req, res) => {
 
               if (quotes.length) {
                 let j = quotes.length - 1
+                mostRecentQuote = quotes[j].quote
                 while (j > 0) {
                   j--
                   quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
                 }
-                mostRecentQuote = quotes[j].quote
               }
 
               res.write(app.toString().replace('<!--FOOTER-ENTRY-->', addquote)

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html><head>
+  <title>Faster Than Me</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
-  <title>Faster Than Me</title>
   <!--<meta name="description" content="">-->
 
-  <script src="https://use.fontawesome.com/6adfc93334.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://s3-us-west-1.amazonaws.com/fasterthan/font-awesome-4.7.0/css/font-awesome.min.css">
+  
   <!--[if lt IE 9]> <script src="resources/html5shiv.js"></script> <![endif]-->
   <style>
     /* HTML5 Support for older browsers */
@@ -83,18 +85,6 @@
         font-weight: lighter;
         text-transform: uppercase;
     }
-    #footer-wrapper {
-        max-width: 640px;
-        margin: 0px auto;
-    }
-    footer {
-        position: fixed;
-        bottom: 0;
-        height: 80px;
-        line-height: 40px;
-        min-width: 640px;
-        background-color: white;
-    }
     footer a {
         color: #4d6394;
         margin: 0 24px;
@@ -132,14 +122,41 @@
         text-align: left;
     }
     #input {
-        font-size: 12px;
-        min-width: 256px;
+        font-size: 16px;
+        min-width: 272px;
         text-align: center;
+    }
+    input {
+        border-radius: 0px;
+    }
+    #submit_button {
+        font-size: 16px;
     }
     #form {
         max-width: 640px;
         border-top: 1px solid #eee;
         margin: 0px auto;
+        background-color: white;
+    }
+    ::-webkit-input-placeholder { color: #4d6394; }
+    ::-moz-placeholder { color: #4d6394; }
+    ::-ms-input-placeholder { color: #4d6394; }
+
+    #footer-wrapper {
+        max-width: 640px;
+        margin: 0px auto;
+    }
+    footer {
+        position: fixed;
+        bottom: 0;
+        height: 80px;
+        line-height: 40px;
+        min-width: 640px;
+    }
+    #footer-entry-wrapper {
+        position: fixed;
+        left: 0;
+        width: 100%;
     }
     #external-links-wrapper {
         position: fixed;
@@ -147,20 +164,17 @@
         bottom: 0;
         width: 100%;
     }
-    #footer-entry-wrapper {
-        position: fixed;
-        left: 0;
-        width: 100%;
-    }
     #external-links {
         max-width: 640px;
         margin: 0px auto;
+        padding: 0px;
         border-top: 2px solid #e3e3e8;
+        background-color: white;
     }
-    #external-links-wrapper li {
+    #external-links li {
         display: inline-block;
     }
-    #external-links-wrapper ul {
+    #external-links ul {
         padding: 0px;
     }
   </style>
@@ -168,7 +182,7 @@
 
 <body>
 <header>
-    <a href="/photos"><img id="logo" src="https://s.gravatar.com/avatar/b6975651e3aed3de0c2a1aaec08c5607" alt="David Alexander Foster"></a>
+    <a href="/photos"><img id="logo" src="https://s3-us-west-1.amazonaws.com/fasterthan/avatar_240.png" alt="David Alexander Foster"></a>
     <h1><a href="/">f <span style="color: #cfcfd6">></span></a></h1>
 </header>
 <div id="overflow">
