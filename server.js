@@ -1,8 +1,8 @@
 // Library Imports
 let mongoose = require('mongoose')
+let Filter = require('bad-words')
 let http = require('http')
 let fs = require('fs')
-let Filter = require('bad-words')
 
 // Load static HTML files into memory
 let app = fs.readFileSync('resources/partials/app.html')
@@ -13,6 +13,7 @@ let login = fs.readFileSync('resources/partials/login.html')
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 let password = "gener8c0s"
+let mostRecentQuote = "Taco taco taco taco taco, izquierda!"
 filter = new Filter()
 
 
@@ -70,12 +71,14 @@ server.on('request', (req, res) => {
           db.once('open', function () {
             Quote.findOne().sort({date: -1}).exec( (err, quote) => {
               if (err) return console.error(err)
-              mongoose.disconnect()
+
+              if (quote) mostRecentQuote = quote.quote
               
               res.write(app.toString()
-              .replace('<!--NAV-ENTRY-->', '<em>' + quote.quote + '</em> <a href="/quotes">&rarr;</a>')
+              .replace('<!--NAV-ENTRY-->', '<em>' + mostRecentQuote + '</em> <a href="/quotes">&rarr;</a>')
               .replace('<!--MAIN-ENTRY-->', resume))
               res.end()
+              mongoose.disconnect()
             })
           })
         break
@@ -93,16 +96,15 @@ server.on('request', (req, res) => {
               mongoose.disconnect()
 
               let quotesInDatabase = ""
-              let j = quotes.length - 1
 
-              let mostRecentQuote = quotes[j].quote
-
-              while (j > 0) {
-                j--
-                quotesInDatabase += '<p>' + quotes[j].quote + '</p>'
+              if (quotes.length) {
+                let j = quotes.length - 1
+                while (j > 0) {
+                  j--
+                  quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+                }
+                mostRecentQuote = quotes[j].quote
               }
-              // for (var i = quotes.length - 1; i >= 0; i--)
-              //   quotesInDatabase += '<p>' + JSON.parse(JSON.stringify(quotes[i].quote)) + '</p>'
 
               res.write(app.toString().replace('<!--FOOTER-ENTRY-->', addquote)
               .replace('<!--MAIN-ENTRY-->', quotesInDatabase)
@@ -150,7 +152,7 @@ server.on('request', (req, res) => {
             // We've successfully established a conection to the database
             console.log("Connection to Mongo database established")
 
-            // Store our user's email in the database
+            // Store quote document in the database
             quote.save( (err, quote) => {
               if (err) {
                 res.end(app.toString().replace('<!--MAIN-ENTRY-->', '<p>You encountered an error</p>'))
