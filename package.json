@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/fasterthan/fasterthan/issues"
   },
-  "homepage": "https://github.com/fasterthan/fasterthan#readme"
+  "homepage": "https://github.com/fasterthan/fasterthan#readme",
+  "dependencies": {
+    "bad-words": "^1.5.1"
+  }
 }

@@ -1,0 +1,39 @@
+<script>
+  function addQuote() {
+    var main = document.getElementsByTagName('main')[0]
+    var quote = document.getElementById('input')
+    var quoteForm = document.getElementById('form')
+
+    if (!quote.value)
+      quote.placeholder = "Write something..."
+
+    else {
+      var httpRequest = new XMLHttpRequest()
+
+      // Retrieve data in quote input field and convert to lower case
+      // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
+      httpRequest.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          // Disable submit button after quote has successfully been sent
+          var newQuote = document.createElement('p')
+          newQuote.innerHTML = quote.value
+
+          main.insertBefore(newQuote, main.firstChild)
+          quoteForm.reset()
+          document.getElementById('submit_button').disabled = true
+          quote.placeholder = this.response
+        }
+      }
+      httpRequest.open('POST', '/quotes/new')
+      // Setting request header is required
+      httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+      // Send quote to server
+      httpRequest.send(quote.value)
+    }
+  }
+</script>
+
+<form id="form" action="javascript:addQuote()">
+  <input type="text" id="input" maxlength="128" placeholder="What thought burns a hole through your mind?">
+  <input type="submit" id="submit_button" value="Add">
+</form>

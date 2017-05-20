@@ -1,89 +1,118 @@
-// var mongoose = require('mongoose')
-var http = require('http')
-var fs = require('fs')
+// Library Imports
+let mongoose = require('mongoose')
+let http = require('http')
+let fs = require('fs')
+let Filter = require('bad-words')
 
-var server = http.createServer()
-var avatar = fs.readFileSync('resources/avatar.png')
-var header = fs.readFileSync('resources/partials/header.html')
-var ticker = fs.readFileSync('resources/partials/ticker.html')
-var footer = fs.readFileSync('resources/partials/footer.html')
-var home = fs.readFileSync('resources/partials/index.html')
+// Load static HTML files into memory
+let app = fs.readFileSync('resources/partials/app.html')
+let resume = fs.readFileSync('resources/partials/resume.html')
+let addquote = fs.readFileSync('resources/partials/addquote.html')
+let login = fs.readFileSync('resources/partials/login.html')
 
-var poetry = "<main><h1>Born Too Soon</h1><p>We were born 200 years later, cowboys in space. We ride spaceships to planets like they were cars and we were people 200 years ago driving to another state. Born to a different father, unshackled by demons. You float along a passageway aboard our ship, looking at me as you make your way towards me. I see your face the same as I remember it, and it makes me happy to think about. We were born too soon, to a world not ready for us.</p></main>"
-// Define the document schema for Mongoose
-// var Schema = mongoose.Schema
-// var bookSchema = new Schema({
-//   email: String,
-//   isbn: Number,
-//   buying: Boolean,
-//   pin: Number
-// })
-// var Book = mongoose.model('Book', bookSchema)
+// Load global variables
+let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
+let password = "gener8c0s"
+filter = new Filter()
 
-/*
-Our server object is an EventEmitter
-When it receives an HTTP request it emits a 'request' event
-".on" hearing the 'request' event emitted from the server
-we execute the following code
-*/
+
+// Database ORM model creation
+
+// Initialize mongoDB
+let db
+
+// Initialize Schema
+let Schema = mongoose.Schema
+
+// Build Quote ORM model
+let quoteSchema = new Schema({
+  quote: { type: String, maxlength: 128 },
+  date: { type: Date, default: Date.now }
+})
+let Quote = mongoose.model('Quote', quoteSchema)
+
+// Build blog ORM model
+let blogSchema = new Schema({
+  title:  { type: String, maxlength: 2500 },
+  author: String,
+  body:   String,
+  date: { type: Date, default: Date.now }
+})
+
+
+// Create Server
+let server = http.createServer()
+
+// Function call for incoming HTTP request
 server.on('request', (req, res) => {
-  var userAgent = req.headers['user-agent']
-  var body = []
+  let userAgent = req.headers['user-agent']
+  let body = []
 
+  // Parsing request body
   req.on('error', () => {
     console.error(err)
-    // Parsing chunks of data in a POST request...
   }).on('data', chunk => {
     body.push(chunk)
   }).on('end', () => {
-    // Alas: the body of a POST request
     body = Buffer.concat(body).toString()
 
     // GET Router
     if (req.method == 'GET') {
       switch (req.url) {
+
         case '/':
           res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(header)
-          res.write(ticker)
-          res.write(home)
-          res.write(footer)
+
+          mongoose.connect('mongodb://localhost/quotes')
+          db = mongoose.connection
+
+          db.on('error', console.error.bind(console, 'connection error:'))
+          db.once('open', function () {
+            Quote.findOne().sort({date: -1}).exec( (err, quote) => {
+              if (err) return console.error(err)
+              mongoose.disconnect()
+              
+              res.write(app.toString()
+              .replace('<!--NAV-ENTRY-->', '<em>' + quote.quote + '</em> <a href="/quotes">&rarr;</a>')
+              .replace('<!--MAIN-ENTRY-->', resume))
+              res.end()
+            })
+          })
+        break
+
+        case '/quotes':
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+
+          mongoose.connect('mongodb://localhost/quotes')
+          db = mongoose.connection
+
+          db.on('error', console.error.bind(console, 'connection error:'))
+          db.once('open', function () {
+            Quote.find((err, quotes) => {
+              if (err) return console.error(err)
+              mongoose.disconnect()
+
+              let str = ""
+              for (var i = quotes.length - 1; i >= 0; i--)
+                str += '<p>' + JSON.parse(JSON.stringify(quotes[i].quote)) + '</p>'
+
+              res.write(app.toString().replace('<!--NAV-ENTRY-->', addquote)
+              .replace('<!--MAIN-ENTRY-->', str))
+              res.end()
+            })
+          })
+        break
+
+        case '/login':
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+          res.write(app.toString().replace('<!--NAV-ENTRY-->', login)
+          .replace('<!--MAIN-ENTRY-->', resume))
           res.end()
         break
 
-        case '/resources/avatar.png':
-          res.writeHead(200, { 'Content-Type': 'image/png' })
-          res.end(avatar)
-        break
-
-        case '/poetry':
-          res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(header)
-          res.write(poetry)
-          res.write(footer)
-        break
-
-        // case '/books':
-        //   // Connect to MongoDB
-        //   mongoose.connect('mongodb://localhost/bukex')
-        //   var db = mongoose.connection
-        //   db.on('error', console.error.bind(console, 'connection error:'))
-        //   db.once('open', function () {
-        //     Book.find((err, books) => {
-        //       if (err) return console.error(err)
-
-        //       // res.write(page)
-        //       res.end(JSON.stringify(books))
-        //       mongoose.disconnect()
-        //     })
-        //   })
-        // break
-
         default:
           res.writeHead(404, { 'Content-Type': 'text/html' })
-          res.write(header)
-          res.write("<h1>404</h1><p>The page you're requesting doesn't exist.</p>")
-          res.write(footer)
+          res.write(app.toString().replace('<!--MAIN-ENTRY-->', _404))
           res.end()
         break
       }
@@ -92,34 +121,42 @@ server.on('request', (req, res) => {
     // POST Router
     if (req.method == 'POST') {
       switch (req.url) {
-        case '/books':
-          // Create a new mongoose model with the email our user submitted 
-          var book = new Book({ email: 'dethicos@jones.com', isbn: body, buying: true, pin: 12345 })
+        case '/quotes/new':
+          // Create a new mongoose model with the quote our user submitted 
+          let quote = new Quote({ quote: filter.clean(body) })
 
           // Connect to MongoDB
-          mongoose.connect('mongodb://localhost/bukex')
-          var db = mongoose.connection
+          mongoose.connect('mongodb://localhost/quotes')
+          db = mongoose.connection
+
           db.on('error', console.error.bind(console, 'connection error:'))
           db.once('open', function () {
             // We've successfully established a conection to the database
             console.log("Connection to Mongo database established")
 
             // Store our user's email in the database
-            book.save( (err, email) => {
+            quote.save( (err, quote) => {
               if (err) {
-                res.end("There was an error connecting to our database :(")
+                res.end(app.toString().replace('<!--MAIN-ENTRY-->', '<p>You encountered an error</p>'))
                 return console.error(err)
               }
+              mongoose.disconnect()
 
               res.writeHead(200, { 'Content-Type': 'text/plain' })
-              res.end("Your book has been added to the exchange!")
-              mongoose.disconnect()
+              res.end("< Quote added >")
             })
           })
         break
+
+        case '/login':
+          if (body === password) {
+            res.writeHead(200, { 'Content-Type': 'text/plain' })
+            res.end("Authentication successful")
+          }
+          else res.end("Authentication failed")
+        break
       }
     }
-    
     // Error handling
     res.on('error', err => {
       console.error(err)
