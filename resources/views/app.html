@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html><head>
+  <title>Faster Than Me</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
-  <title>Faster Than Me</title>
   <!--<meta name="description" content="">-->
 
-  <script src="https://use.fontawesome.com/6adfc93334.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://s3-us-west-1.amazonaws.com/fasterthan/font-awesome-4.7.0/css/font-awesome.min.css">
+  
   <!--[if lt IE 9]> <script src="resources/html5shiv.js"></script> <![endif]-->
   <style>
     /* HTML5 Support for older browsers */
@@ -78,19 +80,17 @@
         color: #4d6394;
     }
     main h1, main h2 {
-        margin: 8px 0;
+        margin: 16px 0;
         letter-spacing: 2px;
         font-weight: lighter;
         text-transform: uppercase;
     }
-    footer {
-        height: 40px;
-        line-height: 40px;
-        border-top: 2px solid #e3e3e8;
-    }
     footer a {
         color: #4d6394;
         margin: 0 24px;
+    }
+    main {
+        margin-bottom: 88px;
     }
     main a {
         color: #4d6394;
@@ -121,22 +121,68 @@
     li {
         text-align: left;
     }
-    input {
+    #input {
+        font-size: 16px;
+        min-width: 272px;
         text-align: center;
     }
-    #input {
-        font-size: 12px;
-        min-width: 256px;
+    input {
+        border-radius: 0px;
+    }
+    #submit_button {
+        font-size: 16px;
     }
     #form {
+        max-width: 640px;
+        border-top: 1px solid #eee;
+        margin: 0px auto;
+        background-color: white;
+    }
+    ::-webkit-input-placeholder { color: #4d6394; }
+    ::-moz-placeholder { color: #4d6394; }
+    ::-ms-input-placeholder { color: #4d6394; }
+
+    #footer-wrapper {
+        max-width: 640px;
+        margin: 0px auto;
+    }
+    footer {
+        position: fixed;
+        bottom: 0;
+        height: 80px;
         line-height: 40px;
+        min-width: 640px;
+    }
+    #footer-entry-wrapper {
+        position: fixed;
+        left: 0;
+        width: 100%;
+    }
+    #external-links-wrapper {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+    }
+    #external-links {
+        max-width: 640px;
+        margin: 0px auto;
+        padding: 0px;
+        border-top: 2px solid #e3e3e8;
+        background-color: white;
+    }
+    #external-links li {
+        display: inline-block;
+    }
+    #external-links ul {
+        padding: 0px;
     }
   </style>
 </head>
 
 <body>
 <header>
-    <a href="/photos"><img id="logo" src="https://s.gravatar.com/avatar/b6975651e3aed3de0c2a1aaec08c5607" alt="David Alexander Foster"></a>
+    <a href="/photos"><img id="logo" src="https://s3-us-west-1.amazonaws.com/fasterthan/avatar_240.png" alt="David Alexander Foster"></a>
     <h1><a href="/">f <span style="color: #cfcfd6">></span></a></h1>
 </header>
 <div id="overflow">
@@ -174,10 +220,20 @@
 <main>
     <!--MAIN-ENTRY-->
 </main>
+
+<div id="footer-wrapper">
 <footer>
-    <a target="_blank" href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a>
-    <a target="_blank" href="https://www.instagram.com/the.t.u.r.n" class="fa fa-fw fa-instagram"></a>
-    <a target="_blank" href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a>
-    <a target="_blank" href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>    
+    <div id="footer-entry-wrapper">
+        <!--FOOTER-ENTRY-->
+    </div>
+    <div id="external-links-wrapper">
+        <ul id="external-links">
+            <li><a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a></li>
+            <li><a href="https://www.instagram.com/the.t.u.r.n" class="fa fa-fw fa-instagram"></a></li>
+            <li><a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a></li>
+            <li><a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a></li>
+        </ul>
+    </div>
 </footer>
+</div>
 </body></html>

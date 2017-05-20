@@ -1,19 +1,20 @@
 // Library Imports
 let mongoose = require('mongoose')
+let Filter = require('bad-words')
 let http = require('http')
 let fs = require('fs')
-let Filter = require('bad-words')
 
 // Load static HTML files into memory
-let app = fs.readFileSync('resources/partials/app.html')
-let resume = fs.readFileSync('resources/partials/resume.html')
-let addquote = fs.readFileSync('resources/partials/addquote.html')
-let login = fs.readFileSync('resources/partials/login.html')
+let app = fs.readFileSync('resources/views/app.html')
+let resume = fs.readFileSync('resources/views/resume.html')
+let addquote = fs.readFileSync('resources/views/addquote.html')
+let login = fs.readFileSync('resources/views/login.html')
 
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 let password = "gener8c0s"
-filter = new Filter()
+let mostRecentQuote = "Taco taco taco taco taco, izquierda!"
+let filter = new Filter({ placeHolder: '&#128520;'})
 
 
 // Database ORM model creation
@@ -70,12 +71,14 @@ server.on('request', (req, res) => {
           db.once('open', function () {
             Quote.findOne().sort({date: -1}).exec( (err, quote) => {
               if (err) return console.error(err)
-              mongoose.disconnect()
+
+              if (quote) mostRecentQuote = quote.quote
               
               res.write(app.toString()
-              .replace('<!--NAV-ENTRY-->', '<em>' + quote.quote + '</em> <a href="/quotes">&rarr;</a>')
+              .replace('<!--NAV-ENTRY-->', '<em>' + mostRecentQuote + '</em> <a href="/quotes">&rarr;</a>')
               .replace('<!--MAIN-ENTRY-->', resume))
               res.end()
+              mongoose.disconnect()
             })
           })
         break
@@ -92,12 +95,20 @@ server.on('request', (req, res) => {
               if (err) return console.error(err)
               mongoose.disconnect()
 
-              let str = ""
-              for (var i = quotes.length - 1; i >= 0; i--)
-                str += '<p>' + JSON.parse(JSON.stringify(quotes[i].quote)) + '</p>'
+              let quotesInDatabase = ""
 
-              res.write(app.toString().replace('<!--NAV-ENTRY-->', addquote)
-              .replace('<!--MAIN-ENTRY-->', str))
+              if (quotes.length) {
+                let j = quotes.length - 1
+                mostRecentQuote = quotes[j].quote
+                while (j > 0) {
+                  j--
+                  quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+                }
+              }
+
+              res.write(app.toString().replace('<!--FOOTER-ENTRY-->', addquote)
+              .replace('<!--MAIN-ENTRY-->', quotesInDatabase)
+              .replace('<!--NAV-ENTRY-->', '<em>' + mostRecentQuote + '</em> <a href="/quotes">&rarr;</a>'))
               res.end()
             })
           })
@@ -107,6 +118,13 @@ server.on('request', (req, res) => {
           res.writeHead(200, { 'Content-Type': 'text/html' })
           res.write(app.toString().replace('<!--NAV-ENTRY-->', login)
           .replace('<!--MAIN-ENTRY-->', resume))
+          res.end()
+        break
+
+        case '/interface':
+          res.write(app.toString().replace('<!--FOOTER-ENTRY-->', addquote)
+          .replace('<!--MAIN-ENTRY-->', resume)
+          .replace('<!--NAV-ENTRY-->', '<em>' + "YOLO guides me. YOLO sets me free." + '</em> <a href="/quotes">&rarr;</a>'))
           res.end()
         break
 
@@ -134,7 +152,7 @@ server.on('request', (req, res) => {
             // We've successfully established a conection to the database
             console.log("Connection to Mongo database established")
 
-            // Store our user's email in the database
+            // Store quote document in the database
             quote.save( (err, quote) => {
               if (err) {
                 res.end(app.toString().replace('<!--MAIN-ENTRY-->', '<p>You encountered an error</p>'))
@@ -168,6 +186,10 @@ server.on('request', (req, res) => {
     console.log('Request Body: \t' + body)
     console.log('===================================')
   })
-}).listen(process.env.PORT)
+<<<<<<< HEAD
+}).listen(8080)
+=======
+}).listen(8080)
+>>>>>>> textbox
 
 console.log("Server started at http://localhost:" + server.address().port)
