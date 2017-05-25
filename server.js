@@ -28,7 +28,8 @@ let Schema = mongoose.Schema
 // Build Quote ORM model
 let quoteSchema = new Schema({
   quote: { type: String, maxlength: 128 },
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now },
+  isFaster: { type: Boolean, default: false }
 })
 let Quote = mongoose.model('Quote', quoteSchema)
 
@@ -68,7 +69,7 @@ server.on('request', (req, res) => {
           db = mongoose.connection
 
           db.on('error', console.error.bind(console, 'connection error:'))
-          db.once('open', function () {
+          db.once('open', () => {
             Quote.findOne().sort({date: -1}).exec( (err, quote) => {
               if (err) return console.error(err)
 
@@ -90,7 +91,7 @@ server.on('request', (req, res) => {
           db = mongoose.connection
 
           db.on('error', console.error.bind(console, 'connection error:'))
-          db.once('open', function () {
+          db.once('open', () => {
             Quote.find((err, quotes) => {
               if (err) return console.error(err)
               mongoose.disconnect()
@@ -105,20 +106,13 @@ server.on('request', (req, res) => {
                   quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
                 }
               }
+              quotesInDatabase += addquote
 
-              res.write(app.toString().replace('<!--FOOTER-ENTRY-->', addquote)
-              .replace('<!--MAIN-ENTRY-->', quotesInDatabase)
-              .replace('<!--NAV-ENTRY-->', '<em>' + mostRecentQuote + '</em> <a href="/quotes">&rarr;</a>'))
+              res.write(app.toString().replace('<!--MAIN-ENTRY-->', quotesInDatabase)
+              .replace('<!--NAV-ENTRY-->', '<em>' + mostRecentQuote + '</em> <a style="color:white;" href="/quotes">&rarr;</a>'))
               res.end()
             })
           })
-        break
-
-        case '/login':
-          res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(app.toString().replace('<!--NAV-ENTRY-->', login)
-          .replace('<!--MAIN-ENTRY-->', resume))
-          res.end()
         break
 
         case '/interface':
@@ -140,8 +134,16 @@ server.on('request', (req, res) => {
     if (req.method == 'POST') {
       switch (req.url) {
         case '/quotes/new':
-          // Create a new mongoose model with the quote our user submitted 
-          let quote = new Quote({ quote: filter.clean(body) })
+          let secret = body.substring(0, 3)
+          let quote = new Quote
+          body = body.substring(4, body.length)
+          console.log(secret + "body" + body)
+
+          if (secret == '!ft') {
+            quote.isFaster = true
+            quote.quote = body
+          }
+          else quote.quote = filter.clean(body)
 
           // Connect to MongoDB
           mongoose.connect('mongodb://localhost/quotes')
@@ -164,14 +166,6 @@ server.on('request', (req, res) => {
               res.end("< Quote added >")
             })
           })
-        break
-
-        case '/login':
-          if (body === password) {
-            res.writeHead(200, { 'Content-Type': 'text/plain' })
-            res.end("Authentication successful")
-          }
-          else res.end("Authentication failed")
         break
       }
     }

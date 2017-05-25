@@ -16,12 +16,8 @@
         if (this.readyState == 4 && this.status == 200) {
           // Disable submit button after quote has successfully been sent
           var newQuote = document.createElement('p')
-          newQuote.innerHTML = quote.value
+          quoteForm.innerHTML = quote.value
 
-          main.insertBefore(newQuote, main.firstChild)
-          quoteForm.reset()
-          document.getElementById('submit_button').disabled = true
-          quote.placeholder = this.response
         }
       }
       httpRequest.open('POST', '/quotes/new')
@@ -34,6 +30,6 @@
 </script>
 
 <form id="form" action="javascript:addQuote()">
-  <input type="text" id="input" maxlength="128" autocomplete="off" placeholder="What thought consumes you?">
+  <input type="text" id="input" maxlength="128" autocomplete="off" placeholder="Write something!">
   <input type="submit" id="submit_button" value="&#9997;">
 </form>
