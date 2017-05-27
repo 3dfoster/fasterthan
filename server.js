@@ -8,11 +8,9 @@ let fs = require('fs')
 let app = fs.readFileSync('resources/views/app.html')
 let resume = fs.readFileSync('resources/views/resume.html')
 let addquote = fs.readFileSync('resources/views/addquote.html')
-let login = fs.readFileSync('resources/views/login.html')
 
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
-let password = "gener8c0s"
 let fasterQuote = "Taco taco taco taco taco, izquierda!"
 let filter = new Filter({ placeHolder: '&#128520;'})
 
