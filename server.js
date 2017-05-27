@@ -13,7 +13,7 @@ let addquote = fs.readFileSync('resources/views/addquote.html')
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 let fasterQuote = "I am the mountain rising high."
 let filter = new Filter({ placeHolder: '&#128520;'})
-
+const PORT = process.env.PORT || 8080
 
 // Database ORM model creation
 
@@ -179,6 +179,6 @@ server.on('request', (req, res) => {
     console.log('Request Body: \t' + body)
     console.log('===================================')
   })
-}).listen(8080)
+}).listen(PORT)
 
-console.log("Server started at http://localhost:" + server.address().port)
+// console.log("Server started at http://localhost:" + server.address().port)
