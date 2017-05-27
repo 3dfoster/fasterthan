@@ -11,7 +11,7 @@ let addquote = fs.readFileSync('resources/views/addquote.html')
 
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
-let fasterQuote = "Taco taco taco taco taco, izquierda!"
+let fasterQuote = "I am the mountain rising high."
 let filter = new Filter({ placeHolder: '&#128520;'})
 
 
@@ -27,7 +27,8 @@ let Schema = mongoose.Schema
 let quoteSchema = new Schema({
   quote: { type: String, maxlength: 128 },
   date: { type: Date, default: Date.now },
-  isFaster: { type: Boolean, default: false }
+  isFaster: { type: Boolean, default: false },
+  addr: { type: String, maxlength: 160 }
 })
 let Quote = mongoose.model('Quote', quoteSchema)
 
@@ -47,6 +48,7 @@ let server = http.createServer()
 server.on('request', (req, res) => {
   let userAgent = req.headers['user-agent']
   let body = []
+  let addr = req.connection.remoteAddress
 
   // Parsing request body
   req.on('error', () => {
@@ -63,7 +65,7 @@ server.on('request', (req, res) => {
         case '/':
           res.writeHead(200, { 'Content-Type': 'text/html' })
 
-          mongoose.connect('mongodb://localhost/quotes')
+          mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
           db = mongoose.connection
 
           db.on('error', console.error.bind(console, 'connection error:'))
@@ -85,7 +87,7 @@ server.on('request', (req, res) => {
         case '/quotes':
           res.writeHead(200, { 'Content-Type': 'text/html' })
 
-          mongoose.connect('mongodb://localhost/quotes')
+          mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
           db = mongoose.connection
 
           db.on('error', console.error.bind(console, 'connection error:'))
@@ -136,10 +138,13 @@ server.on('request', (req, res) => {
             quote.isFaster = true
             quote.quote = body
           }
-          else quote.quote = filter.clean(body)
-
+          else {
+            quote.quote = filter.clean(body)
+            quote.addr = addr
+          }
+          
           // Connect to MongoDB
-          mongoose.connect('mongodb://localhost/quotes')
+          mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
           db = mongoose.connection
 
           db.on('error', console.error.bind(console, 'connection error:'))
