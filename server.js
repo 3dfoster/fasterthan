@@ -168,6 +168,7 @@ server.on('request', (req, res) => {
     })
 
     console.log('Path: \t\t' + req.url)
+    console.log('IP: \t\t' + req.connection.remoteAddress)
     console.log('Method: \t' + req.method)
     console.log('User Agent: \t' + userAgent)
     console.log('Request Body: \t' + body)
