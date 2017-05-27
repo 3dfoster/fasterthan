@@ -13,7 +13,7 @@ let login = fs.readFileSync('resources/views/login.html')
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 let password = "gener8c0s"
-let mostRecentQuote = "Taco taco taco taco taco, izquierda!"
+let fasterQuote = "Taco taco taco taco taco, izquierda!"
 let filter = new Filter({ placeHolder: '&#128520;'})
 
 
@@ -70,13 +70,13 @@ server.on('request', (req, res) => {
 
           db.on('error', console.error.bind(console, 'connection error:'))
           db.once('open', () => {
-            Quote.findOne().sort({date: -1}).exec( (err, quote) => {
+            Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quote) => {
               if (err) return console.error(err)
 
-              if (quote) mostRecentQuote = quote.quote
+              if (quote) fasterQuote = quote.quote
               
               res.write(app.toString()
-              .replace('<!--NAV-ENTRY-->', '<em>' + mostRecentQuote + '</em> <a href="/quotes">&rarr;</a>')
+              .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes">&rarr;</a>')
               .replace('<!--MAIN-ENTRY-->', resume))
               res.end()
               mongoose.disconnect()
@@ -99,27 +99,23 @@ server.on('request', (req, res) => {
               let quotesInDatabase = ""
 
               if (quotes.length) {
-                let j = quotes.length - 1
-                mostRecentQuote = quotes[j].quote
-                while (j > 0) {
-                  j--
-                  quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+                let j = 0
+
+                while (j <= quotes.length - 1) {
+                    if (quotes[j].isFaster == true)
+                      fasterQuote = quotes[j].quote
+
+                    else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+                  j++
                 }
               }
               quotesInDatabase += addquote
 
               res.write(app.toString().replace('<!--MAIN-ENTRY-->', quotesInDatabase)
-              .replace('<!--NAV-ENTRY-->', '<em>' + mostRecentQuote + '</em> <a style="color:white;" href="/quotes">&rarr;</a>'))
+              .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a style="color:white; pointer-events: none; cursor: default;" href="/quotes">&rarr;</a>'))
               res.end()
             })
           })
-        break
-
-        case '/interface':
-          res.write(app.toString().replace('<!--FOOTER-ENTRY-->', addquote)
-          .replace('<!--MAIN-ENTRY-->', resume)
-          .replace('<!--NAV-ENTRY-->', '<em>' + "YOLO guides me. YOLO sets me free." + '</em> <a href="/quotes">&rarr;</a>'))
-          res.end()
         break
 
         default:
@@ -134,12 +130,11 @@ server.on('request', (req, res) => {
     if (req.method == 'POST') {
       switch (req.url) {
         case '/quotes/new':
-          let secret = body.substring(0, 3)
           let quote = new Quote
-          body = body.substring(4, body.length)
-          console.log(secret + "body" + body)
+          let secret = body.substring(0, 3)
 
           if (secret == '!ft') {
+            body = body.substring(4, body.length)
             quote.isFaster = true
             quote.quote = body
           }
@@ -163,7 +158,7 @@ server.on('request', (req, res) => {
               mongoose.disconnect()
 
               res.writeHead(200, { 'Content-Type': 'text/plain' })
-              res.end("< Quote added >")
+              res.end()
             })
           })
         break
