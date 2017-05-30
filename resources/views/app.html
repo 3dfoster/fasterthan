@@ -179,6 +179,7 @@
     var Overflow = document.getElementById('overflow')
     var Main = document.getElementsByTagName('main')[0]
     var Header = document.getElementsByTagName('header')[0]
+    var Logo = document.getElementById('logo')
 
     var navHeight = 40
     var noGradient = 'box-shadow: none'
@@ -204,11 +205,13 @@
         if (document.body.scrollTop >= Header.offsetHeight) {
             document.documentElement.style.paddingTop = Nav.offsetHeight + 'px'
             // alert(Nav.offsetHeight)
+            logo.style.display = 'none'
             Overflow.className = "sticky-nav-wrapper"
             Nav.className = "sticky-nav"
         }
         else {
             document.documentElement.style.paddingTop = 0
+            logo.style.display = 'inline'
             Overflow.className = ""
             Nav.className = ""
         }
