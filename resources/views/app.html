@@ -68,6 +68,7 @@
         width: 100%;
         overflow-x: scroll;
         white-space: nowrap;
+        background-color: white;
         border-bottom: 2px solid #cfcfd6;
     }
     nav::-webkit-scrollbar {
@@ -78,6 +79,9 @@
     }
     nav a:hover {
         color: #4d6394;
+    }
+    main {
+        overflow: auto;
     }
     main h1, main h2 {
         margin: 16px 0;
@@ -181,7 +185,6 @@
     var scrollbarHeight = Nav.offsetHeight - Nav.clientHeight
     Nav.style.height = navHeight + scrollbarHeight + 'px'
     Nav.style.lineHeight = navHeight + scrollbarHeight + 'px'
-    Overflow.style.height = navHeight + 'px'
 
     gradient()
     stickyFooter()
@@ -191,7 +194,7 @@
     }
     window.onresize = function () {
         if (Nav.scrollLeft + Nav.scrollWidth - Nav.clientWidth == 0)
-            Overflow.style.cssText += noGradient
+            Nav.style.cssText += noGradient
         else gradient()
 
         stickyFooter()
@@ -199,25 +202,29 @@
 
     window.onscroll = function () {
         if (document.body.scrollTop >= Header.offsetHeight) {
+            document.documentElement.style.paddingTop = Nav.offsetHeight + 'px'
+            // alert(Nav.offsetHeight)
             Overflow.className = "sticky-nav-wrapper"
             Nav.className = "sticky-nav"
         }
         else {
+            document.documentElement.style.paddingTop = 0
             Overflow.className = ""
             Nav.className = ""
         }
     }
 
     function gradient() {
-        Overflow.style.cssText += 'box-shadow: #888 -' + maxGrad(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(Nav.scrollLeft) + 'px 0px 40px -40px inset'
+        Nav.style.cssText += 'box-shadow: #888 -' + maxGrad(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(Nav.scrollLeft) + 'px 0px 40px -40px inset'
     }
     function maxGrad(val) {
         if (val >= 48) return 48
         else return val
     }
     function stickyFooter() {
-        Main.style.minHeight = document.documentElement.clientHeight - Header.offsetHeight - Overflow.offsetHeight - 42 + 'px'
+        Main.style.minHeight = document.documentElement.clientHeight - Header.offsetHeight - Nav.offsetHeight - 42 + 'px'
     }
+    // Main.innerHTML = document.documentElement.clientHeight + ' ' + Header.offsetHeight + ' ' + Nav.offsetHeight
 </script>
 
 <footer>
