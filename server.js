@@ -9,11 +9,15 @@ let app = fs.readFileSync('resources/views/app.html')
 let resume = fs.readFileSync('resources/views/resume.html')
 let addquote = fs.readFileSync('resources/views/addquote.html')
 
+// OpenShift
+let port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
+let ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'
+
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 let fasterQuote = "I am the mountain rising high."
 let filter = new Filter({ placeHolder: '&#128520;'})
-const PORT = process.env.PORT || 8080
+// const PORT = process.env.PORT || 8080
 
 // Database ORM model creation
 
@@ -179,6 +183,6 @@ server.on('request', (req, res) => {
     console.log('Request Body: \t' + body)
     console.log('===================================')
   })
-}).listen(PORT)
+}).listen(port, ip)
 
 // console.log("Server started at http://localhost:" + server.address().port)
