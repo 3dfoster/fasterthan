@@ -6,10 +6,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="theme-color" content="#38598c">
+  <meta name="theme-color" content="#374c68">
   <meta charset="UTF-8">
   
-  <meta name="description" content="Faster than me? David Alexander Foster is faster than you.">
+  <meta name="description" content="David Alexander Foster is faster than you.">
 
   <link rel="stylesheet" type="text/css" href="https://s3-us-west-1.amazonaws.com/fasterthan/font-awesome-4.7.0/css/font-awesome.min.css">
   
@@ -193,12 +193,9 @@
     </nav>
 </div>
 <script>
-  var Header = document.getElementsByTagName('header')[0]
-  var Overflow = document.getElementById('overflow')
   var Nav = document.getElementsByTagName('nav')[0]
   var Main = document.getElementsByTagName('main')[0]
-
-  
+  var Overflow = document.getElementById('overflow')
 
   var navHeight = 40
   var noGradient = 'box-shadow: none'
@@ -211,33 +208,20 @@
     gradient()
   }
   window.onresize = function () {
-  var Main = document.getElementsByTagName('main')[0]
-    if (Math.round(Nav.scrollLeft) + (Nav.scrollWidth - Nav.clientWidth) == 0)
+    if (Nav.scrollLeft + (Nav.scrollWidth - Nav.clientWidth) == 0)
       Overflow.style.cssText += noGradient
     else gradient()
   }
-  window.onscroll = function () {
-
-    Nav.innerHTML = Math.round(document.body.scrollTop)
-    if (Math.round(document.body.scrollTop) >= window.getComputedStyle(Header).height) {
-        
-    }
-
-    // if (Math.round(Main.scrollTop) + (Main.scrollHeight - Main.clientHeight) == 0)
-    //   alert("warn!")
-    // else gradient()
-
-  }
   function gradient() {
+      console.log(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft + ' ' + Nav.scrollLeft)
     Overflow.style.cssText += 'box-shadow: #888 -' + maxGrad(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(Nav.scrollLeft) + 'px 0px 40px -40px inset'
   }
-  
   function maxGrad(val) {
-      if (val >= 48) return 48
-      else return val
+      if (val >= 48) return 48 + 10
+      else return val + 10
   }
 </script>
-<main style="height: 690px">
+<main>
     <!--MAIN-ENTRY-->
 </main>
 
