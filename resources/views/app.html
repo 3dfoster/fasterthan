@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="theme-color" content="#374c68">
+  <meta name="theme-color" content="#4f506f">
   <meta charset="UTF-8">
   
   <meta name="description" content="David Alexander Foster is faster than you.">
@@ -189,12 +189,11 @@
 </header>
 <div id="overflow">
     <nav>
-      <!--NAV-ENTRY-->
+      <!--NAV-ENTRY-->All bodies contortion. This is a string I hope it strings. FMEM Comparo.
     </nav>
 </div>
 <script>
   var Nav = document.getElementsByTagName('nav')[0]
-  var Main = document.getElementsByTagName('main')[0]
   var Overflow = document.getElementById('overflow')
 
   var navHeight = 40
@@ -213,12 +212,11 @@
     else gradient()
   }
   function gradient() {
-      console.log(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft + ' ' + Nav.scrollLeft)
     Overflow.style.cssText += 'box-shadow: #888 -' + maxGrad(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(Nav.scrollLeft) + 'px 0px 40px -40px inset'
   }
   function maxGrad(val) {
-      if (val >= 48) return 48 + 10
-      else return val + 10
+      if (val >= 48) return 48
+      else return val
   }
 </script>
 <main>
