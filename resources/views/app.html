@@ -94,9 +94,6 @@
         color: #4d6394;
         margin: 0 24px;
     }
-    main {
-        margin-bottom: 48px;
-    }
     main a {
         color: #4d6394;
     }
@@ -144,40 +141,10 @@
     ::-moz-placeholder { font-size: 12px; }
     ::-ms-input-placeholder { font-size: 12px; }
 
-    #footer-wrapper {
-        max-width: 640px;
-        margin: 0px auto;
-    }
     footer {
-        position: fixed;
-        bottom: 0;
         line-height: 40px;
-        min-width: 640px;
-    }
-    #footer-entry-wrapper {
-        position: fixed;
-        left: 0;
-        bottom: 40px;
-        width: 100%;
-    }
-    #external-links-wrapper {
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-    }
-    #external-links {
         max-width: 640px;
-        margin: 0px auto;
-        padding: 0px;
-        border-top: 2px solid #e3e3e8;
-        background-color: white;
-    }
-    #external-links li {
-        display: inline-block;
-    }
-    #external-links ul {
-        padding: 0px;
+        border-top: 2px solid 
     }
   </style>
 </head>
@@ -189,12 +156,33 @@
 </header>
 <div id="overflow">
     <nav>
-      <!--NAV-ENTRY-->
+      <!--NAV-ENTRY-->In the quivering forest with a shiver in darkness.
     </nav>
 </div>
+
+<main>
+    <!--MAIN-ENTRY-->
+</main>
 <script>
   var Nav = document.getElementsByTagName('nav')[0]
   var Overflow = document.getElementById('overflow')
+  var Main = document.getElementsByTagName('main')[0]
+
+  var h1 = document.getElementsByTagName('h1')[0]
+  var Header = document.getElementsByTagName('header')[0]
+
+  window.onscroll = function () {
+      h1.innerHTML = document.body.scrollTop + ' ' + Header.offsetHeight
+      if (document.body.scrollTop >= Header.offsetHeight) {
+        Overflow.style.backgroundColor = 'pink'
+      }
+      else
+        Overflow.style.backgroundColor = 'white'
+  }
+
+
+
+
 
   var navHeight = 40
   var noGradient = 'box-shadow: none'
@@ -206,10 +194,14 @@
   Nav.onscroll = function () {
     gradient()
   }
+  stickyFooter()
   window.onresize = function () {
     if (Nav.scrollLeft + Nav.scrollWidth - Nav.clientWidth == 0)
       Overflow.style.cssText += noGradient
     else gradient()
+
+    stickyFooter()
+    
   }
   function gradient() {
     Overflow.style.cssText += 'box-shadow: #888 -' + maxGrad(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(Nav.scrollLeft) + 'px 0px 40px -40px inset'
@@ -218,24 +210,15 @@
       if (val >= 48) return 48
       else return val
   }
+  function stickyFooter() {
+      Main.style.minHeight = '1200px' // document.documentElement.clientHeight - Header.offsetHeight - Overflow.offsetHeight - 42 + 'px'
+  }
 </script>
-<main>
-    <!--MAIN-ENTRY-->
-</main>
 
-<div id="footer-wrapper">
 <footer>
-    <div id="footer-entry-wrapper">
-        <!--FOOTER-ENTRY-->
-    </div>
-    <div id="external-links-wrapper">
-        <ul id="external-links">
-            <li><a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a></li>
-            <li><a href="https://www.instagram.com/the.t.u.r.n" class="fa fa-fw fa-instagram"></a></li>
-            <li><a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a></li>
-            <li><a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a></li>
-        </ul>
-    </div>
+    <a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a>
+    <a href="https://www.instagram.com/the.t.u.r.n" class="fa fa-fw fa-instagram"></a>
+    <a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a>
+    <a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>
 </footer>
-</div>
 </body></html>
