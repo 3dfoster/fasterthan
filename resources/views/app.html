@@ -189,7 +189,7 @@
 </header>
 <div id="overflow">
     <nav>
-      <!--NAV-ENTRY-->All bodies contortion. This is a string I hope it strings. FMEM Comparo.
+      <!--NAV-ENTRY-->
     </nav>
 </div>
 <script>
@@ -207,7 +207,7 @@
     gradient()
   }
   window.onresize = function () {
-    if (Nav.scrollLeft + (Nav.scrollWidth - Nav.clientWidth) == 0)
+    if (Nav.scrollLeft + Nav.scrollWidth - Nav.clientWidth == 0)
       Overflow.style.cssText += noGradient
     else gradient()
   }
