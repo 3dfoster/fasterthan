@@ -2,6 +2,7 @@
 let mongoose = require('mongoose')
 let Filter = require('bad-words')
 let http = require('http')
+let https = require('https')
 let fs = require('fs')
 
 // Load static HTML files into memory
@@ -10,16 +11,14 @@ let resume = fs.readFileSync('resources/views/resume.html')
 let addquote = fs.readFileSync('resources/views/addquote.html')
 
 // OpenShift
-let port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
-let ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'
+let port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080
+let ip = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'
 
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 let fasterQuote = "I am the mountain rising high."
 let filter = new Filter({ placeHolder: '&#128520;'})
 // const PORT = process.env.PORT || 8080
-
-// Database ORM model creation
 
 // Initialize mongoDB
 let db
@@ -119,6 +118,49 @@ server.on('request', (req, res) => {
               .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a style="color:white; pointer-events: none; cursor: default;" href="/quotes">&rarr;</a>'))
               res.end()
             })
+          })
+        break
+
+        case '/photos':
+          https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', (resp) => {
+            const statusCode = resp.statusCode;
+            const contentType = resp.headers['content-type'];
+
+            let error;
+            if (statusCode !== 200) {
+              error = new Error(`Request Failed.\n` +
+                                `Status Code: ${statusCode}`);
+            } else if (!/^application\/json/.test(contentType)) {
+              error = new Error(`Invalid content-type.\n` +
+                                `Expected application/json but received ${contentType}`);
+            }
+            if (error) {
+              console.log(error.message);
+              // consume respponse data to free up memory
+              resp.respume();
+              return;
+            }
+
+            resp.setEncoding('utf8');
+            let rawData = '';
+            resp.on('data', (chunk) => rawData += chunk);
+            resp.on('end', () => {
+              let instagramPhotos = ""
+              try {
+                let object = JSON.parse(rawData);
+                // console.log(parsedData);
+                for (let i = 0; i < object.data.length; i++) {
+                  instagramPhotos += '<img class="ig" src="' + object.data[i].images.standard_resolution.url + '"/>'
+                }
+                res.write(app.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos)
+                .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes">&rarr;</a>'))
+                res.end()
+              } catch (e) {
+                console.log(e.message);
+              }
+            });
+          }).on('error', (e) => {
+            console.log(`Got error: ${e.message}`);
           })
         break
 
