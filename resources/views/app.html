@@ -147,8 +147,8 @@
     }
 
     .ig {
-        width: 200px;
-        margin: 6px;
+        height: 200px;
+        margin: 0 0 -5px 0;
     }
   </style>
 </head>
@@ -197,7 +197,7 @@
         Nav.style.cssText += 'box-shadow: #888 -' + maxGrad(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(Nav.scrollLeft) + 'px 0px 40px -40px inset'
     }
     function maxGrad(val) {
-        if (val >= 48) return 48
+        if (val >= 56) return 56
         else return val
     }
     function stickyFooter() {
