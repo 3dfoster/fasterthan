@@ -7,6 +7,7 @@ let fs = require('fs')
 
 // Load static HTML files into memory
 let app = fs.readFileSync('resources/views/app.html')
+let privacy = fs.readFileSync('resources/views/privacy.html')
 let resume = fs.readFileSync('resources/views/resume.html')
 let addquote = fs.readFileSync('resources/views/addquote.html')
 
@@ -42,7 +43,6 @@ let blogSchema = new Schema({
   body:   String,
   date: { type: Date, default: Date.now }
 })
-
 
 // Create Server
 let server = http.createServer()
@@ -145,22 +145,33 @@ server.on('request', (req, res) => {
             let rawData = ''
             resp.on('data', (chunk) => rawData += chunk);
             resp.on('end', () => {
-              let instagramPhotos = ""
               try {
-                let object = JSON.parse(rawData)
-                // console.log(parsedData);
-                for (let i = 0; i < object.data.length; i++) {
-                  // instagramPhotos += '<a href="' + object.data[i].link + '"/><img class="ig" src="' + object.data[i].images.standard_resolution.url + '"/>'
-                  instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
-                }
-                res.write(app.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos)
-                .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes">&rarr;</a>'))
-                res.end()
+                mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+                db = mongoose.connection
+
+                db.on('error', console.error.bind(console, 'connection error:'))
+                db.once('open', () => {
+                  Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quote) => {
+                    if (err) return console.error(err)
+
+                    if (quote) fasterQuote = quote.quote
+                    mongoose.disconnect()
+                    
+                    let instagramPhotos = ""
+                    let object = JSON.parse(rawData)
+                    for (let i = 0; i < object.data.length; i++)
+                      instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
+
+                    res.write(app.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos)
+                    .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes">&rarr;</a>'))
+                    res.end()
+                  })
+                })
               } catch (e) {
                 console.log(e.message)
               }
             });
-          }).on('error', (e) => {
+          }).on('error', e => {
             console.log(`Got error: ${e.message}`)
           })
         break
@@ -168,6 +179,14 @@ server.on('request', (req, res) => {
         default:
           res.writeHead(404, { 'Content-Type': 'text/html' })
           res.write(app.toString().replace('<!--MAIN-ENTRY-->', _404))
+          res.end()
+        break
+
+        case '/privacy':
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+
+          res.write(app.toString()
+          .replace('<!--MAIN-ENTRY-->', privacy))
           res.end()
         break
       }
@@ -228,4 +247,4 @@ server.on('request', (req, res) => {
   })
 }).listen(port, ip)
 
-// console.log("Server started at http://localhost:" + server.address().port)
+console.log("Server started at http://localhost:" + port)
