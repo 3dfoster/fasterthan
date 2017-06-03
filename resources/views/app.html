@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="theme-color" content="#0066ff">
+  <meta name="theme-color" content="#3A5EAB">
   <meta charset="UTF-8">
   
   <meta name="description" content="Faster than me? David Alexander Foster is faster than you.">
@@ -35,7 +35,7 @@
         padding: 0;
     }
     body {
-        max-width: 640px;
+        max-width: 760px;
         margin: 0 auto;
         text-align: center;
         font-family: sans-serif;
@@ -94,8 +94,16 @@
     main h1, main h2 {
         margin: 16px 0;
         letter-spacing: 2px;
-        font-weight: lighter;
         text-transform: uppercase;
+        font-weight: lighter;
+    }
+    main h3 {
+        font-weight: lighter;
+    }
+    @media screen and (min-width:0\0) {
+        main h1, main h2, main h3 {
+            font-weight: bolder;
+        }
     }
     footer a {
         color: #4d6394;
@@ -138,6 +146,8 @@
         min-width: 272px;
         text-align: center;
         border: none;
+        outline: none;
+        color: #3A5EAB;
         border-bottom: 1px solid #ccc;
     }
     input {
@@ -162,10 +172,15 @@
         color: #4d6394;
         font-style: italic;
     }
+    input:focus::-webkit-input-placeholder { color:transparent; }
+    input:focus:-moz-placeholder { color:transparent; }
+    input:focus::-moz-placeholder { color:transparent; }
+    input:focus:-ms-input-placeholder { color:transparent; }
+    input:focus { color: transparent; }
 
     footer {
         line-height: 40px;
-        max-width: 640px;
+        max-width: 760px;
         border-top: 2px solid #e3e3e8;
     }
     .ig {
@@ -189,6 +204,9 @@
     }
     .justify {
         text-align: justify;
+    }
+    .button {
+        margin-right: 12px;
     }
   </style>
 </head>
@@ -218,7 +236,6 @@
     var noGradient = 'box-shadow: none'
     var scrollbarHeight = Nav.offsetHeight - Nav.clientHeight
     Nav.style.height = navHeight + scrollbarHeight + 'px'
-    // Nav.style.lineHeight = navHeight + scrollbarHeight + 'px'
     Overflow.style.height = navHeight + 'px'
 
     gradient()

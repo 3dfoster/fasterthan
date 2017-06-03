@@ -5,7 +5,7 @@
     var quoteForm = document.getElementById('form')
 
     if (!quote.value)
-      quote.placeholder = "Write something..."
+      quote.placeholder = "Write something!"
 
     else {
       var httpRequest = new XMLHttpRequest()
@@ -30,6 +30,6 @@
 </script>
 
 <form id="form" action="javascript:addQuote()">
-  <input type="text" id="input" maxlength="128" autocomplete="off" placeholder="Write something poetic">
-  <input type="submit" id="submit_button" value="&#9997;">
+  <input type="text" autocapitalize="sentences" autocorrect="on" id="input" maxlength="128" autocomplete="off" placeholder="Write something poetic...">
+  <input type="submit" id="submit_button" value="🖋">
 </form>
