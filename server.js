@@ -79,7 +79,7 @@ server.on('request', (req, res) => {
               if (quote) fasterQuote = quote.quote
               
               res.write(app.toString()
-              .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes">&rarr;</a>')
+              .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + ' <a href="/quotes">&rarr;</a></em>')
               .replace('<!--MAIN-ENTRY-->', resume))
               res.end()
               mongoose.disconnect()
@@ -163,7 +163,7 @@ server.on('request', (req, res) => {
                       instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
 
                     res.write(app.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos)
-                    .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes">&rarr;</a>'))
+                    .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + ' <a href="/quotes">&rarr;</a></em>'))
                     res.end()
                   })
                 })
