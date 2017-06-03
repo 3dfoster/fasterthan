@@ -129,16 +129,31 @@
         font-size: 16px;
         min-width: 272px;
         text-align: center;
+        border: none;
+        border-bottom: 2px solid #ccc;
     }
     input {
         border-radius: 0px;
     }
     #submit_button {
         font-size: 16px;
+        background: none;
+        border: none;
+        position: absolute;
+        cursor: pointer;
     }
-    ::-webkit-input-placeholder { font-size: 12px; }
-    ::-moz-placeholder { font-size: 12px; }
-    ::-ms-input-placeholder { font-size: 12px; }
+    ::-webkit-input-placeholder {
+        color: #4d6394;
+        font-style: italic;
+    }
+    ::-moz-placeholder {
+        color: #4d6394;
+        font-style: italic;
+    }
+    ::-ms-input-placeholder {
+        color: #4d6394;
+        font-style: italic;
+    }
 
     footer {
         line-height: 40px;
