@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+
+    <script type="text/javascript" src="htjs/ht.js"></script>
+  </head>
+  
+  <body></body>
+
+  <script>
+    var Html = new Html()
+    var Body = new Body(760, 'sans-serif', 'blue')
+    var Header = new Header(64)
+
+    Body.appendChild(Header)
+
+    window.onload = function() {
+      request('/david', 'GET', function(Person) {
+        Header.changeLogo('/photos', Person.photo)
+        Header.changeHeading(Person.style.icon, Person.style.colors.accent)
+        Html.changeTitle(Person.name)
+      })
+    }
+</script>
+</html>
