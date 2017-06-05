@@ -101,7 +101,7 @@ var Ticker = function(navHeight) {
   arrow.style.cursor = 'pointer'
   arrow.style.marginRight = '8px'
   arrow.style.padding = '0px 8px'
-  // arrow.style.cssFloat = 'right'
+  arrow.style.opacity = 0
   arrow.onclick = function() { request('/quotes', 'GET', loadHTML)}
   arrow.innerText = '➔'
   
@@ -112,6 +112,7 @@ var Ticker = function(navHeight) {
   
   ticker.addQuote = function(_quote) {
     quote.innerHTML = _quote
+    arrow.style.opacity = 1
   }
 
   gradient()
