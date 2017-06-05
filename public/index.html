@@ -9,7 +9,7 @@
 
     <script type="text/javascript" src="htjs/ht.js"></script>
   </head>
-  
+
   <body></body>
 
   <script>
@@ -21,9 +21,7 @@
 
     window.onload = function() {
       request('/david', 'GET', function(Person) {
-        Header.changeLogo('/photos', Person.photo)
-        Header.changeHeading(Person.style.icon, Person.style.colors.accent)
-        Html.changeTitle(Person.name)
+        loadPage(Person)
       })
     }
 </script>
