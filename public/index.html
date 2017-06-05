@@ -8,18 +8,25 @@
     <meta charset="UTF-8">
 
     <script type="text/javascript" src="htjs/ht.js"></script>
+    <link type="text/css" href="style.css" rel="stylesheet">
   </head>
 
   <body></body>
 
   <script>
     var Html = new Html()
-    var Body = new Body(760, 'sans-serif', 'blue')
+    var Body = new Body(760, 'sans-serif', 'white')
     var Header = new Header(64)
+    var Main = new Main()
+    var Footer = new Footer(40, 'white')
 
     Body.appendChild(Header)
+    Body.appendChild(Main)
+    Body.appendChild(Footer)
 
     window.onload = function() {
+    Main.style.minHeight = `${document.documentElement.clientHeight - document.getElementsByTagName('header')[0].offsetHeight - document.getElementsByTagName('footer')[0].offsetHeight}px`
+  
       request('/david', 'GET', function(Person) {
         loadPage(Person)
       })

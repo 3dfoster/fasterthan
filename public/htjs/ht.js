@@ -48,7 +48,7 @@ var Header = function(height, backgroundColor) {
   logo.style.height = `${height}px`
   logo.style.cursor = 'pointer'
   logo.style.backgroundColor = '#888'
-  logo.onclick = function() { request('/photos', 'GET', loadPage) }
+  logo.onclick = function() { request('/photos', 'GET', loadPhotos) }
 
   heading.style.display = 'inline-block'
   heading.style.margin = '0px auto'
@@ -58,15 +58,21 @@ var Header = function(height, backgroundColor) {
   heading.style.cursor = 'pointer'
   heading.style.color = '#444'
   heading.innerText = 'ht.js'
-  heading.onclick = function() { request('/sophia', 'GET', loadPage) }
+  heading.onclick = function() { request('/', 'GET', loadHTML) }
   
   header.changeHeading = function(_heading, themeColor) {
     heading.innerText = _heading
     heading.style.color = themeColor
   }
-  header.changeLogo = function(url, src) {
-    logo.onclick = function() { request(url, 'GET', loadPage) }
+  header.changeLogo = function(src) {
     logo.src = src
+  }
+  header.loading = function(isLoading) {
+    if (isLoading)
+      heading.className = 'loading'
+
+    else
+      heading.classList.remove('loading')
   }
 
   header.appendChild(logo)
@@ -75,7 +81,27 @@ var Header = function(height, backgroundColor) {
   return header
 }
 
+var Main = function() {
+  var main = document.createElement('main')
+  main.style.overflow = 'auto'
+
+  window.onresize = function () {
+    main.style.minHeight = `${document.documentElement.clientHeight - document.getElementsByTagName('header')[0].offsetHeight - document.getElementsByTagName('footer')[0].offsetHeight}px`
+  }
+  return main
+}
+
+var Footer = function(height, color) {
+  var footer = document.createElement('footer')
+  footer.style.lineHeight = `${height}px`
+  footer.style.borderTop = '2px solid #e3e3e8'
+  footer.style.backgroundColor = color
+
+  return footer
+}
+
 function request(url, method, callback) {
+  Header.loading(true)
   var httpRequest = new XMLHttpRequest()
 
   httpRequest.onreadystatechange = function () {
@@ -90,6 +116,26 @@ function loadPage(res) {
   var Person = res
 
   Html.changeTitle(Person.name)
-  Header.changeLogo('/photos', Person.photo)
+  Header.changeLogo(Person.photo)
   Header.changeHeading(Person.style.icon, Person.style.colors.accent)
+  Header.loading(false)
+}
+
+function loadHTML(res) {
+  main.innerHTML = res
+  Header.loading(false)
+}
+
+function loadPhotos(res) {
+  var object = res
+  var instagramPhotos = ""
+  for (let i = 0; i < object.data.length; i++) {
+    var tmp = document.createElement('img')
+    tmp.style.cursor = 'pointer'
+    tmp.className = 'ig'
+    tmp.src = object.data[i].images.low_resolution.url
+    tmp.onclick = function() { location.href = object.data[i].link }
+    Main.appendChild(tmp)
+  }
+  Header.loading(false)
 }

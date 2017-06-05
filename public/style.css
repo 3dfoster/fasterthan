@@ -1,0 +1,44 @@
+.ig {
+    float: left;
+}
+@media screen and (min-width: 320px) and (max-width: 480px) {
+    .ig {
+        width: 50%;
+    }
+}
+@media screen and (min-width: 480px) and (max-width: 640px) {
+    .ig {
+        width: 33.33%;
+    }
+}
+@media screen and (min-width: 640px) {
+    .ig {
+        width: 25%;
+    }
+}
+.loading {
+  -webkit-animation: rainbow 2s infinite;
+  -ms-animation: rainbow 2s infinite;
+  animation: rainbow 2s infinite; 
+}
+@-webkit-keyframes rainbow{
+	20%{color: red;}
+	40%{color: yellow;}
+	60%{color: green;}
+	80%{color: blue;}
+	100%{color: orange;}	
+}
+@-ms-keyframes rainbow{
+	20%{color: red;}
+	40%{color: yellow;}
+	60%{color: green;}
+	80%{color: blue;}
+	100%{color: orange;}	
+}
+@keyframes rainbow{
+	20%{color: red;}
+	40%{color: yellow;}
+	60%{color: green;}
+	80%{color: blue;}
+	100%{color: orange;}	
+}
