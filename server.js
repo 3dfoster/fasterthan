@@ -1,13 +1,27 @@
 // Libraries
+const mongoose = require('mongoose')
 const express = require('express')
 const https = require('https')
 const fs = require('fs')
 
 let resume = fs.readFileSync('views/resume.html')
+let addquote = fs.readFileSync('views/addquote.html')
 
 // Ports
 let port = process.env.PORT || 8080
 let ip = process.env.IP   || '0.0.0.0'
+
+// Initialize Schema
+let Schema = mongoose.Schema
+
+// Build Quote ORM model
+let quoteSchema = new Schema({
+  quote: { type: String, maxlength: 128 },
+  date: { type: Date, default: Date.now },
+  isFaster: { type: Boolean, default: false },
+  addr: { type: String, maxlength: 160 }
+})
+let Quote = mongoose.model('Quote', quoteSchema)
 
 let Phia = {
   "name": "Sophia Maria Holmgren",
@@ -60,8 +74,53 @@ app.get('/david', (req, res) => {
   res.send(JSON.stringify(David))
 })
 
-app.get('/sophia', (req, res) => {
-  res.send(JSON.stringify(Phia))
+app.get('/quotes', (req, res) => {
+  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+  db = mongoose.connection
+
+  db.on('error', console.error.bind(console, 'connection error:'))
+  db.once('open', () => {
+    Quote.find((err, quotes) => {
+      if (err) return console.error(err)
+      mongoose.disconnect()
+
+      let quotesInDatabase = ""
+
+      if (quotes.length) {
+        let j = 0
+
+        while (j <= quotes.length - 1) {
+            if (quotes[j].isFaster == true)
+              fasterQuote = quotes[j].quote
+
+            else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+          j++
+        }
+      }
+      quotesInDatabase += addquote
+
+      res.send(quotesInDatabase)
+    })
+  })
+})
+
+app.get('/quotes/faster', (req, res) => {
+  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+  db = mongoose.connection
+
+  db.on('error', console.error.bind(console, 'connection error:'))
+  db.once('open', () => {
+    Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quote) => {
+      if (err) return console.error(err)
+      
+      let fasterQuote = "In the quivering forest where the shivering dog rest..."
+
+      if (quote) fasterQuote = quote.quote
+      
+      res.send(fasterQuote)
+      mongoose.disconnect()
+    })
+  })
 })
 
 app.get('/photos', (req, res) => {

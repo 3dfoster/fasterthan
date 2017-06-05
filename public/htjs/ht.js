@@ -26,6 +26,7 @@ var Body = function(width, fontFamily, backgroundColor) {
   body.style.fontFamily = 'sans-serif'
   body.style.fontFamily = fontFamily
   body.style.textAlign = 'center'
+  body.style.color = '#666'
   body.style.backgroundColor = '#fff'
   body.style.backgroundColor = backgroundColor
 
@@ -81,12 +82,68 @@ var Header = function(height, backgroundColor) {
   return header
 }
 
+var Ticker = function(navHeight) {
+  var ticker = document.createElement('aside')
+  ticker.style.overflow = 'hidden'
+  ticker.style.borderBottom = '2px solid #cfcfd6'
+
+  var innerflow = document.createElement('div')
+  innerflow.style.width = '100%'
+  innerflow.style.overflowX = 'scroll'
+  innerflow.style.whiteSpace = 'nowrap'
+  innerflow.style.backgroundColor = '#fff'
+
+  var quote = document.createElement('em')
+  quote.style.lineHeight = `${navHeight}px`
+  quote.style.margin = '0 8px'
+
+  var arrow = document.createElement('span')
+  arrow.style.cursor = 'pointer'
+  arrow.style.marginRight = '8px'
+  arrow.style.padding = '0px 8px'
+  // arrow.style.cssFloat = 'right'
+  arrow.onclick = function() { request('/quotes', 'GET', loadHTML)}
+  arrow.innerText = '➔'
+  
+  var noGradient = 'box-shadow: none'
+  var scrollbarHeight = 30 // innerflow.offsetHeight - innerflow.clientHeight
+  innerflow.style.height = `${navHeight + scrollbarHeight}px`
+  ticker.style.height = `${navHeight}px`
+  
+  ticker.addQuote = function(_quote) {
+    quote.innerHTML = _quote
+  }
+
+  gradient()
+  innerflow.onscroll = function () {
+      gradient()
+  }
+  window.onresize = function () {
+      if (innerflow.scrollLeft + innerflow.scrollWidth - innerflow.clientWidth == 0)
+          innerflow.style.cssText += noGradient
+      else gradient()
+  }
+
+  function gradient() {
+      innerflow.style.cssText += 'box-shadow: #888 -' + maxGrad(innerflow.scrollWidth - innerflow.clientWidth - innerflow.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(innerflow.scrollLeft) + 'px 0px 40px -40px inset'
+  }
+    function maxGrad(val) {
+        if (val >= 56) return 56
+        else return val
+    }
+  innerflow.appendChild(quote)
+  innerflow.appendChild(arrow)
+  ticker.appendChild(innerflow)
+
+  return ticker
+}
+
 var Main = function() {
   var main = document.createElement('main')
   main.style.overflow = 'auto'
 
   window.onresize = function () {
-    main.style.minHeight = `${document.documentElement.clientHeight - document.getElementsByTagName('header')[0].offsetHeight - document.getElementsByTagName('footer')[0].offsetHeight}px`
+    main.style.minHeight = `${document.documentElement.clientHeight - document.getElementsByTagName('header')[0].offsetHeight - document.getElementsByTagName('aside')[0].offsetHeight - document.getElementsByTagName('footer')[0].offsetHeight}px`
   }
   return main
 }

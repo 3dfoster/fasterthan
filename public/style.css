@@ -42,47 +42,188 @@
 	80%{color: blue;}
 	100%{color: orange;}	
 }
-
-
-main h1, main h2 {
-    margin: 16px 0;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-weight: lighter;
-}
-main h3 {
-    font-weight: lighter;
-}
-footer a {
-    color: #4d6394;
-    margin: 0 24px;
-}
-main a {
-    color: #4d6394;
-}
-main h2 span {
-    display: inline-block;
-    padding: 0 8px;
-}
-@media screen and (min-width: 640px) {
-    #separator {
-        background-color: #4d6394;
-        display: inline-block;
-        width: 2px;
-        height: 16px;
+    header,
+    section,
+    footer,
+    aside,
+    nav,
+    main,
+    article,
+    figure {
+        display: block;
+    }
+    html {
+        overflow-y: scroll;
+    }
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        max-width: 760px;
+        margin: 0 auto;
+        text-align: center;
+        font-family: sans-serif;
+        color: #666;
+    }
+    a {
+        color: #444;
+        text-decoration: none;
+    }
+    a:hover {
+        color: #4f506f;
+    }
+    header {
+        height: 64px;
+        border-bottom: 1px solid #eee;
+    }
+    header h1 {
+    line-height: 64px;
+    margin: 0;
+    }
+    header h1 a {
+        margin-left: -64px;
+        color: #4d6394;
+    }
+    img {
+        float: left;
+        width: 64px;
+        background-color: #b4b5ca;
+    }
+    #overflow {
+        overflow: hidden;
+        border-bottom: 2px solid #cfcfd6;
+    }
+    nav {
+        width: 100%;
+        overflow-x: scroll;
+        white-space: nowrap;
+        background-color: white;
+    }
+    nav em {
+        line-height: 40px;
         margin: 0 8px;
     }
-}
-main h3 {
-    padding-left: 8px;
-    margin-top: 40px;
-    text-align: left;
-    border-bottom: 1px solid #bbb;
-}
-ul {
-    list-style-type: none;
-    padding-left: 16px;
-}
-li {
-    text-align: left;
-}
+    nav::-webkit-scrollbar {
+        display: none;
+    }
+    nav a {
+        color: #4d6394;
+    }
+    nav a:hover {
+        color: #4d6394;
+    }
+    main {
+        overflow: auto;
+    }
+    main h1, main h2 {
+        margin: 16px 0;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: lighter;
+    }
+    main h3 {
+        font-weight: lighter;
+    }
+    footer a {
+        color: #4d6394;
+        margin: 0 24px;
+    }
+    main a {
+        color: #4d6394;
+    }
+    main h2 span {
+        display: inline-block;
+        padding: 0 8px;
+    }
+    @media screen and (min-width: 640px) {
+        #separator {
+            background-color: #4d6394;
+            display: inline-block;
+            width: 2px;
+            height: 16px;
+            margin: 0 8px;
+        }
+    }
+    main h3 {
+        padding-left: 8px;
+        margin-top: 40px;
+        text-align: left;
+        border-bottom: 1px solid #bbb;
+    }
+    ul {
+        list-style-type: none;
+        padding-left: 16px;
+    }
+    li {
+        text-align: left;
+    }
+    #form {
+        margin: 16px 0;
+    }
+    #input {
+        font-size: 16px;
+        min-width: 272px;
+        text-align: center;
+        border: none;
+        outline: none;
+        color: #3A5EAB;
+        border-bottom: 1px solid #ccc;
+    }
+    input {
+        border-radius: 0px;
+    }
+    #submit_button {
+        font-size: 16px;
+        background: none;
+        border: none;
+        position: absolute;
+        cursor: pointer;
+    }
+    ::-webkit-input-placeholder {
+        color: #4d6394;
+        font-style: italic;
+    }
+    ::-moz-placeholder {
+        color: #4d6394;
+        font-style: italic;
+    }
+    ::-ms-input-placeholder {
+        color: #4d6394;
+        font-style: italic;
+    }
+    input:focus::-webkit-input-placeholder { color:transparent; }
+    input:focus:-moz-placeholder { color:transparent; }
+    input:focus::-moz-placeholder { color:transparent; }
+    input:focus:-ms-input-placeholder { color:transparent; }
+    input:focus { color: transparent; }
+
+    footer {
+        line-height: 40px;
+        max-width: 760px;
+        border-top: 2px solid #e3e3e8;
+    }
+    .ig {
+        float: left;
+    }
+    @media screen and (min-width: 320px) and (max-width: 480px) {
+        .ig {
+            width: 50%;
+        }
+    }
+    @media screen and (min-width: 480px) and (max-width: 640px) {
+        .ig {
+            width: 33.33%;
+        }
+    }
+    @media screen and (min-width: 640px) {
+        .ig {
+            width: 25%;
+        }
+    }
+    .justify {
+        text-align: justify;
+    }
+    .button {
+        margin-right: 12px;
+    }
