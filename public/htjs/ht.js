@@ -58,7 +58,7 @@ var Header = function(height, backgroundColor) {
   heading.style.cursor = 'pointer'
   heading.style.color = '#444'
   heading.innerText = 'ht.js'
-  heading.onclick = function() { request('/', 'GET', loadHTML) }
+  heading.onclick = function() { request('/resume', 'GET', loadHTML) }
   
   header.changeHeading = function(_heading, themeColor) {
     heading.innerText = _heading
@@ -106,14 +106,14 @@ function request(url, method, callback) {
 
   httpRequest.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200)
-      callback(JSON.parse(this.responseText))
+      callback(this.responseText)
   }
   httpRequest.open(method, url)
   httpRequest.send()
 }
       
 function loadPage(res) {
-  var Person = res
+  var Person = JSON.parse(res)
 
   Html.changeTitle(Person.name)
   Header.changeLogo(Person.photo)
@@ -122,13 +122,14 @@ function loadPage(res) {
 }
 
 function loadHTML(res) {
-  main.innerHTML = res
+  Main.innerHTML = res
   Header.loading(false)
 }
 
 function loadPhotos(res) {
-  var object = res
+  var object = JSON.parse(res)
   var instagramPhotos = ""
+  Main.innerHTML = ''
   for (let i = 0; i < object.data.length; i++) {
     var tmp = document.createElement('img')
     tmp.style.cursor = 'pointer'

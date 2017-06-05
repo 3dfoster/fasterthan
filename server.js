@@ -52,8 +52,8 @@ let David = {
 const app = express()
 app.use(express.static('public'))
 
-app.get('/', (req, res) => {
-  res.sendFile(resume)
+app.get('/resume', (req, res) => {
+  res.send(resume)
 })
 
 app.get('/david', (req, res) => {
