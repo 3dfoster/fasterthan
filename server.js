@@ -1,4 +1,5 @@
 // Libraries
+const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const express = require('express')
 const https = require('https')
@@ -64,7 +65,10 @@ let David = {
   }
 }
 const app = express()
+
 app.use(express.static('public'))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/resume', (req, res) => {
   res.send(resume)
@@ -152,6 +156,40 @@ app.get('/photos', (req, res) => {
     })
   }).on('error', e => { console.log(`Got error: ${e.message}`)})
 })
+
+app.post('/quotes/new', (req, res) => {
+  let quote = new Quote
+  console.log(JSON.stringify(req.body.quote))
+  let secret = req.body.quote.substring(0, 3)
+
+  if (secret == '!ft') {
+    req = req.body.quote.substring(4, req.length)
+    quote.isFaster = true
+    quote.quote = req
+  }
+  else
+    quote.quote = filter.clean(req.body.quote)
+  
+  // Connect to MongoDB
+  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+  db = mongoose.connection
+
+  db.on('error', console.error.bind(console, 'connection error:'))
+  db.once('open', function () {
+    // We've successfully established a conection to the database
+    console.log("Connection to Mongo database established")
+
+    // Store quote document in the database
+    quote.save( (err, quote) => {
+      if (err)
+        return console.error(err)
+
+      mongoose.disconnect()
+    })
+  })
+})
+
+
 
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port)

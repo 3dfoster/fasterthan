@@ -198,3 +198,33 @@ function loadPhotos(res) {
   }
   Header.loading(false)
 }
+
+
+function addQuote() {
+  var main = document.getElementsByTagName('main')[0]
+  var quote = document.getElementById('input')
+  var quoteForm = document.getElementById('form')
+// var quote = { "quote" : quote.value }
+  if (!quote.value)
+    quote.placeholder = "Write something!"
+
+  else {
+    var httpRequest = new XMLHttpRequest()
+
+    var data = { quote: quote.value }
+    // Retrieve data in quote input field and convert to lower case
+    // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
+    httpRequest.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        var newQuote = document.createElement('p')
+        quoteForm.innerHTML = quote.value
+      }
+    }
+    httpRequest.open('POST', '/quotes/new')
+    // Setting request header is required
+    httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+    // Send quote to server
+    // alert(quote.value)
+    httpRequest.send(JSON.stringify(data))
+  }
+}
