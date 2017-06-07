@@ -121,6 +121,14 @@ server.on('request', (req, res) => {
           })
         break
 
+        case '/quotes/new':
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+              
+              res.write(app.toString()
+              .replace('<!--MAIN-ENTRY-->', addquote))
+              res.end()
+        break
+
         case '/photos':
           https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', (resp) => {
             const statusCode = resp.statusCode;
