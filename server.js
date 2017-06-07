@@ -1,5 +1,6 @@
 // Libraries
 const bodyParser = require('body-parser')
+const Filter = require('bad-words')
 const mongoose = require('mongoose')
 const express = require('express')
 const https = require('https')
