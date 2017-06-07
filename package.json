@@ -19,6 +19,7 @@
   "homepage": "https://github.com/fasterthan/fasterthan#readme",
   "dependencies": {
     "bad-words": "^1.5.1",
+    "badwords": "^1.0.0",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "mongoose": "^4.10.3"

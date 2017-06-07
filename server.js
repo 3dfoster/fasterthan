@@ -188,13 +188,11 @@ app.post('/quotes/new', (req, res) => {
       if (err)
         return console.error(err)
 
-      res.send()
       mongoose.disconnect()
+      res.status(200).send()
     })
   })
 })
-
-
 
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port)
