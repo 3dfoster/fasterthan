@@ -71,6 +71,9 @@ app.use(express.static('public'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+// Swearjar
+let filter = new Filter({ placeHolder: '&#128520;'})
+
 app.get('/resume', (req, res) => {
   res.send(resume)
 })
@@ -185,6 +188,7 @@ app.post('/quotes/new', (req, res) => {
       if (err)
         return console.error(err)
 
+      res.send()
       mongoose.disconnect()
     })
   })
