@@ -18,6 +18,7 @@ let ip = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 let fasterQuote = "I am the mountain rising high."
+let photoQuote = "Memories, reverberating across the echo chamber of my mind."
 let filter = new Filter({ placeHolder: '&#128520;'})
 // const PORT = process.env.PORT || 8080
 
@@ -32,7 +33,7 @@ let quoteSchema = new Schema({
   quote: { type: String, maxlength: 128 },
   date: { type: Date, default: Date.now },
   isFaster: { type: Boolean, default: false },
-  addr: { type: String, maxlength: 160 }
+  addr: { type: String, maxlength: 160, default: 'warn' }
 })
 let Quote = mongoose.model('Quote', quoteSchema)
 
@@ -154,27 +155,14 @@ server.on('request', (req, res) => {
             resp.on('data', (chunk) => rawData += chunk);
             resp.on('end', () => {
               try {
-                mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-                db = mongoose.connection
+                let instagramPhotos = ""
+                let object = JSON.parse(rawData)
+                for (let i = 0; i < object.data.length; i++)
+                  instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
 
-                db.on('error', console.error.bind(console, 'connection error:'))
-                db.once('open', () => {
-                  Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quote) => {
-                    if (err) return console.error(err)
-
-                    if (quote) fasterQuote = quote.quote
-                    mongoose.disconnect()
-                    
-                    let instagramPhotos = ""
-                    let object = JSON.parse(rawData)
-                    for (let i = 0; i < object.data.length; i++)
-                      instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
-
-                    res.write(app.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos)
-                    .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
-                    res.end()
-                  })
-                })
+                res.write(app.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos)
+                .replace('<!--NAV-ENTRY-->', '<em>' + photoQuote + '</em> <a href="/quotes" class="button">➔</a>'))
+                res.end()
               } catch (e) {
                 console.log(e.message)
               }
@@ -213,8 +201,8 @@ server.on('request', (req, res) => {
             quote.quote = body
           }
           else {
-            quote.quote = filter.clean(body)
-            quote.addr = addr
+            if (body.length <= 128)
+              quote.quote = filter.clean(body)
           }
           
           // Connect to MongoDB
