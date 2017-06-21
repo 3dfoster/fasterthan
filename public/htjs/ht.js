@@ -62,7 +62,7 @@ var Header = function(height, backgroundColor) {
   heading.onclick = function() { request('/resume', 'GET', loadHTML) }
   
   header.changeHeading = function(_heading, themeColor) {
-    heading.innerText = _heading
+    heading.innerHTML = _heading + '&#xFE0E;'
     heading.style.color = themeColor
   }
   header.changeLogo = function(src) {
@@ -199,7 +199,6 @@ function loadPhotos(res) {
   Header.loading(false)
 }
 
-
 function addQuote() {
   var main = document.getElementsByTagName('main')[0]
   var quote = document.getElementById('input')
@@ -224,7 +223,6 @@ function addQuote() {
     // Setting request header is required
     httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
     // Send quote to server
-    // alert(quote.value)
     httpRequest.send(JSON.stringify(data))
   }
 }

@@ -62,7 +62,7 @@ let David = {
       "accent": "#6666ff",
       "background": "#e6e6ff"
     },
-    "icon": "☣"
+    "icon": "💀"
   }
 }
 const app = express()
@@ -150,7 +150,7 @@ app.get('/photos', (req, res) => {
 
     resp.setEncoding('utf8')
     let rawData = ''
-    resp.on('data', (chunk) => rawData += chunk)
+    resp.on('data', chunk => rawData += chunk)
     resp.on('end', () => {
       try {
         res.send(rawData)
@@ -179,7 +179,7 @@ app.post('/quotes/new', (req, res) => {
   db = mongoose.connection
 
   db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', function () {
+  db.once('open', () => {
     // We've successfully established a conection to the database
     console.log("Connection to Mongo database established")
 
