@@ -7,6 +7,7 @@ let fs = require('fs')
 
 // Load static HTML files into memory
 let app = fs.readFileSync('resources/views/app.html')
+let bubbly = fs.readFileSync('resources/views/bubbly.html')
 let privacy = fs.readFileSync('resources/views/privacy.html')
 let resume = fs.readFileSync('resources/views/resume.html')
 let addquote = fs.readFileSync('resources/views/addquote.html')
@@ -172,6 +173,14 @@ server.on('request', (req, res) => {
           })
         break
 
+
+        case '/elastic-memories':
+
+                res.write(app.toString().replace('<!--MAIN-ENTRY-->', bubbly)
+                .replace('<!--NAV-ENTRY-->', '<em>' + photoQuote + '</em> <a href="/quotes" class="button">➔</a>'))
+                res.end()
+        break
+
         case '/api/write-csv':
           https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
             const statusCode = resp.statusCode;
@@ -204,8 +213,9 @@ server.on('request', (req, res) => {
                   }
 
                   fs.writeFile('ig.csv', line, err => {
-                    if (err) throw err;
-                    console.log('The file has been saved!');
+                    if (err) throw err
+                    
+                    res.end('file saved!')
                   })
               } catch (e) {
                 console.log(e.message)
@@ -219,8 +229,7 @@ server.on('request', (req, res) => {
         case '/api/get-csv':
           let file = fs.readFileSync('ig.csv')
           res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(file)
-          res.end()
+          res.end(file)
         break
 
         case '/privacy':
