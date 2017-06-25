@@ -143,7 +143,7 @@ server.on('request', (req, res) => {
 
             resp.setEncoding('utf8')
             let rawData = ''
-            resp.on('data', (chunk) => rawData += chunk);
+            resp.on('data', (chunk) => rawData += chunk)
             resp.on('end', () => {
               try {
                 mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
@@ -176,9 +176,54 @@ server.on('request', (req, res) => {
           })
         break
 
-        default:
-          res.writeHead(404, { 'Content-Type': 'text/html' })
-          res.write(app.toString().replace('<!--MAIN-ENTRY-->', _404))
+        case '/api/write-csv':
+          https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
+            const statusCode = resp.statusCode;
+            const contentType = resp.headers['content-type']
+
+            let error;
+            if (statusCode !== 200) {
+              error = new Error(`Request Failed.\n` +
+                                `Status Code: ${statusCode}`)
+            } else if (!/^application\/json/.test(contentType)) {
+              error = new Error(`Invalid content-type.\n` +
+                                `Expected application/json but received ${contentType}`)
+            }
+            if (error) {
+              console.log(error.message)
+              // consume response data to free up memory
+              resp.respume()
+              return
+            }
+
+            resp.setEncoding('utf8')
+            let rawData = ''
+            resp.on('data', (chunk) => rawData += chunk);
+            resp.on('end', () => {
+              try {
+                rawData = JSON.parse(rawData)
+                let line = "thumbnailUrl,Url,likes\n"
+                  for (let i = 0; i < rawData.data.length; i++) {
+                    line += rawData.data[i].images.low_resolution.url + ',' + rawData.data[i].link + ',' + rawData.data[i].likes.count + '\n'
+                  }
+
+                  fs.writeFile('ig.csv', line, err => {
+                    if (err) throw err;
+                    console.log('The file has been saved!');
+                  })
+              } catch (e) {
+                console.log(e.message)
+              }
+            });
+          }).on('error', e => {
+            console.log(`Got error: ${e.message}`)
+          })
+        break
+
+        case '/api/get-csv':
+          let file = fs.readFileSync('ig.csv')
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+          res.write(file)
           res.end()
         break
 
@@ -187,6 +232,12 @@ server.on('request', (req, res) => {
 
           res.write(app.toString()
           .replace('<!--MAIN-ENTRY-->', privacy))
+          res.end()
+        break
+
+        default:
+          res.writeHead(404, { 'Content-Type': 'text/html' })
+          res.write(app.toString().replace('<!--MAIN-ENTRY-->', _404))
           res.end()
         break
       }
