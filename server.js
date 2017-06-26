@@ -10,10 +10,12 @@ const fs = require('fs')
 let resume = fs.readFileSync('views/resume.html')
 let index = fs.readFileSync('views/app.html')
 let addquote = fs.readFileSync('views/addquote.html')
+let elastic = fs.readFileSync('views/elastic.html')
 
 let homeScript = fs.readFileSync('indexes/home.js')
 let quoteScript = fs.readFileSync('indexes/quotes.js')
 let photoScript = fs.readFileSync('indexes/photos.js')
+let elasticScript = fs.readFileSync('indexes/elastic.js')
 
 // Ports
 let port = process.env.PORT || 8080
@@ -31,26 +33,6 @@ let quoteSchema = new Schema({
 })
 let Quote = mongoose.model('Quote', quoteSchema)
 
-let Phia = {
-  "name": "Sophia Maria Holmgren",
-  "photo": "https://scontent-atl3-1.cdninstagram.com/t51.2885-19/s320x320/14727646_1169168589834186_6905304133377458176_a.jpg",
-  "major": "Art",
-  "degree": "associate student",
-  "school": "Sacramento City College",
-  "googleID": "none",
-  "style": {
-    "font": {
-      "family": "sans-serif",
-      "alignment": "center",
-      "color": "#cc3300"
-    },
-    "colors": {
-      "accent": "pink",
-      "background": "#f5f5f0"
-    },
-    "icon": "❀"
-  }
-}
 let David = {
   "name": "David Alexander Foster",
   "photo": "/images/avatar_240.png",
@@ -67,6 +49,27 @@ let David = {
     "colors": {
       "accent": "#4d6394",
       "background": "#e6e6ff"
+    },
+    "icon": "F >"
+  }
+}
+
+let Darkness = {
+  "name": "David Alexander Foster",
+  "photo": "/images/avatar_240.png",
+  "major": "Computer science",
+  "degree": "undergraduate",
+  "school": "UC Davis",
+  "googleID": "l3BrFHMCWeUnr4pM3QZXyHk1dxsysnkdWLmEJRw9mYo",
+  "style": {
+    "font": {
+      "family": "sans-serif",
+      "alignment": "center",
+      "color": "#444"
+    },
+    "colors": {
+      "accent": "crimson",
+      "background": "#222"
     },
     "icon": "F >"
   }
@@ -97,6 +100,13 @@ app.get('/resume', (req, res) => {
 app.get('/david', (req, res) => {
   if (req.headers.loaded)
     res.send(JSON.stringify(David))
+    
+  else res.redirect('/')
+})
+
+app.get('/darkness', (req, res) => {
+  if (req.headers.loaded)
+    res.send(JSON.stringify(Darkness))
     
   else res.redirect('/')
 })
@@ -231,6 +241,69 @@ app.post('/quotes/new', (req, res) => {
       res.status(200).send()
     })
   })
+})
+
+app.get('/elastic-memories', (req, res) => {
+  if (req.headers.loaded)
+    res.send(elastic)
+
+    else {
+      res.write(index.toString()
+        .replace('/*ONLOAD-ENTRY*/', elasticScript))
+      res.end()
+    }
+
+})
+
+app.get('/api/write-csv', (req, res) => {
+  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
+    const statusCode = resp.statusCode;
+    const contentType = resp.headers['content-type']
+
+    let error;
+    if (statusCode !== 200) {
+      error = new Error(`Request Failed.\n` +
+                        `Status Code: ${statusCode}`)
+    } else if (!/^application\/json/.test(contentType)) {
+      error = new Error(`Invalid content-type.\n` +
+                        `Expected application/json but received ${contentType}`)
+    }
+    if (error) {
+      console.log(error.message)
+      // consume response data to free up memory
+      resp.respume()
+      return
+    }
+
+    resp.setEncoding('utf8')
+    let rawData = ''
+    resp.on('data', (chunk) => rawData += chunk);
+    resp.on('end', () => {
+      try {
+        rawData = JSON.parse(rawData)
+        let line = "thumbnailUrl,Url,likes\n"
+          for (let i = 0; i < rawData.data.length; i++) {
+            line += rawData.data[i].images.low_resolution.url + ',' + rawData.data[i].link + ',' + rawData.data[i].likes.count + '\n'
+          }
+
+          fs.writeFile('ig.csv', line, err => {
+            if (err) throw err
+            
+            res.end('file saved!')
+          })
+      } catch (e) {
+        console.log(e.message)
+      }
+    });
+  }).on('error', e => {
+    console.log(`Got error: ${e.message}`)
+  })
+})
+
+app.get('/api/get-csv', (req, res) => {
+  let file = fs.readFileSync('ig.csv')
+  res.writeHead(200, { 'Content-Type': 'text/html' })
+  res.end(file)
 })
 
 app.get('*', (req, res) => {

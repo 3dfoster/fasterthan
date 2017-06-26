@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="UTF-8">
 
+<script src="https://d3js.org/d3.v4.min.js"></script>
     <script type="text/javascript" src="htjs/ht.js"></script>
     <link rel="stylesheet" type="text/css" href="https://s3-us-west-1.amazonaws.com/fasterthan/font-awesome-4.7.0/css/font-awesome.min.css">
     <link type="text/css" href="style.css" rel="stylesheet">
@@ -56,8 +57,8 @@
 
     function quotes(res) {
       Main.innerHTML = res
-      window.history.pushState('', 'Quotes', '/quotes')
 
+      window.history.pushState('', 'Quotes', '/quotes')
       Header.loading(false)
     }
 
@@ -75,6 +76,80 @@
       }
 
       window.history.pushState(history.state, 'photos', '/photos')
+      Header.loading(false)
+    }
+
+    function elastic(res) {
+      Main.innerHTML = res
+      window.history.pushState('', 'Elastic Memories', '/elastic-memories')
+
+      var canvas = document.getElementsByTagName('svg')[0]
+      var main = document.getElementsByTagName('main')[0]
+      var Header = document.getElementsByTagName('header')[0]
+      var Overflow = document.getElementsByTagName('aside')[0]
+
+      var canvasHeight = document.documentElement.clientHeight - Header.offsetHeight - Overflow.offsetHeight - 42
+
+      canvas.setAttribute("height", canvasHeight)
+      canvas.setAttribute("width", main.offsetWidth)
+
+      var svg = d3.select("svg"),
+          width = +svg.attr("width"),
+          height = +svg.attr("height")
+
+      var format = d3.format(",d")
+
+      var pack = d3.pack()
+          .size([width, height])
+          .padding(1.5)
+
+      d3.csv("http://localhost:8080/api/get-csv", function(d) {
+        d.likes = +d.likes
+        if (d.likes) return d
+      }, function(error, classes) {
+        if (error) throw error
+
+        console.log(classes)
+
+        var root = d3.hierarchy({children: classes})
+            .sum(function(d) { return d.likes })
+            .each(function(d) {
+              if (thumbnailUrl = d.data.thumbnailUrl) {
+                var thumbnailUrl, i = thumbnailUrl.lastIndexOf(".")
+                d.thumbnailUrl = thumbnailUrl
+                d.package = thumbnailUrl.slice(0, i)
+                d.class = thumbnailUrl.slice(i + 1)
+              }
+              if (Url = d.data.Url) {
+                var Url, i = Url.lastIndexOf(".")
+                d.Url = Url
+                d.package = Url.slice(0, i)
+                d.class = Url.slice(i + 1)
+              }
+            })
+
+        var node = svg.selectAll(".node")
+          .data(pack(root).leaves())
+          .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")" })
+
+        node.append("clipPath")
+            .attr("id", function(d) { return "clip-" + d.thumbnailUrl })
+          .append("circle")
+            .attr("r", function(d) { return d.r })
+
+        node.append("a")
+            .attr("href", function(d) { return d.Url })
+          .append("image")
+            .attr("clip-path", function(d) { return "url(#clip-" + d.thumbnailUrl + ")" })
+            .attr("xlink:href", function(d) { return d.thumbnailUrl })
+            .attr("x", function(d) { return -d.r })
+            .attr("y", function(d) { return -d.r })
+            .attr("width", function(d) { return d.r * 2 })
+            .attr("height", function(d) { return d.r * 2 })
+      })
+
       Header.loading(false)
     }
 
