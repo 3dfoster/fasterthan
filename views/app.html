@@ -26,6 +26,12 @@
     Body.appendChild(Ticker)
     Body.appendChild(Main)
     Body.appendChild(Footer)
+
+    window.onload = function() {
+      Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
+
+      /*ONLOAD-ENTRY*/
+    }
     
     function loadPage(res) {
       var Person = JSON.parse(res)
@@ -70,20 +76,6 @@
 
       window.history.pushState(history.state, 'photos', '/photos')
       Header.loading(false)
-    }
-
-    window.onload = function() {
-      Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
-
-      request('/david', 'GET', function(Person) {
-        loadPage(Person)
-      })
-      request('/quotes', 'GET', function(_quotes) {
-        quotes(_quotes)
-      })      
-      request('/quotes/faster', 'GET', function(quote) {
-        Ticker.addQuote(quote)
-      })
     }
 
     function addQuote() {

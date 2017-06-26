@@ -8,7 +8,7 @@ const path = require('path')
 const fs = require('fs')
 
 let resume = fs.readFileSync('views/resume.html')
-let index = fs.readFileSync('public/index.html')
+let index = fs.readFileSync('views/app.html')
 let addquote = fs.readFileSync('views/addquote.html')
 
 // Ports
@@ -67,6 +67,7 @@ let David = {
     "icon": "F >"
   }
 }
+
 const app = express()
 
 app.use(express.static('public'))
@@ -77,7 +78,9 @@ app.use(bodyParser.urlencoded({ extended: true }))
 let filter = new Filter({ placeHolder: '&#128520;'})
 
 app.get('/', (req,res) => {
-  
+    res.write(index.toString()
+      .replace('/*ONLOAD-ENTRY*/', homeScript))
+    res.end()
 })
 
 app.get('/resume', (req, res) => {
