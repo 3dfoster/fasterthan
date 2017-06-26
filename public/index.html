@@ -38,7 +38,7 @@
         loadPage(Person)
       })
       request('/resume', 'GET', function(resume) {
-        loadHTML(resume)
+        home(resume)
       })
       request('/quotes/faster', 'GET', function(quote) {
         Ticker.addQuote(quote)
@@ -59,13 +59,21 @@
       Header.loading(false)
     }
 
-    function loadHTML(res) {
+    function home(res) {
       Main.innerHTML = res
+      window.history.pushState('', 'Home', '/')
 
       Header.loading(false)
     }
 
-    function loadPhotos(res) {
+    function quotes(res) {
+      Main.innerHTML = res
+      window.history.pushState('', 'Quotes', '/quotes')
+
+      Header.loading(false)
+    }
+
+    function photos(res) {
       var object = JSON.parse(res)
       var instagramPhotos = ""
       Main.innerHTML = ''
@@ -78,9 +86,7 @@
         Main.appendChild(tmp)
       }
 
-      // window.location.pathname = '/photos'
       window.history.pushState(history.state, 'photos', '/photos')
-      console.log(history.state)
       Header.loading(false)
     }
 

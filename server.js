@@ -7,6 +7,7 @@ const https = require('https')
 const fs = require('fs')
 
 let resume = fs.readFileSync('views/resume.html')
+let index = fs.readFileSync('public/index.html')
 let addquote = fs.readFileSync('views/addquote.html')
 
 // Ports
@@ -75,11 +76,17 @@ app.use(bodyParser.urlencoded({ extended: true }))
 let filter = new Filter({ placeHolder: '&#128520;'})
 
 app.get('/resume', (req, res) => {
-  res.send(resume)
+  if (req.headers.loaded)
+    res.send(resume)
+
+  else res.redirect('/')
 })
 
 app.get('/david', (req, res) => {
-  res.send(JSON.stringify(David))
+  if (req.headers.loaded)
+    res.send(JSON.stringify(David))
+    
+  else res.end(index)
 })
 
 app.get('/quotes', (req, res) => {

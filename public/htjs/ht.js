@@ -111,7 +111,8 @@ var Header = function(height, borderColor, backgroundColor) {
   logo.style.height = `${height}px`
   logo.style.cursor = 'pointer'
   logo.style.backgroundColor = '#888'
-  logo.onclick = function() { request('/photos', 'GET', loadPhotos) }
+  logo.onclick = function() {
+    request('/photos', 'GET', photos) }
 
   heading.style.display = 'inline-block'
   heading.style.margin = '0px auto'
@@ -119,7 +120,9 @@ var Header = function(height, borderColor, backgroundColor) {
   heading.style.padding = '0 16px'
   heading.style.cursor = 'pointer'
   heading.style.color = '#444'
-  heading.onclick = function() { request('/resume', 'GET', loadHTML) }
+  heading.onclick = function() {
+    request('/resume', 'GET', home)
+  }
 
   Header.appendChild(logo)
   Header.appendChild(heading)
@@ -154,7 +157,9 @@ var Ticker = function(navHeight, accentColor) {
   arrow.style.marginRight = '8px'
   arrow.style.padding = '0px 8px'
   arrow.style.opacity = 0
-  arrow.onclick = function() { request('/quotes', 'GET', loadHTML)}
+  arrow.onclick = function() {
+    request('/quotes', 'GET', quotes)
+  }
   arrow.innerText = '➔'
   
   var noGradient = 'box-shadow: none'
@@ -229,8 +234,6 @@ var Footer = function(height, color, backgroundColor) {
 
     footer.appendChild(A)
   }
-    // Footer.innerHTML = '<a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a><a href="https://www.instagram.com/_u/the.t.u.r.n" class="fa fa-fw fa-instagram"></a><a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a><a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>'
-
   return footer
 }
 
@@ -243,5 +246,6 @@ function request(url, method, callback) {
       callback(this.responseText)
   }
   httpRequest.open(method, url)
+  httpRequest.setRequestHeader("loaded", true)
   httpRequest.send()
 }
