@@ -48,7 +48,7 @@ let David = {
     },
     "colors": {
       "accent": "#4d6394",
-      "background": "#e6e6ff"
+      "background": "#fff"
     },
     "icon": "F >"
   }

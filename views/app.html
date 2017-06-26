@@ -38,7 +38,7 @@
       var Person = JSON.parse(res)
 
       Html.changeTitle(Person.name)
-      Html.backgroundColor('#fff')
+      Html.backgroundColor(Person.style.colors.background)
       Header.logo(Person.photo)
       Header.heading(Person.style.icon, Person.style.colors.accent)
       Header.borderColor('#eee')
@@ -89,6 +89,8 @@
       var Overflow = document.getElementsByTagName('aside')[0]
 
       var canvasHeight = document.documentElement.clientHeight - Header.offsetHeight - Overflow.offsetHeight - 42
+
+      main.style.backgroundImage = 'url(images/digital_ripple.gif'
 
       canvas.setAttribute("height", canvasHeight)
       canvas.setAttribute("width", main.offsetWidth)
