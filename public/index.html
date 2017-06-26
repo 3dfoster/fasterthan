@@ -15,14 +15,12 @@
   <body></body>
 
   <script>
-    var Html = new Html()
-    var Body = new Body(760, 'sans-serif', 'white')
+    var Html = new Html('#fff')
+    var Body = new Body(760, 'sans-serif')
     var Header = new Header(64)
-    var Ticker = new Ticker(40)
+    var Ticker = new Ticker(40, 'blue')
     var Main = new Main()
-    var Footer = new Footer(40, 'white')
-
-    Footer.innerHTML = '<a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a><a href="https://www.instagram.com/_u/the.t.u.r.n" class="fa fa-fw fa-instagram"></a><a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a><a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>'
+    var Footer = new Footer(40)
 
     Body.appendChild(Header)
     Body.appendChild(Ticker)
@@ -30,7 +28,12 @@
     Body.appendChild(Footer)
 
     window.onload = function() {
-      Main.style.minHeight = `${document.documentElement.clientHeight - document.getElementsByTagName('header')[0].offsetHeight - document.getElementsByTagName('aside')[0].offsetHeight - document.getElementsByTagName('footer')[0].offsetHeight}px`
+      console.log(Html.height)
+      console.log(Header.offsetHeight)
+      console.log(Ticker.offsetHeight)
+      console.log(Footer.offsetHeight)
+      Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
+
       request('/david', 'GET', function(Person) {
         loadPage(Person)
       })
@@ -41,5 +44,71 @@
         Ticker.addQuote(quote)
       })
     }
-</script>
+    
+    function loadPage(res) {
+      var Person = JSON.parse(res)
+
+      Html.changeTitle(Person.name)
+      Html.backgroundColor('#fff')
+      Header.logo(Person.photo)
+      Header.heading(Person.style.icon, Person.style.colors.accent)
+      Header.borderColor('#eee')
+      Ticker.arrowColor(Person.style.colors.accent)
+      Footer.color(Person.style.colors.accent)
+
+      Header.loading(false)
+    }
+
+    function loadHTML(res) {
+      Main.innerHTML = res
+
+      Header.loading(false)
+    }
+
+    function loadPhotos(res) {
+      var object = JSON.parse(res)
+      var instagramPhotos = ""
+      Main.innerHTML = ''
+      for (let i = 0; i < object.data.length; i++) {
+        var tmp = document.createElement('img')
+        tmp.style.cursor = 'pointer'
+        tmp.className = 'ig'
+        tmp.src = object.data[i].images.low_resolution.url
+        tmp.onclick = function() { location.href = object.data[i].link }
+        Main.appendChild(tmp)
+      }
+
+      // window.location.pathname = '/photos'
+      window.history.pushState(history.state, 'photos', '/photos')
+      console.log(history.state)
+      Header.loading(false)
+    }
+
+    function addQuote() {
+      var main = document.getElementsByTagName('main')[0]
+      var quote = document.getElementById('input')
+      var quoteForm = document.getElementById('form')
+      if (!quote.value)
+        quote.placeholder = "Write something!"
+
+      else {
+        var httpRequest = new XMLHttpRequest()
+
+        var data = { quote: quote.value }
+        // Retrieve data in quote input field and convert to lower case
+        // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
+        httpRequest.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            var newQuote = document.createElement('p')
+            quoteForm.innerHTML = quote.value
+          }
+        }
+        httpRequest.open('POST', '/quotes/new')
+        // Setting request header is required
+        httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+        // Send quote to server
+        httpRequest.send(JSON.stringify(data))
+      }
+    }
+  </script>
 </html>

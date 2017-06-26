@@ -59,10 +59,10 @@ let David = {
       "color": "#444"
     },
     "colors": {
-      "accent": "#6666ff",
+      "accent": "#4d6394",
       "background": "#e6e6ff"
     },
-    "icon": "💀"
+    "icon": "F >"
   }
 }
 const app = express()

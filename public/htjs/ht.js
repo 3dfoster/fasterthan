@@ -1,47 +1,109 @@
-var Html = function() {
+var h1 = function(text, color) {
+  var H1 = document.createElement('h1')
+
+  H1.text = function(_text) {
+    h1.innerText = _text
+  }
+  H1.color = function(_color) {
+    h1.style.color = _color
+  }
+
+  H1.text(text)
+
+  return H1
+}
+
+var a = function() {
+  var A = document.createElement('a')
+
+  return A
+}
+
+var aside = function() {
+  var Aside = document.createElement('aside')
+
+  return Aside
+}
+
+var header = function(height) {
+  var Header = document.createElement('header')
+
+  Header.height = function(_height) {
+    Header.style.height = _height
+  }
+
+  Header.height(height)
+
+  return Header
+}
+
+var Html = function(backgroundColor) {
   var html = document.documentElement
 
-  // Styling
+  html.height = html.clientHeight
+
+  // Initialize styling
   html.style.padding = '0px'
   html.style.margin = '0px'
   html.style.overflowY = 'scroll'
-  html.style.backgroundColor = '#fff'
+  html.style.backgroundColor = backgroundColor
 
   html.changeTitle = function(title) {
     document.title = title
   }
-  html.changeBackgroundColor = function(accent, bg) {
-    html.style.backgroundColor = bg
+  html.backgroundColor = function(_backgroundColor) {
+    html.style.backgroundColor = _backgroundColor
   }
 
   return html
 }
 
-var Body = function(width, fontFamily, backgroundColor) {
+var Body = function(width, fontFamily, color, backgroundColor) {
   var body = document.body
 
-  body.style.maxWidth = `${width}px`
+  body.changeWidth = function(_width) {
+    body.style.maxWidth = `${_width}px`
+  }
+
+  // Initialize styling
+  body.changeWidth(width)
   body.style.margin = '0 auto'
   body.style.position = 'relative'
   body.style.fontFamily = 'sans-serif'
   body.style.fontFamily = fontFamily
   body.style.textAlign = 'center'
-  body.style.color = '#666'
-  body.style.backgroundColor = '#fff'
   body.style.backgroundColor = backgroundColor
 
   return body
 }
 
-var Header = function(height, backgroundColor) {
-  var header = document.createElement('header')
-  var heading = document.createElement('h1')
+var Header = function(height, borderColor, backgroundColor) {
+  var Header = new header(height)
+  var heading = new h1('ht.js')
   var logo = document.createElement('img')
+  
+  Header.heading = function(_heading, themeColor) {
+    heading.innerHTML = _heading
+    heading.style.color = themeColor
+  }
+  Header.logo = function(src) {
+    logo.src = src
+  }
+  Header.loading = function(_isLoading) {
+    if (_isLoading)
+      heading.className = 'loading'
 
-  header.style.height = `${height}px`
-  header.style.borderBottom = '1px solid rgb(238, 238, 238)'
-  header.style.backgroundColor = '#fff'
-  header.style.backgroundColor = backgroundColor
+    else
+      heading.classList.remove('loading')
+  }
+  Header.borderColor = function(_borderColor) {
+    Header.style.borderBottom = `1px solid ${_borderColor}`
+  }
+
+  // Not sure why setting header height in header function doesn't work but it doesn't
+  Header.style.height = `${height}px`
+  Header.borderColor(borderColor)
+  Header.style.backgroundColor = backgroundColor
 
   logo.style.position = 'absolute'
   logo.style.left = 0
@@ -54,44 +116,34 @@ var Header = function(height, backgroundColor) {
   heading.style.display = 'inline-block'
   heading.style.margin = '0px auto'
   heading.style.lineHeight = `${height}px`
-  heading.style.fontWeight = 'lighter'
   heading.style.padding = '0 16px'
   heading.style.cursor = 'pointer'
   heading.style.color = '#444'
-  heading.innerText = 'ht.js'
   heading.onclick = function() { request('/resume', 'GET', loadHTML) }
-  
-  header.changeHeading = function(_heading, themeColor) {
-    heading.innerHTML = _heading + '&#xFE0E;'
-    heading.style.color = themeColor
-  }
-  header.changeLogo = function(src) {
-    logo.src = src
-  }
-  header.loading = function(isLoading) {
-    if (isLoading)
-      heading.className = 'loading'
 
-    else
-      heading.classList.remove('loading')
-  }
+  Header.appendChild(logo)
+  Header.appendChild(heading)
 
-  header.appendChild(logo)
-  header.appendChild(heading)
-
-  return header
+  return Header
 }
 
-var Ticker = function(navHeight) {
-  var ticker = document.createElement('aside')
+var Ticker = function(navHeight, accentColor) {
+  var ticker = new aside()
   ticker.style.overflow = 'hidden'
   ticker.style.borderBottom = '2px solid #cfcfd6'
+  
+  ticker.addQuote = function(_quote) {
+    quote.innerHTML = _quote
+    arrow.style.opacity = 1
+  }
+  ticker.arrowColor = function(_color) {
+    arrow.style.color = _color
+  }
 
   var innerflow = document.createElement('div')
   innerflow.style.width = '100%'
   innerflow.style.overflowX = 'scroll'
   innerflow.style.whiteSpace = 'nowrap'
-  innerflow.style.backgroundColor = '#fff'
 
   var quote = document.createElement('em')
   quote.style.lineHeight = `${navHeight}px`
@@ -109,29 +161,8 @@ var Ticker = function(navHeight) {
   var scrollbarHeight = 30 // innerflow.offsetHeight - innerflow.clientHeight
   innerflow.style.height = `${navHeight + scrollbarHeight}px`
   ticker.style.height = `${navHeight}px`
-  
-  ticker.addQuote = function(_quote) {
-    quote.innerHTML = _quote
-    arrow.style.opacity = 1
-  }
+  ticker.arrowColor(accentColor)
 
-  gradient()
-  innerflow.onscroll = function () {
-      gradient()
-  }
-  window.onresize = function () {
-      if (innerflow.scrollLeft + innerflow.scrollWidth - innerflow.clientWidth == 0)
-          innerflow.style.cssText += noGradient
-      else gradient()
-  }
-
-  function gradient() {
-      innerflow.style.cssText += 'box-shadow: #888 -' + maxGrad(innerflow.scrollWidth - innerflow.clientWidth - innerflow.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(innerflow.scrollLeft) + 'px 0px 40px -40px inset'
-  }
-    function maxGrad(val) {
-        if (val >= 56) return 56
-        else return val
-    }
   innerflow.appendChild(quote)
   innerflow.appendChild(arrow)
   ticker.appendChild(innerflow)
@@ -144,16 +175,61 @@ var Main = function() {
   main.style.overflow = 'auto'
 
   window.onresize = function () {
-    main.style.minHeight = `${document.documentElement.clientHeight - document.getElementsByTagName('header')[0].offsetHeight - document.getElementsByTagName('aside')[0].offsetHeight - document.getElementsByTagName('footer')[0].offsetHeight}px`
+      Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
   }
   return main
 }
 
-var Footer = function(height, color) {
+var Footer = function(height, color, backgroundColor) {
   var footer = document.createElement('footer')
   footer.style.lineHeight = `${height}px`
   footer.style.borderTop = '2px solid #e3e3e8'
-  footer.style.backgroundColor = color
+  footer.style.backgroundColor = backgroundColor
+
+  footer.color = function(_color) {
+    footer.childNodes.forEach(function(element) {
+      element.style.color = _color
+    }, this);
+  }
+
+  for (var i = 0; i < 4; i++) {
+    var A = new a()
+    switch (i) {
+      case 0:
+        A.href = "mailto:faster@ucdavis.edu"
+        A.className = "fa fa-fw fa-envelope-o"
+        A.style.color = color
+        A.style.margin = '0 24px'
+      break
+
+      case 1:
+        A.href = "https://www.instagram.com/_u/the.t.u.r.n"
+        A.className = "fa fa-fw fa-instagram"
+        A.style.color = color
+        A.style.margin = '0 24px'
+      break
+
+      case 2:
+        A.href = "https://gitlab.com/dfoster"
+        A.className = "fa fa-fw fa-gitlab"
+        A.style.color = color
+        A.style.margin = '0 24px'
+      break
+
+      case 3:
+        A.href = "https://github.com/fasterthan"
+        A.className = "fa fa-fw fa-github"
+        A.style.color = color
+        A.style.margin = '0 24px'
+      break
+
+    }
+
+    footer.color(color)
+
+    footer.appendChild(A)
+  }
+    // Footer.innerHTML = '<a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a><a href="https://www.instagram.com/_u/the.t.u.r.n" class="fa fa-fw fa-instagram"></a><a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a><a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>'
 
   return footer
 }
@@ -168,61 +244,4 @@ function request(url, method, callback) {
   }
   httpRequest.open(method, url)
   httpRequest.send()
-}
-      
-function loadPage(res) {
-  var Person = JSON.parse(res)
-
-  Html.changeTitle(Person.name)
-  Header.changeLogo(Person.photo)
-  Header.changeHeading(Person.style.icon, Person.style.colors.accent)
-  Header.loading(false)
-}
-
-function loadHTML(res) {
-  Main.innerHTML = res
-  Header.loading(false)
-}
-
-function loadPhotos(res) {
-  var object = JSON.parse(res)
-  var instagramPhotos = ""
-  Main.innerHTML = ''
-  for (let i = 0; i < object.data.length; i++) {
-    var tmp = document.createElement('img')
-    tmp.style.cursor = 'pointer'
-    tmp.className = 'ig'
-    tmp.src = object.data[i].images.low_resolution.url
-    tmp.onclick = function() { location.href = object.data[i].link }
-    Main.appendChild(tmp)
-  }
-  Header.loading(false)
-}
-
-function addQuote() {
-  var main = document.getElementsByTagName('main')[0]
-  var quote = document.getElementById('input')
-  var quoteForm = document.getElementById('form')
-// var quote = { "quote" : quote.value }
-  if (!quote.value)
-    quote.placeholder = "Write something!"
-
-  else {
-    var httpRequest = new XMLHttpRequest()
-
-    var data = { quote: quote.value }
-    // Retrieve data in quote input field and convert to lower case
-    // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
-    httpRequest.onreadystatechange = function () {
-      if (this.readyState == 4 && this.status == 200) {
-        var newQuote = document.createElement('p')
-        quoteForm.innerHTML = quote.value
-      }
-    }
-    httpRequest.open('POST', '/quotes/new')
-    // Setting request header is required
-    httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-    // Send quote to server
-    httpRequest.send(JSON.stringify(data))
-  }
 }
