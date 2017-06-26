@@ -4,6 +4,7 @@ const Filter = require('bad-words')
 const mongoose = require('mongoose')
 const express = require('express')
 const https = require('https')
+const path = require('path')
 const fs = require('fs')
 
 let resume = fs.readFileSync('views/resume.html')
@@ -75,6 +76,10 @@ app.use(bodyParser.urlencoded({ extended: true }))
 // Swearjar
 let filter = new Filter({ placeHolder: '&#128520;'})
 
+app.get('/', (req,res) => {
+  
+})
+
 app.get('/resume', (req, res) => {
   if (req.headers.loaded)
     res.send(resume)
@@ -90,33 +95,38 @@ app.get('/david', (req, res) => {
 })
 
 app.get('/quotes', (req, res) => {
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-  db = mongoose.connection
+  if (!req.headers.loaded)
+    res.sendFile(path.join(__dirname + '/indexes/quotes.html'))
+  
+  else {
+    mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+    db = mongoose.connection
 
-  db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', () => {
-    Quote.find((err, quotes) => {
-      if (err) return console.error(err)
-      mongoose.disconnect()
+    db.on('error', console.error.bind(console, 'connection error:'))
+    db.once('open', () => {
+      Quote.find((err, quotes) => {
+        if (err) return console.error(err)
+        mongoose.disconnect()
 
-      let quotesInDatabase = ""
+        let quotesInDatabase = ""
 
-      if (quotes.length) {
-        let j = 0
+        if (quotes.length) {
+          let j = 0
 
-        while (j <= quotes.length - 1) {
-            if (quotes[j].isFaster == true)
-              fasterQuote = quotes[j].quote
+          while (j <= quotes.length - 1) {
+              if (quotes[j].isFaster == true)
+                fasterQuote = quotes[j].quote
 
-            else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
-          j++
+              else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+            j++
+          }
         }
-      }
-      quotesInDatabase += addquote
+        quotesInDatabase += addquote
 
-      res.send(quotesInDatabase)
+        res.send(quotesInDatabase)
+      })
     })
-  })
+  }
 })
 
 app.get('/quotes/faster', (req, res) => {
@@ -139,33 +149,38 @@ app.get('/quotes/faster', (req, res) => {
 })
 
 app.get('/photos', (req, res) => {
-  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
-    const statusCode = resp.statusCode;
-    const contentType = resp.headers['content-type']
+  if (!req.headers.loaded)
+    res.sendFile(path.join(__dirname + '/indexes/photos.html'))
+  
+  else {
+    https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
+      const statusCode = resp.statusCode;
+      const contentType = resp.headers['content-type']
 
-    let error
-    if (statusCode !== 200)
-      error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
-    else if (!/^application\/json/.test(contentType))
-      error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
-    
-    if (error) {
-      console.log(error.message)
-      resp.respume()
-      return
-    }
-
-    resp.setEncoding('utf8')
-    let rawData = ''
-    resp.on('data', chunk => rawData += chunk)
-    resp.on('end', () => {
-      try {
-        res.send(rawData)
-      } catch (e) {
-        console.log(e.message)
+      let error
+      if (statusCode !== 200)
+        error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
+      else if (!/^application\/json/.test(contentType))
+        error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
+      
+      if (error) {
+        console.log(error.message)
+        resp.respume()
+        return
       }
-    })
-  }).on('error', e => { console.log(`Got error: ${e.message}`)})
+
+      resp.setEncoding('utf8')
+      let rawData = ''
+      resp.on('data', chunk => rawData += chunk)
+      resp.on('end', () => {
+        try {
+          res.send(rawData)
+        } catch (e) {
+          console.log(e.message)
+        }
+      })
+    }).on('error', e => { console.log(`Got error: ${e.message}`)})
+  }
 })
 
 app.post('/quotes/new', (req, res) => {
@@ -201,6 +216,9 @@ app.post('/quotes/new', (req, res) => {
   })
 })
 
+app.get('*', (req, res) => {
+  res.send("<h1>404</h1><p>The page you're requesting doesn't exist")
+})
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port)
 })
