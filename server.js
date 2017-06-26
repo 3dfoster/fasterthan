@@ -11,6 +11,10 @@ let resume = fs.readFileSync('views/resume.html')
 let index = fs.readFileSync('views/app.html')
 let addquote = fs.readFileSync('views/addquote.html')
 
+let homeScript = fs.readFileSync('indexes/home.js')
+let quoteScript = fs.readFileSync('indexes/quotes.js')
+let photoScript = fs.readFileSync('indexes/photos.js')
+
 // Ports
 let port = process.env.PORT || 8080
 let ip = process.env.IP   || '0.0.0.0'
@@ -94,12 +98,15 @@ app.get('/david', (req, res) => {
   if (req.headers.loaded)
     res.send(JSON.stringify(David))
     
-  else res.end(index)
+  else res.redirect('/')
 })
 
 app.get('/quotes', (req, res) => {
-  if (!req.headers.loaded)
-    res.sendFile(path.join(__dirname + '/indexes/quotes.html'))
+  if (!req.headers.loaded) {
+    res.write(index.toString()
+      .replace('/*ONLOAD-ENTRY*/', quoteScript))
+    res.end()
+  }
   
   else {
     mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
@@ -133,6 +140,9 @@ app.get('/quotes', (req, res) => {
 })
 
 app.get('/quotes/faster', (req, res) => {
+  if (!req.headers.loaded)
+    res.redirect('/')
+    
   mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
   db = mongoose.connection
 
@@ -152,41 +162,45 @@ app.get('/quotes/faster', (req, res) => {
 })
 
 app.get('/photos', (req, res) => {
-  if (!req.headers.loaded)
-    res.sendFile(path.join(__dirname + '/indexes/photos.html'))
-  
-  else {
-    https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
-      const statusCode = resp.statusCode;
-      const contentType = resp.headers['content-type']
-
-      let error
-      if (statusCode !== 200)
-        error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
-      else if (!/^application\/json/.test(contentType))
-        error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
-      
-      if (error) {
-        console.log(error.message)
-        resp.respume()
-        return
-      }
-
-      resp.setEncoding('utf8')
-      let rawData = ''
-      resp.on('data', chunk => rawData += chunk)
-      resp.on('end', () => {
-        try {
-          res.send(rawData)
-        } catch (e) {
-          console.log(e.message)
-        }
-      })
-    }).on('error', e => { console.log(`Got error: ${e.message}`)})
+  if (!req.headers.loaded) {
+    res.write(index.toString()
+      .replace('/*ONLOAD-ENTRY*/', photoScript))
+    res.end()
   }
+  
+  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
+    const statusCode = resp.statusCode;
+    const contentType = resp.headers['content-type']
+
+    let error
+    if (statusCode !== 200)
+      error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
+    else if (!/^application\/json/.test(contentType))
+      error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
+    
+    if (error) {
+      console.log(error.message)
+      resp.respume()
+      return
+    }
+
+    resp.setEncoding('utf8')
+    let rawData = ''
+    resp.on('data', chunk => rawData += chunk)
+    resp.on('end', () => {
+      try {
+        res.send(rawData)
+      } catch (e) {
+        console.log(e.message)
+      }
+    })
+  }).on('error', e => { console.log(`Got error: ${e.message}`)})
 })
 
 app.post('/quotes/new', (req, res) => {
+  if (!req.headers.loaded)
+    res.redirect('/')
+    
   let quote = new Quote
   console.log(JSON.stringify(req.body.quote))
   let secret = req.body.quote.substring(0, 3)
