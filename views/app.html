@@ -30,7 +30,15 @@
     window.onload = function() {
       Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
 
-      /*ONLOAD-ENTRY*/
+      request('/david', 'GET', function(Person) {
+        loadPage(Person)
+      })
+      request('/resume', 'GET', function(resume) {
+        home(resume)
+      })
+      request('/quotes/faster', 'GET', function(quote) {
+        Ticker.addQuote(quote)
+      })
     }
     
     function loadPage(res) {
