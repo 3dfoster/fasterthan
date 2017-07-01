@@ -81,19 +81,28 @@
 
     function elastic(res) {
       Main.innerHTML = res
-      window.history.pushState('', 'Elastic Memories', '/elastic-memories')
+      window.history.pushState('', 'Elastic Memories', '/elastic')
 
       var canvas = document.getElementsByTagName('svg')[0]
       var main = document.getElementsByTagName('main')[0]
       var Header = document.getElementsByTagName('header')[0]
       var Overflow = document.getElementsByTagName('aside')[0]
-
+      
       var canvasHeight = document.documentElement.clientHeight - Header.offsetHeight - Overflow.offsetHeight - 42
 
-      main.style.backgroundImage = 'url(images/digital_ripple.gif'
-
-      canvas.setAttribute("height", canvasHeight)
+      // Set the height/width (square) of SVG to height or width of main
+      // depending on which one is bigger
       canvas.setAttribute("width", main.offsetWidth)
+
+      if (main.offsetWidth > canvasHeight)
+        canvasHeight = main.offsetWidth
+      else
+        canvas.setAttribute("width", canvasHeight)
+        
+      canvas.setAttribute("height", canvasHeight)
+
+
+      main.style.backgroundImage = 'url(images/digital_ripple_2.gif'
 
       var svg = d3.select("svg"),
           width = +svg.attr("width"),

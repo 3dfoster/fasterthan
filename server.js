@@ -54,27 +54,6 @@ let David = {
   }
 }
 
-let Darkness = {
-  "name": "David Alexander Foster",
-  "photo": "/images/avatar_240.png",
-  "major": "Computer science",
-  "degree": "undergraduate",
-  "school": "UC Davis",
-  "googleID": "l3BrFHMCWeUnr4pM3QZXyHk1dxsysnkdWLmEJRw9mYo",
-  "style": {
-    "font": {
-      "family": "sans-serif",
-      "alignment": "center",
-      "color": "#444"
-    },
-    "colors": {
-      "accent": "crimson",
-      "background": "#222"
-    },
-    "icon": "F >"
-  }
-}
-
 const app = express()
 
 app.use(express.static('public'))
@@ -85,9 +64,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 let filter = new Filter({ placeHolder: '&#128520;'})
 
 app.get('/', (req,res) => {
-    res.write(index.toString()
-      .replace('/*ONLOAD-ENTRY*/', homeScript))
-    res.end()
+    res.write('warn')
 })
 
 app.get('/resume', (req, res) => {
@@ -100,13 +77,6 @@ app.get('/resume', (req, res) => {
 app.get('/david', (req, res) => {
   if (req.headers.loaded)
     res.send(JSON.stringify(David))
-    
-  else res.redirect('/')
-})
-
-app.get('/darkness', (req, res) => {
-  if (req.headers.loaded)
-    res.send(JSON.stringify(Darkness))
     
   else res.redirect('/')
 })
@@ -243,7 +213,7 @@ app.post('/quotes/new', (req, res) => {
   })
 })
 
-app.get('/elastic-memories', (req, res) => {
+app.get('/elastic', (req, res) => {
   if (req.headers.loaded)
     res.send(elastic)
 

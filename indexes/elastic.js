@@ -1,10 +1,8 @@
 
-request('/darkness', 'GET', function(Person) {
+request('/david', 'GET', function(Person) {
   loadPage(Person)
 })
-request('/elastic-memories', 'GET', function(bubbles) {
+request('/elastic', 'GET', function(bubbles) {
   elastic(bubbles)
 })
-request('/quotes/faster', 'GET', function(quote) {
-  Ticker.addQuote(quote)
-})
+Ticker.addQuote("Memories, reverberating across the echo chamber of my mind.")
