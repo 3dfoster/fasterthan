@@ -25,7 +25,7 @@ var pack = d3.pack()
     .size([width, height])
     .padding(1.5)
 
-d3.csv("http://localhost:8080/api/get-csv", function(d) {
+d3.csv(window.location.origin + "/api/get-csv", function(d) {
     d.likes = +d.likes
     if (d.likes) return d
 }, function(error, classes) {
