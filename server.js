@@ -10,10 +10,7 @@ let app = fs.readFileSync('resources/views/app.html')
 let privacy = fs.readFileSync('resources/views/privacy.html')
 let resume = fs.readFileSync('resources/views/resume.html')
 let addquote = fs.readFileSync('resources/views/addquote.html')
-
-// OpenShift
-let port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080
-let ip = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'
+let elastic = fs.readFileSync('resources/views/elastic.html')
 
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
@@ -43,6 +40,10 @@ let blogSchema = new Schema({
   body:   String,
   date: { type: Date, default: Date.now }
 })
+
+// Ports
+let port = process.env.PORT || 8080
+let ip = process.env.IP || '0.0.0.0'
 
 // Create Server
 let server = http.createServer()
@@ -115,7 +116,7 @@ server.on('request', (req, res) => {
               quotesInDatabase += addquote
 
               res.write(app.toString().replace('<!--MAIN-ENTRY-->', quotesInDatabase)
-              .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> '))
+              .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em>  <a href="/quotes" style="opacity:0;" class="button">➔</a>'))
               res.end()
             })
           })
@@ -176,6 +177,21 @@ server.on('request', (req, res) => {
           })
         break
 
+        case '/elastic':
+          res.write(app.toString()
+          .replace('<!--MAIN-ENTRY-->', '<svg></svg>')
+          .replace('<!--SCRIPT-ENTRY-->', elastic))
+          res.end()
+
+        break
+
+        case '/api/get-csv':
+          let file = fs.readFileSync('ig.csv')
+          res.writeHead(200, { 'Content-Type': 'text/html' })
+          res.write(file)
+          res.end()
+        break
+
         case '/api/write-csv':
           https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
             const statusCode = resp.statusCode;
@@ -218,13 +234,6 @@ server.on('request', (req, res) => {
           }).on('error', e => {
             console.log(`Got error: ${e.message}`)
           })
-        break
-
-        case '/api/get-csv':
-          let file = fs.readFileSync('ig.csv')
-          res.writeHead(200, { 'Content-Type': 'text/html' })
-          res.write(file)
-          res.end()
         break
 
         case '/privacy':

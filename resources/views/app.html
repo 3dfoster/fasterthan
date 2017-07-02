@@ -17,14 +17,7 @@
   <!--[if lt IE 9]> <script src="resources/html5shiv.js"></script> <![endif]-->
   <style>
     /* HTML5 Support for older browsers */
-    header,
-    section,
-    footer,
-    aside,
-    nav,
-    main,
-    article,
-    figure {
+    header, section, footer, aside, nav, main, article, figure {
         display: block;
     }
     html {
@@ -48,6 +41,7 @@
     a:hover {
         color: #4f506f;
     }
+
     header {
         height: 64px;
         border-bottom: 1px solid #eee;
@@ -92,20 +86,10 @@
         overflow: auto;
     }
     main h1, main h2 {
-        margin: 16px 0;
+        margin: 16px 0px;
         letter-spacing: 2px;
         text-transform: uppercase;
         font-weight: lighter;
-    }
-    main h3 {
-        font-weight: lighter;
-    }
-    footer a {
-        color: #4d6394;
-        margin: 0 24px;
-    }
-    main a {
-        color: #4d6394;
     }
     main h2 span {
         display: inline-block;
@@ -122,9 +106,13 @@
     }
     main h3 {
         padding-left: 8px;
-        margin-top: 40px;
+        margin: 40px 8px 16px 8px;
         text-align: left;
         border-bottom: 1px solid #bbb;
+        font-weight: lighter;
+    }
+    main a {
+        color: #4d6394;
     }
     ul {
         list-style-type: none;
@@ -132,6 +120,7 @@
     }
     li {
         text-align: left;
+        line-height: 150%;
     }
     #form {
         margin: 16px 0;
@@ -178,6 +167,10 @@
         max-width: 760px;
         border-top: 2px solid #e3e3e8;
     }
+    footer a {
+        color: #4d6394;
+        margin: 0 24px;
+    }
     .ig {
         float: left;
     }
@@ -209,7 +202,7 @@
 <body>
 <header>
     <a href="/photos"><img id="logo" src="https://s3-us-west-1.amazonaws.com/fasterthan/avatar_240.png" alt="David Alexander Foster"></a>
-    <h1><a href="/">f <span style="color: #cfcfd6">></span></a></h1>
+    <h1><a href="/">F <span style="color: #cfcfd6">></span></a></h1>
 </header>
 
 <div id="overflow">
@@ -274,4 +267,4 @@
     <a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a>
     <a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>
 </footer>
-</body></html>
+</body><!--SCRIPT-ENTRY--></html>
