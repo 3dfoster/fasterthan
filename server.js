@@ -64,7 +64,11 @@ app.use(bodyParser.urlencoded({ extended: true }))
 let filter = new Filter({ placeHolder: '&#128520;'})
 
 app.get('/', (req,res) => {
-    res.write('warn')
+  if (!req.headers.loaded) {
+    res.write(index.toString()
+      .replace('/*ONLOAD-ENTRY*/', homeScript))
+    res.end()
+  }
 })
 
 app.get('/resume', (req, res) => {
