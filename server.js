@@ -100,7 +100,7 @@ server.on('request', (req, res) => {
               if (err) return console.error(err)
               mongoose.disconnect()
 
-              let quotesInDatabase = ""
+              let quotesInDatabase = "<main>"
 
               if (quotes.length) {
                 let j = 0
@@ -113,7 +113,7 @@ server.on('request', (req, res) => {
                   j++
                 }
               }
-              quotesInDatabase += addquote
+              quotesInDatabase += addquote + "</main>"
 
               res.write(app.toString().replace('<!--MAIN-ENTRY-->', quotesInDatabase)
               .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em>  <a href="/quotes" style="opacity:0;" class="button">➔</a>'))
@@ -179,8 +179,7 @@ server.on('request', (req, res) => {
 
         case '/elastic':
           res.write(app.toString()
-          .replace('<!--MAIN-ENTRY-->', '<h1 style="display:inline-block;margin:8px auto;">Memories</h1><br><em>reverberating across the echo chamber of my mind</em><svg></svg>')
-          .replace('<!--SCRIPT-ENTRY-->', elastic))
+          .replace('<!--MAIN-ENTRY-->', elastic))
           res.end()
 
         break
@@ -224,8 +223,8 @@ server.on('request', (req, res) => {
                   }
 
                   fs.writeFile('ig.csv', line, err => {
-                    if (err) throw err;
-                    console.log('The file has been saved!');
+                    if (err) throw err
+                    res.end('The file has been saved!')
                   })
               } catch (e) {
                 console.log(e.message)
