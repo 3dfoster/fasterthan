@@ -179,12 +179,8 @@ server.on('request', (req, res) => {
 
         case '/elastic':
           res.write(app.toString()
-<<<<<<< HEAD
           .replace('<!--MAIN-ENTRY-->', '<h1 style="display:inline-block;margin:8px auto;">Memories</h1><svg></svg><em>reverberating across the echo chamber of my mind</em>')
           .replace('<!--SCRIPT-ENTRY-->', elastic))
-=======
-          .replace('<!--MAIN-ENTRY-->', elastic))
->>>>>>> 3544e7767f09cb299cb45f42292b8108e259c3b3
           res.end()
 
         break
