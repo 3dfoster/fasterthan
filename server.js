@@ -313,7 +313,7 @@ server.on('request', (req, res) => {
               mongoose.disconnect()
 
               res.writeHead(200, { 'Content-Type': 'text/plain' })
-              res.end("You've signed up")
+              res.end("You're all signed up 😀")
             })
           })
         break
