@@ -33,13 +33,12 @@ let quoteSchema = new Schema({
 })
 let Quote = mongoose.model('Quote', quoteSchema)
 
-// Build blog ORM model
-let blogSchema = new Schema({
-  title:  { type: String, maxlength: 2500 },
-  author: String,
-  body:   String,
+// Build Quote ORM model
+let InstagramAccountSchema = new Schema({
+  account: { type: String, maxlength: 32 },
   date: { type: Date, default: Date.now }
 })
+let InstagramAccount = mongoose.model('InstagramAccount', InstagramAccountSchema)
 
 // Ports
 let port = process.env.PORT || 8080
@@ -179,8 +178,7 @@ server.on('request', (req, res) => {
 
         case '/elastic':
           res.write(app.toString()
-          .replace('<!--MAIN-ENTRY-->', '<h1 style="display:inline-block;margin:8px auto;">Memories</h1><svg></svg><em>reverberating across the echo chamber of my mind</em>')
-          .replace('<!--SCRIPT-ENTRY-->', elastic))
+          .replace('<!--MAIN-ENTRY-->', elastic))
           res.end()
 
         break
@@ -288,6 +286,34 @@ server.on('request', (req, res) => {
 
               res.writeHead(200, { 'Content-Type': 'text/plain' })
               res.end()
+            })
+          })
+        break
+
+        case '/elastic/signup':
+          let IgAccount = new InstagramAccount
+
+          IgAccount.account = body
+          
+          // Connect to MongoDB
+          mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/elastic')
+          db = mongoose.connection
+
+          db.on('error', console.error.bind(console, 'connection error:'))
+          db.once('open', function () {
+            // We've successfully established a conection to the database
+            console.log("Connection to Mongo database established")
+
+            // Store quote document in the database
+            IgAccount.save( (err, IgAccount) => {
+              if (err) {
+                res.write("You've encountered an error")
+                return console.error(err)
+              }
+              mongoose.disconnect()
+
+              res.writeHead(200, { 'Content-Type': 'text/plain' })
+              res.end("You've signed up")
             })
           })
         break

@@ -3,6 +3,11 @@
     <br>
     <em>(reverberating across the echo chamber of my mind)</em>
     <svg></svg>
+
+<form id="form" style="background-color: white; margin-top: 0px; display: inline-block; padding: 8px" action="javascript:signup()">
+  Request your own page:<br>
+  <input type="text" id="input" maxlength="32" autocomplete="off" placeholder="Instagram account" style="min-width: initial; border: 1px solid #4d6394; margin-top: 4px" ><input type="submit" id="submit_button" style="position: initial; margin-left: 4px;" value="go">
+</form>
 </main>
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -81,4 +86,37 @@ d3.csv(window.location.origin + "/api/get-csv", function(d) {
         .attr("width", function(d) { return d.r * 2 })
         .attr("height", function(d) { return d.r * 2 })
 })
+
+function signup() {
+    var main = document.getElementsByTagName('main')[0]
+    var quote = document.getElementById('input')
+    var quoteForm = document.getElementById('form')
+
+    if (!quote.value)
+        quote.placeholder = "Enter your IG account"
+
+    else {
+        var httpRequest = new XMLHttpRequest()
+
+        // Retrieve data in quote input field and convert to lower case
+        // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
+        httpRequest.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            // Disable submit button after quote has successfully been sent
+            quote.innerText = this.response
+            
+            document.getElementById('submit_button').disabled = true
+            document.getElementById('form').reset()
+            document.getElementById('input').placeholder = this.response
+        }
+        }
+        httpRequest.open('POST', '/elastic/signup')
+        // Setting request header is required
+        httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+        // Send quote to server
+        httpRequest.send(quote.value)
+        document.getElementById('form').reset()
+        document.getElementById('input').placeholder = "Submitting request..."
+    }
+}
 </script>
