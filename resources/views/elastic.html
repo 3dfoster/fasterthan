@@ -1,12 +1,14 @@
 <main>
-    <h1 style="display:inline-block;margin:16px auto 8px auto;letter-spacing:4px;">Memories</h1>
-    <br>
-    <em>(reverberating across the echo chamber of my mind)</em>
+    <div style="display:inline-block;margin:16px auto 8px auto;letter-spacing:4px; font-size: 2em; text-transform: uppercase">
+    <span style="background-color: white;">Elastic</span>
+    <span style="background-color: white;">Memories</span>
+
+    </div>
     <svg></svg>
 
-<form id="form" style="background-color: white; margin-top: 0px; display: inline-block; padding: 8px" action="javascript:signup()">
-  Request your own page:<br>
-  <input type="text" id="input" maxlength="32" autocomplete="off" placeholder="Instagram account" style="min-width: initial; border: 1px solid #4d6394; margin-top: 4px" ><input type="submit" id="submit_button" style="position: initial; border: 1px solid #4d6394; margin-left: 4px;" value="go">
+    <span style="background-color: white; padding: 2px 4px;">Request your own:</span>
+<form id="form" style="background-color: white; margin-top: 0px; display: inline-block; padding: 2px" action="javascript:signup()">
+  <input type="text" id="input" maxlength="32" autocomplete="off" placeholder="Instagram account" style="min-width: initial; border: 1px solid #4d6394;" ><input type="submit" id="submit_button" style="position: initial; border: 1px solid #4d6394; margin-left: 4px;" value="go">
 </form>
 </main>
 
@@ -77,7 +79,7 @@ d3.csv(window.location.origin + "/api/get-csv", function(d) {
         .attr("r", function(d) { return d.r })
 
     node.append("a")
-        .attr("href", function(d) { return d.Url })
+        .attr("xlink:href", function(d) { return d.Url })
     .append("image")
         .attr("clip-path", function(d) { return "url(#clip-" + d.thumbnailUrl + ")" })
         .attr("xlink:href", function(d) { return d.thumbnailUrl })
@@ -85,6 +87,7 @@ d3.csv(window.location.origin + "/api/get-csv", function(d) {
         .attr("y", function(d) { return -d.r })
         .attr("width", function(d) { return d.r * 2 })
         .attr("height", function(d) { return d.r * 2 })
+        alert('warn')
 })
 
 function signup() {
