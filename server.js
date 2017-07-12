@@ -290,33 +290,33 @@ server.on('request', (req, res) => {
           })
         break
 
-        case '/elastic/signup':
-          let IgAccount = new InstagramAccount
+        // case '/elastic/signup':
+        //   let IgAccount = new InstagramAccount
 
-          IgAccount.account = body
+        //   IgAccount.account = body
           
-          // Connect to MongoDB
-          mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/elastic')
-          db = mongoose.connection
+        //   // Connect to MongoDB
+        //   mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/elastic')
+        //   db = mongoose.connection
 
-          db.on('error', console.error.bind(console, 'connection error:'))
-          db.once('open', function () {
-            // We've successfully established a conection to the database
-            console.log("Connection to Mongo database established")
+        //   db.on('error', console.error.bind(console, 'connection error:'))
+        //   db.once('open', function () {
+        //     // We've successfully established a conection to the database
+        //     console.log("Connection to Mongo database established")
 
-            // Store quote document in the database
-            IgAccount.save( (err, IgAccount) => {
-              if (err) {
-                res.write("You've encountered an error")
-                return console.error(err)
-              }
-              mongoose.disconnect()
+        //     // Store quote document in the database
+        //     IgAccount.save( (err, IgAccount) => {
+        //       if (err) {
+        //         res.write("You've encountered an error")
+        //         return console.error(err)
+        //       }
+        //       mongoose.disconnect()
 
-              res.writeHead(200, { 'Content-Type': 'text/plain' })
-              res.end("You're all signed up 😀")
-            })
-          })
-        break
+        //       res.writeHead(200, { 'Content-Type': 'text/plain' })
+        //       res.end("You're all signed up 😀")
+        //     })
+        //   })
+        // break
       }
     }
     // Error handling
