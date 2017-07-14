@@ -192,9 +192,9 @@ var Footer = function(height, color, backgroundColor) {
   footer.style.backgroundColor = backgroundColor
 
   footer.color = function(_color) {
-    footer.childNodes.forEach(function(element) {
-      element.style.color = _color
-    })
+    for (var i = 0; i < footer.childNodes.length; i++) {
+    footer.childNodes[i].style.color = _color
+    }
   }
 
   for (var i = 0; i < 4; i++) {

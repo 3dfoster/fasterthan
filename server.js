@@ -6,6 +6,7 @@ const express = require('express')
 const https = require('https')
 const fs = require('fs')
 
+// Static HTML files
 const resume = fs.readFileSync('views/resume.html')
 const addquote = fs.readFileSync('views/addquote.html')
 const privacy = fs.readFileSync('views/privacy.html')
@@ -26,14 +27,18 @@ const quoteSchema = new Schema({
 })
 const Quote = mongoose.model('Quote', quoteSchema)
 
-const app = express()
-
-app.use(express.static('public'))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-
 // Swearjar
 const filter = new Filter({ placeHolder: '&#128520;'})
+
+// Express app
+const app = express()
+
+// Serve static files
+app.use(express.static('public'))
+
+// Allow parsing of incoming XMLhttprequests
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/quotes', (req, res) => {
   res.sendFile(__dirname + '/public/index.html')
@@ -69,54 +74,24 @@ app.get('/api/privacy', (req, res) => {
 })
 
 app.get('/api/quotes', (req, res) => {
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-  db = mongoose.connection
+  connectMongo('getAll', Quote, quotes => {
+    let quotesInDatabase = ""
 
-  db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', () => {
-    Quote.find((err, quotes) => {
-      if (err) return console.error(err)
-      mongoose.disconnect()
+    for (let i = 0; i < quotes.length; i++)
+        quotesInDatabase += '<p>' + quotes[i].quote + '</p>\n'
 
-      let quotesInDatabase = ""
-
-      if (quotes.length) {
-        let j = 0
-
-        while (j <= quotes.length - 1) {
-            if (quotes[j].isFaster == true)
-              fasterQuote = quotes[j].quote
-
-            else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
-          j++
-        }
-      }
-      quotesInDatabase += addquote
-
-      res.send(quotesInDatabase)
-    })
+    quotesInDatabase += addquote
+    
+    res.send(quotesInDatabase)
   })
 })
 
 app.get('/api/quotes/faster', (req, res) => {
   if (!req.headers.loaded)
     res.redirect('/')
-    
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-  db = mongoose.connection
-
-  db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', () => {
-    Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quote) => {
-      if (err) return console.error(err)
-      
-      let fasterQuote = "In the quivering forest where the shivering dog rest..."
-
-      if (quote) fasterQuote = quote.quote
-      
-      res.send(fasterQuote)
-      mongoose.disconnect()
-    })
+  
+  connectMongo('getFaster', Quote, quote => {
+    res.end(quote)
   })
 })
 
@@ -155,7 +130,6 @@ app.post('/quotes/new', (req, res) => {
     res.redirect('/')
     
   let quote = new Quote
-  console.log(JSON.stringify(req.body.quote))
   let secret = req.body.quote.substring(0, 3)
 
   if (secret == '!ft') {
@@ -166,33 +140,54 @@ app.post('/quotes/new', (req, res) => {
   else
     quote.quote = filter.clean(req.body.quote)
   
-  // Connect to MongoDB
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-  db = mongoose.connection
-
-  db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', () => {
-    // We've successfully established a conection to the database
-    console.log("Connection to Mongo database established")
-
-    // Store quote document in the database
-    quote.save( (err, quote) => {
-      if (err)
-        return console.error(err)
-
-      mongoose.disconnect()
-      res.status(200).send()
-    })
+  // Save quote in Mongo database
+  connectMongo('save', quote, () => {
+    res.status(200).send()
   })
 })
 
+// Requests to any URL not defined is sent a 404
 app.get('*', (req, res) => {
-  res.send("<h1>404</h1><p>The page you're requesting doesn't exist")
+  res.status(404).send("<h1>404</h1><p>The page you're requesting doesn't exist")
 })
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port)
 })
 
+function connectMongo(mode, model, callback) {
+  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+  db = mongoose.connection
+
+  db.on('error', console.error.bind(console, 'connection error:'))
+  db.once('open', () => {
+    console.log("Connection to Mongo database established")
+
+    switch (mode) {
+      case 'save':
+        model.save()
+        mongoose.disconnect()
+      break
+
+      case 'getFaster':
+        model.findOne({ isFaster: true }).sort({date: -1}).exec( (err, documents) => {
+          mongoose.disconnect()
+          if (err) return console.error(err)
+        
+          callback(documents.quote)
+        })
+      break
+
+      case 'getAll':
+        model.find((err, documents) => {
+          mongoose.disconnect()
+          if (err) return console.error(err)
+        
+          callback(documents)
+        })
+      break
+    }
+  })
+}
 
 let Phia = {
   "name": "Sophia Maria Holmgren",
