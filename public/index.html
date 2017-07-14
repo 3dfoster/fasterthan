@@ -28,9 +28,53 @@
     Body.appendChild(Footer)
 
     window.onload = function() {
+      switch (location.pathname) {
+        case '/photos':
+          request('/api/david', 'GET', function(Person) {
+            loadPage(Person)
+          })
+          request('/api/photos', 'GET', function(_photos) {
+            photos(_photos)
+          })
+          Ticker.addQuote("Memories, reverberating across the echo chamber of my mind...")
+        break
+
+        case '/quotes':
+          request('/api/david', 'GET', function(Person) {
+            loadPage(Person)
+          })
+          request('/api/quotes', 'GET', function(_quotes) {
+            quotes(_quotes)
+          })
+          request('/api/quotes/faster', 'GET', function(quote) {
+            Ticker.addQuote(quote)
+          })
+        break
+
+        case '/privacy':
+          request('/api/david', 'GET', function(Person) {
+            loadPage(Person)
+          })
+          request('/api/privacy', 'GET', function(privacy) {
+            home(privacy)
+          })
+        break
+
+        default:
+          request('/api/david', 'GET', function(Person) {
+            loadPage(Person)
+          })
+          request('/api/resume', 'GET', function(resume) {
+            home(resume)
+          })
+          request('/api/quotes/faster', 'GET', function(quote) {
+            Ticker.addQuote(quote)
+          })
+        break
+      }
+
       Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
 
-      /*ONLOAD-ENTRY*/
     }
     
     function loadPage(res) {
@@ -103,6 +147,20 @@
         // Send quote to server
         httpRequest.send(JSON.stringify(data))
       }
+    }
+
+    function request(url, method, callback) {
+      Header.loading(true)
+      var httpRequest = new XMLHttpRequest()
+
+      httpRequest.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200)
+          callback(this.responseText)
+          // console.log(this.responseText.split('\n', 1)[0])
+      }
+      httpRequest.open(method, url)
+      httpRequest.setRequestHeader("loaded", true)
+      httpRequest.send()
     }
   </script>
 </html>

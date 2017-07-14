@@ -4,73 +4,27 @@ const Filter = require('bad-words')
 const mongoose = require('mongoose')
 const express = require('express')
 const https = require('https')
-const path = require('path')
 const fs = require('fs')
 
-let resume = fs.readFileSync('views/resume.html')
-let index = fs.readFileSync('views/app.html')
-let addquote = fs.readFileSync('views/addquote.html')
-
-let homeScript = fs.readFileSync('indexes/home.js')
-let quoteScript = fs.readFileSync('indexes/quotes.js')
-let photoScript = fs.readFileSync('indexes/photos.js')
+const resume = fs.readFileSync('views/resume.html')
+const addquote = fs.readFileSync('views/addquote.html')
+const privacy = fs.readFileSync('views/privacy.html')
 
 // Ports
-let port = process.env.PORT || 8080
-let ip = process.env.IP   || '0.0.0.0'
+const port = process.env.PORT || 8080
+const ip = process.env.IP   || '0.0.0.0'
 
 // Initialize Schema
-let Schema = mongoose.Schema
+const Schema = mongoose.Schema
 
 // Build Quote ORM model
-let quoteSchema = new Schema({
+const quoteSchema = new Schema({
   quote: { type: String, maxlength: 128 },
   date: { type: Date, default: Date.now },
   isFaster: { type: Boolean, default: false },
   addr: { type: String, maxlength: 160 }
 })
-let Quote = mongoose.model('Quote', quoteSchema)
-
-let Phia = {
-  "name": "Sophia Maria Holmgren",
-  "photo": "https://scontent-atl3-1.cdninstagram.com/t51.2885-19/s320x320/14727646_1169168589834186_6905304133377458176_a.jpg",
-  "major": "Art",
-  "degree": "associate student",
-  "school": "Sacramento City College",
-  "googleID": "none",
-  "style": {
-    "font": {
-      "family": "sans-serif",
-      "alignment": "center",
-      "color": "#cc3300"
-    },
-    "colors": {
-      "accent": "pink",
-      "background": "#f5f5f0"
-    },
-    "icon": "❀"
-  }
-}
-let David = {
-  "name": "David Alexander Foster",
-  "photo": "/images/avatar_240.png",
-  "major": "Computer science",
-  "degree": "undergraduate",
-  "school": "UC Davis",
-  "googleID": "l3BrFHMCWeUnr4pM3QZXyHk1dxsysnkdWLmEJRw9mYo",
-  "style": {
-    "font": {
-      "family": "sans-serif",
-      "alignment": "center",
-      "color": "#444"
-    },
-    "colors": {
-      "accent": "#4d6394",
-      "background": "#e6e6ff"
-    },
-    "icon": "F >"
-  }
-}
+const Quote = mongoose.model('Quote', quoteSchema)
 
 const app = express()
 
@@ -79,67 +33,72 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 // Swearjar
-let filter = new Filter({ placeHolder: '&#128520;'})
+const filter = new Filter({ placeHolder: '&#128520;'})
 
-app.get('/', (req,res) => {
-    res.write(index.toString()
-      .replace('/*ONLOAD-ENTRY*/', homeScript))
-    res.end()
+app.get('/quotes', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html')
 })
 
-app.get('/resume', (req, res) => {
+app.get('/photos', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html')
+})
+
+app.get('/privacy', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html')
+})
+
+app.get('/api/resume', (req, res) => {
   if (req.headers.loaded)
     res.send(resume)
 
   else res.redirect('/')
 })
 
-app.get('/david', (req, res) => {
+app.get('/api/david', (req, res) => {
   if (req.headers.loaded)
     res.send(JSON.stringify(David))
-    
+
   else res.redirect('/')
 })
 
-app.get('/quotes', (req, res) => {
-  if (!req.headers.loaded) {
-    res.write(index.toString()
-      .replace('/*ONLOAD-ENTRY*/', quoteScript))
-    res.end()
-  }
-  
-  else {
-    mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-    db = mongoose.connection
+app.get('/api/privacy', (req, res) => {
+  if (req.headers.loaded)
+    res.send(privacy)
 
-    db.on('error', console.error.bind(console, 'connection error:'))
-    db.once('open', () => {
-      Quote.find((err, quotes) => {
-        if (err) return console.error(err)
-        mongoose.disconnect()
-
-        let quotesInDatabase = ""
-
-        if (quotes.length) {
-          let j = 0
-
-          while (j <= quotes.length - 1) {
-              if (quotes[j].isFaster == true)
-                fasterQuote = quotes[j].quote
-
-              else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
-            j++
-          }
-        }
-        quotesInDatabase += addquote
-
-        res.send(quotesInDatabase)
-      })
-    })
-  }
+  else res.redirect('/')
 })
 
-app.get('/quotes/faster', (req, res) => {
+app.get('/api/quotes', (req, res) => {
+  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+  db = mongoose.connection
+
+  db.on('error', console.error.bind(console, 'connection error:'))
+  db.once('open', () => {
+    Quote.find((err, quotes) => {
+      if (err) return console.error(err)
+      mongoose.disconnect()
+
+      let quotesInDatabase = ""
+
+      if (quotes.length) {
+        let j = 0
+
+        while (j <= quotes.length - 1) {
+            if (quotes[j].isFaster == true)
+              fasterQuote = quotes[j].quote
+
+            else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+          j++
+        }
+      }
+      quotesInDatabase += addquote
+
+      res.send(quotesInDatabase)
+    })
+  })
+})
+
+app.get('/api/quotes/faster', (req, res) => {
   if (!req.headers.loaded)
     res.redirect('/')
     
@@ -161,13 +120,7 @@ app.get('/quotes/faster', (req, res) => {
   })
 })
 
-app.get('/photos', (req, res) => {
-  if (!req.headers.loaded) {
-    res.write(index.toString()
-      .replace('/*ONLOAD-ENTRY*/', photoScript))
-    res.end()
-  }
-  
+app.get('/api/photos', (req, res) => {
   https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
     const statusCode = resp.statusCode;
     const contentType = resp.headers['content-type']
@@ -239,3 +192,45 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port)
 })
+
+
+let Phia = {
+  "name": "Sophia Maria Holmgren",
+  "photo": "https://scontent-atl3-1.cdninstagram.com/t51.2885-19/s320x320/14727646_1169168589834186_6905304133377458176_a.jpg",
+  "major": "Art",
+  "degree": "associate student",
+  "school": "Sacramento City College",
+  "googleID": "none",
+  "style": {
+    "font": {
+      "family": "sans-serif",
+      "alignment": "center",
+      "color": "#cc3300"
+    },
+    "colors": {
+      "accent": "pink",
+      "background": "#f5f5f0"
+    },
+    "icon": "❀"
+  }
+}
+let David = {
+  "name": "David Alexander Foster",
+  "photo": "/images/avatar_240.png",
+  "major": "Computer science",
+  "degree": "undergraduate",
+  "school": "UC Davis",
+  "googleID": "l3BrFHMCWeUnr4pM3QZXyHk1dxsysnkdWLmEJRw9mYo",
+  "style": {
+    "font": {
+      "family": "sans-serif",
+      "alignment": "center",
+      "color": "#444"
+    },
+    "colors": {
+      "accent": "#4d6394",
+      "background": "#e6e6ff"
+    },
+    "icon": "F >"
+  }
+}

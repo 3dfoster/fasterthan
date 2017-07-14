@@ -112,7 +112,7 @@ var Header = function(height, borderColor, backgroundColor) {
   logo.style.cursor = 'pointer'
   logo.style.backgroundColor = '#888'
   logo.onclick = function() {
-    request('/photos', 'GET', photos) }
+    request('/api/photos', 'GET', photos) }
 
   heading.style.display = 'inline-block'
   heading.style.margin = '0px auto'
@@ -121,7 +121,7 @@ var Header = function(height, borderColor, backgroundColor) {
   heading.style.cursor = 'pointer'
   heading.style.color = '#444'
   heading.onclick = function() {
-    request('/resume', 'GET', home)
+    request('/api/resume', 'GET', home)
   }
 
   Header.appendChild(logo)
@@ -158,7 +158,7 @@ var Ticker = function(navHeight, accentColor) {
   arrow.style.padding = '0px 8px'
   arrow.style.opacity = 0
   arrow.onclick = function() {
-    request('/quotes', 'GET', quotes)
+    request('/api/quotes', 'GET', quotes)
   }
   arrow.innerText = '➔'
   
@@ -194,40 +194,34 @@ var Footer = function(height, color, backgroundColor) {
   footer.color = function(_color) {
     footer.childNodes.forEach(function(element) {
       element.style.color = _color
-    }, this);
+    })
   }
 
   for (var i = 0; i < 4; i++) {
     var A = new a()
+    A.style.color = color
+    A.style.margin = '0 24px'
+    
     switch (i) {
       case 0:
         A.href = "mailto:faster@ucdavis.edu"
         A.className = "fa fa-fw fa-envelope-o"
-        A.style.color = color
-        A.style.margin = '0 24px'
       break
 
       case 1:
         A.href = "https://www.instagram.com/_u/the.t.u.r.n"
         A.className = "fa fa-fw fa-instagram"
-        A.style.color = color
-        A.style.margin = '0 24px'
       break
 
       case 2:
         A.href = "https://gitlab.com/dfoster"
         A.className = "fa fa-fw fa-gitlab"
-        A.style.color = color
-        A.style.margin = '0 24px'
       break
 
       case 3:
         A.href = "https://github.com/fasterthan"
         A.className = "fa fa-fw fa-github"
-        A.style.color = color
-        A.style.margin = '0 24px'
       break
-
     }
 
     footer.color(color)
