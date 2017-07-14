@@ -12,7 +12,7 @@
     <link type="text/css" href="style.css" rel="stylesheet">
   </head>
 
-  <body></body>
+  <body onload="init()"></body>
 
   <script>
     var Html = new Html('#fff')
@@ -74,7 +74,6 @@
       }
 
       Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
-
     }
     
     function loadPage(res) {

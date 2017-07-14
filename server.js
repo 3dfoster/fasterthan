@@ -77,8 +77,11 @@ app.get('/api/quotes', (req, res) => {
   connectMongo('getAll', Quote, quotes => {
     let quotesInDatabase = ""
 
-    for (let i = 0; i < quotes.length; i++)
-        quotesInDatabase += '<p>' + quotes[i].quote + '</p>\n'
+
+    for (let i = 0; i < quotes.length; i++) {
+        if (!quotes[i].isFaster)
+          quotesInDatabase += '<p>' + quotes[i].quote + '</p>\n'
+    }
 
     quotesInDatabase += addquote
     
