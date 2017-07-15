@@ -27,8 +27,10 @@
     Body.appendChild(Main)
     Body.appendChild(Footer)
 
-    window.onload = function() {
-      switch (location.pathname) {
+    window.onload = load(location.pathname)
+    
+    function load(url) {
+      switch (url) {
         case '/photos':
           request('/api/david', 'GET', function(Person) {
             loadPage(Person)
@@ -74,6 +76,10 @@
       }
 
       Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
+    }
+
+    window.onpopstate = function() {
+      load(location.pathname);
     }
     
     function loadPage(res) {

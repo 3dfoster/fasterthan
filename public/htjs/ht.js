@@ -112,7 +112,8 @@ var Header = function(height, borderColor, backgroundColor) {
   logo.style.cursor = 'pointer'
   logo.style.backgroundColor = '#888'
   logo.onclick = function() {
-    request('/api/photos', 'GET', photos) }
+    request('/api/photos', 'GET', photos)
+  }
 
   heading.style.display = 'inline-block'
   heading.style.margin = '0px auto'
