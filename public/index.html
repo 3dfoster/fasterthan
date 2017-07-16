@@ -12,7 +12,7 @@
     <link type="text/css" href="style.css" rel="stylesheet">
   </head>
 
-  <body onload="init()"></body>
+  <body></body>
 
   <script>
     var Html = new Html('#fff')
@@ -79,7 +79,7 @@
     }
 
     window.onpopstate = function() {
-      load(location.pathname);
+      load(location.pathname)
     }
     
     function loadPage(res) {
