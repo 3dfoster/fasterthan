@@ -7,9 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="UTF-8">
 
-    <script type="text/javascript" src="htjs/ht.js"></script>
+    <script type="text/javascript" src="/htjs/ht.js"></script>
+    <script src='https://d3js.org/d3.v4.min.js'></script>
     <link rel="stylesheet" type="text/css" href="https://s3-us-west-1.amazonaws.com/fasterthan/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link type="text/css" href="style.css" rel="stylesheet">
+    <link type="text/css" href="/style.css" rel="stylesheet">
   </head>
 
   <body></body>
@@ -31,12 +32,22 @@
     
     function load(url) {
       switch (url) {
-        case '/photos':
+        case '/photos/square':
           request('/api/david', 'GET', function(Person) {
             loadPage(Person)
           })
-          request('/api/photos', 'GET', function(_photos) {
-            photos(_photos)
+          request('/api/photos/square', 'GET', function(_photos, responseHeader) {
+            photos(_photos, responseHeader)
+          })
+          Ticker.addQuote("Memories, reverberating across the echo chamber of my mind...")
+        break
+        
+        case '/photos/elastic':
+          request('/api/david', 'GET', function(Person) {
+            loadPage(Person)
+          })
+          request('/api/photos/elastic', 'GET', function(_photos, responseHeader) {
+            elastic(_photos, responseHeader)
           })
           Ticker.addQuote("Memories, reverberating across the echo chamber of my mind...")
         break
@@ -98,22 +109,23 @@
 
     function home(res) {
       Main.innerHTML = res
-      window.history.pushState('', 'Home', '/')
 
+      window.history.pushState('', 'Home', '/')
       Header.loading(false)
     }
 
     function quotes(res) {
       Main.innerHTML = res
-      window.history.pushState('', 'Quotes', '/quotes')
 
+      window.history.pushState('', 'Quotes', '/quotes')
       Header.loading(false)
     }
 
-    function photos(res) {
+    function photos(res, resHeader) {
       var object = JSON.parse(res)
       var instagramPhotos = ""
-      Main.innerHTML = ''
+      Main.textContent = ''
+
       for (let i = 0; i < object.data.length; i++) {
         var tmp = document.createElement('img')
         tmp.style.cursor = 'pointer'
@@ -123,7 +135,17 @@
         Main.appendChild(tmp)
       }
 
-      window.history.pushState(history.state, 'photos', '/photos')
+      window.history.pushState('', 'Square Photos', '/photos/square')
+      Header.loading(false)
+    }
+
+    function elastic(res) {
+      Main.innerHTML = "<div style='display:inline-block;margin:16px auto 8px auto;letter-spacing:4px; font-size: 2em; text-transform: uppercase; font-weight: lighter;'> <span style='background-color: white;'>Elastic</span> <span style='background-color: white;'>Memories</span> </div><svg></svg>"
+      
+      elasticity()
+      window.history.pushState('', 'Quotes', '/quotes')
+
+      window.history.pushState('', 'Elastic Photos', '/photos/elastic')
       Header.loading(false)
     }
 
@@ -159,9 +181,10 @@
       var httpRequest = new XMLHttpRequest()
 
       httpRequest.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200)
-          callback(this.responseText)
+        if (this.readyState == 4 && this.status == 200) {
+          callback(this.responseText, this.getResponseHeader('content-type'))
           // console.log(this.responseText.split('\n', 1)[0])
+        }
       }
       httpRequest.open(method, url)
       httpRequest.setRequestHeader("loaded", true)

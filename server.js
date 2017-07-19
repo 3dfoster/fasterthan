@@ -10,6 +10,7 @@ const fs = require('fs')
 const resume = fs.readFileSync('views/resume.html')
 const addquote = fs.readFileSync('views/addquote.html')
 const privacy = fs.readFileSync('views/privacy.html')
+const elastic = fs.readFileSync('views/elastic.js')
 
 // Ports
 const port = process.env.PORT || 8080
@@ -44,7 +45,7 @@ app.get('/quotes', (req, res) => {
   res.sendFile(__dirname + '/public/index.html')
 })
 
-app.get('/photos', (req, res) => {
+app.get('/photos/*', (req, res) => {
   res.sendFile(__dirname + '/public/index.html')
 })
 
@@ -98,7 +99,7 @@ app.get('/api/quotes/faster', (req, res) => {
   })
 })
 
-app.get('/api/photos', (req, res) => {
+app.get('/api/photos/square', (req, res) => {
   https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
     const statusCode = resp.statusCode;
     const contentType = resp.headers['content-type']
@@ -120,12 +121,33 @@ app.get('/api/photos', (req, res) => {
     resp.on('data', chunk => rawData += chunk)
     resp.on('end', () => {
       try {
+        res.set('content-type', 'application/json')
         res.send(rawData)
       } catch (e) {
         console.log(e.message)
       }
     })
   }).on('error', e => { console.log(`Got error: ${e.message}`)})
+})
+
+app.get('/api/photos/elastic', (req, res) => {
+  if (req.headers.loaded) {
+    res.set('content-type', 'application/javascript')
+    res.send(elastic)
+  }
+
+  else res.redirect('/')
+})
+
+app.get('/api/elastic/write', (req, res) => {
+  writeCSV()
+  res.end('File saved!')
+})
+
+app.get('/api/elastic/get', (req, res) => {
+  let file = fs.readFileSync('ig.csv')
+  res.write(file)
+  res.end()
 })
 
 app.post('/quotes/new', (req, res) => {
@@ -192,6 +214,48 @@ function connectMongo(mode, model, callback) {
   })
 }
 
+function writeCSV() {
+  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
+    const statusCode = resp.statusCode;
+    const contentType = resp.headers['content-type']
+
+    let error;
+    if (statusCode !== 200) {
+      error = new Error(`Request Failed.\n` +
+                        `Status Code: ${statusCode}`)
+    } else if (!/^application\/json/.test(contentType)) {
+      error = new Error(`Invalid content-type.\n` +
+                        `Expected application/json but received ${contentType}`)
+    }
+    if (error) {
+      console.log(error.message)
+      // consume response data to free up memory
+      resp.respume()
+      return
+    }
+
+    resp.setEncoding('utf8')
+    let rawData = ''
+    resp.on('data', (chunk) => rawData += chunk);
+    resp.on('end', () => {
+      try {
+        rawData = JSON.parse(rawData)
+        let line = "thumbnailUrl,Url,likes\n"
+          for (let i = 0; i < rawData.data.length; i++) {
+            line += rawData.data[i].images.low_resolution.url + ',' + rawData.data[i].link + ',' + rawData.data[i].likes.count + '\n'
+          }
+
+          fs.writeFile('ig.csv', line, err => {
+            if (err) throw err
+          })
+      } catch (e) {
+        console.log(e.message)
+      }
+    });
+  }).on('error', e => {
+    console.log(`Got error: ${e.message}`)
+  })
+}
 let Phia = {
   "name": "Sophia Maria Holmgren",
   "photo": "https://scontent-atl3-1.cdninstagram.com/t51.2885-19/s320x320/14727646_1169168589834186_6905304133377458176_a.jpg",

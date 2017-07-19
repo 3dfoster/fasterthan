@@ -34,11 +34,6 @@ header h1 a {
     margin-left: -64px;
     color: #4d6394;
 }
-img {
-    float: left;
-    width: 64px;
-    background-color: #b4b5ca;
-}
 #overflow {
     overflow: hidden;
     border-bottom: 2px solid #cfcfd6;

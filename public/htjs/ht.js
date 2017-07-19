@@ -81,6 +81,7 @@ var Header = function(height, borderColor, backgroundColor) {
   var Header = new header(height)
   var heading = new h1('ht.js')
   var logo = document.createElement('img')
+  var photoggle = document.createElement('img')
   
   Header.heading = function(_heading, themeColor) {
     heading.innerHTML = _heading
@@ -110,9 +111,19 @@ var Header = function(height, borderColor, backgroundColor) {
   logo.style.width = `${height}px`
   logo.style.height = `${height}px`
   logo.style.cursor = 'pointer'
-  logo.style.backgroundColor = '#888'
+  logo.style.backgroundColor = '#b4b5ca'
   logo.onclick = function() {
-    request('/api/photos', 'GET', photos)
+    request('/api/photos/square', 'GET', photos)
+  }
+
+  photoggle.style.position = 'absolute'
+  photoggle.style.right = 0
+  photoggle.style.width = `${height}px`
+  photoggle.style.height = `${height}px`
+  photoggle.style.cursor = 'pointer'
+  photoggle.src = '/images/squares_icon.png'
+  photoggle.onclick = function() {
+    request('/api/photos/elastic', 'GET', elastic)
   }
 
   heading.style.display = 'inline-block'
@@ -127,6 +138,7 @@ var Header = function(height, borderColor, backgroundColor) {
 
   Header.appendChild(logo)
   Header.appendChild(heading)
+  Header.appendChild(photoggle)
 
   return Header
 }
@@ -232,15 +244,93 @@ var Footer = function(height, color, backgroundColor) {
   return footer
 }
 
-function request(url, method, callback) {
-  Header.loading(true)
-  var httpRequest = new XMLHttpRequest()
+function elasticity() {
+    var canvas = document.getElementsByTagName('svg')[0]
+    var main = document.getElementsByTagName('main')[0]
+    var Header = document.getElementsByTagName('header')[0]
+    var Overflow = document.getElementsByTagName('aside')[0]
+    var Footer = 42 // document.getElementsByTagName('footer')[0]
+    if (Overflow) document.body.removeChild(Overflow)
 
-  httpRequest.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200)
-      callback(this.responseText)
-  }
-  httpRequest.open(method, url)
-  httpRequest.setRequestHeader("loaded", true)
-  httpRequest.send()
+    main.style.minHeight = document.documentElement.clientHeight - Header.offsetHeight - Footer + 'px'
+
+    var canvasHeight = document.documentElement.clientHeight - Header.offsetHeight - Footer
+    main.style.backgroundImage = 'url(https://s3-us-west-1.amazonaws.com/fasterthan/digital_ripple_white.gif)'
+
+
+    if (canvasHeight > main.offsetWidth || window.orientation)
+        canvas.setAttribute("height", main.offsetWidth)
+    else
+        canvas.setAttribute("height", canvasHeight)
+
+    canvas.setAttribute("width", main.offsetWidth)
+
+    var svg = d3.select("svg"),
+        width = +svg.attr("width"),
+        height = +svg.attr("height")
+
+    var format = d3.format(",d")
+
+    var pack = d3.pack()
+        .size([width, height])
+        .padding(1.5)
+
+    d3.csv(window.location.origin + "/api/elastic/get", function(d) {
+        d.likes = +d.likes
+        if (d.likes) return d
+    }, function(error, classes) {
+        if (error) throw error
+
+        var root = d3.hierarchy({children: classes})
+            .sum(function(d) { return d.likes })
+            .each(function(d) {
+            if (thumbnailUrl = d.data.thumbnailUrl) {
+                var thumbnailUrl, i = thumbnailUrl.lastIndexOf(".")
+                d.thumbnailUrl = thumbnailUrl
+                d.package = thumbnailUrl.slice(0, i)
+                d.class = thumbnailUrl.slice(i + 1)
+            }
+            if (Url = d.data.Url) {
+                var Url, i = Url.lastIndexOf(".")
+                d.Url = Url
+                d.package = Url.slice(0, i)
+                d.class = Url.slice(i + 1)
+            }
+            })
+
+        var node = svg.selectAll(".node")
+        .data(pack(root).leaves())
+        .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")" })
+
+        node.append("clipPath")
+            .attr("id", function(d) { return "clip-" + d.thumbnailUrl })
+        .append("circle")
+            .attr("r", function(d) { return d.r })
+
+        node.append("a")
+            .attr("xlink:href", function(d) { return d.Url })
+        .append("image")
+            .attr("clip-path", function(d) { return "url(#clip-" + d.thumbnailUrl + ")" })
+            .attr("xlink:href", function(d) { return d.thumbnailUrl })
+            .attr("x", function(d) { return -d.r })
+            .attr("y", function(d) { return -d.r })
+            .attr("width", function(d) { return d.r * 2 })
+            .attr("height", function(d) { return d.r * 2 })
+    })
 }
+
+// function request(url, method, callback) {
+//   Header.loading(true)
+//   var httpRequest = new XMLHttpRequest()
+
+//   httpRequest.onreadystatechange = function () {
+//     if (this.readyState == 4 && this.status == 200)
+//       callback(this.responseText)
+//     alert(this.getResonseHeader('content-type'))
+//   }
+//   httpRequest.open(method, url)
+//   httpRequest.setRequestHeader("loaded", true)
+//   httpRequest.send()
+// }
