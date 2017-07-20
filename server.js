@@ -11,6 +11,8 @@ let privacy = fs.readFileSync('resources/views/privacy.html')
 let resume = fs.readFileSync('resources/views/resume.html')
 let addquote = fs.readFileSync('resources/views/addquote.html')
 let elastic = fs.readFileSync('resources/views/elastic.html')
+let research = fs.readFileSync('resources/views/research.html')
+let passwordStrength = fs.readFileSync('resources/research/password-strength-vs-usability.pdf')
 
 // Load global variables
 let _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
@@ -180,17 +182,44 @@ server.on('request', (req, res) => {
           res.write(app.toString()
           .replace('<!--MAIN-ENTRY-->', elastic))
           res.end()
-
         break
 
-        case '/api/get-csv':
+        case '/research':
+
+          mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+          db = mongoose.connection
+
+          db.on('error', console.error.bind(console, 'connection error:'))
+          db.once('open', () => {
+            Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quote) => {
+              if (err) return console.error(err)
+
+              if (quote) fasterQuote = quote.quote
+              
+            res.writeHead(200, { 'Content-Type': 'text/html' })
+              res.write(app.toString()
+              .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>')
+              .replace('<!--MAIN-ENTRY-->', research))
+              res.end()
+              mongoose.disconnect()
+            })
+          })
+        break
+
+        case '/research/password-strength-vs-usability.pdf':
+          res.writeHead(200, { 'Content-Type': 'application/pdf' })
+          res.write(passwordStrength)
+          res.end()
+        break
+
+        case '/api/get':
           let file = fs.readFileSync('ig.csv')
           res.writeHead(200, { 'Content-Type': 'text/html' })
           res.write(file)
           res.end()
         break
 
-        case '/api/write-csv':
+        case '/api/write':
           https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
             const statusCode = resp.statusCode;
             const contentType = resp.headers['content-type']
