@@ -3,28 +3,24 @@
     var main = document.getElementsByTagName('main')[0]
     var quote = document.getElementById('input')
     var quoteForm = document.getElementById('form')
-
     if (!quote.value)
       quote.placeholder = "Write something!"
-
     else {
       var httpRequest = new XMLHttpRequest()
-
+      var data = { quote: quote.value }
       // Retrieve data in quote input field and convert to lower case
       // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
       httpRequest.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-          // Disable submit button after quote has successfully been sent
           var newQuote = document.createElement('p')
           quoteForm.innerHTML = quote.value
-
         }
       }
       httpRequest.open('POST', '/quotes/new')
       // Setting request header is required
-      httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
+      httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
       // Send quote to server
-      httpRequest.send(quote.value)
+      httpRequest.send(JSON.stringify(data))
     }
   }
 </script>
