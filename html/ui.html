@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Faster Than Me</title>
+
+    <meta name="google-site-verification" content="l3BrFHMCWeUnr4pM3QZXyHk1dxsysnkdWLmEJRw9mYo" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#3A5EAB">
+    <meta charset="UTF-8">
+
+    <meta name="description" content="Faster than me? David Alexander Foster is faster than you.">
+
+    <link rel="stylesheet" type="text/css" href="/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/style.css">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+    <!--[if lt IE 9]> <script src="html5shiv.js"></script> <![endif]-->
+</head>
+
+<body>
+    <header>
+        <a href="/photos"><img id="logo" src="/media/avatar_240.png" alt="David Alexander Foster"></a>
+        <h1><a href="/">F <span style="color: #cfcfd6">></span></a></h1>
+    </header>
+
+    <div id="overflow">
+        <nav>
+            <!--NAV-ENTRY-->
+        </nav>
+    </div>
+
+    <!--MAIN-ENTRY-->
+
+    <script>
+        var Nav = document.getElementsByTagName('nav')[0]
+        var Main = document.getElementsByTagName('main')[0]
+        var Header = document.getElementsByTagName('header')[0]
+        var Overflow = document.getElementById('overflow')
+
+        var navHeight = 40
+        var noGradient = 'box-shadow: none'
+        var scrollbarHeight = Nav.offsetHeight - Nav.clientHeight
+        Nav.style.height = navHeight + scrollbarHeight + 'px'
+        Overflow.style.height = navHeight + 'px'
+
+        gradient()
+        stickyFooter()
+
+        Nav.onscroll = function () {
+            gradient()
+        }
+        window.onresize = function () {
+            if (Nav.scrollLeft + Nav.scrollWidth - Nav.clientWidth == 0)
+                Nav.style.cssText += noGradient
+            else gradient()
+
+            stickyFooter()
+        }
+
+        function gradient() {
+            Nav.style.cssText += 'box-shadow: #888 -' + maxGrad(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(Nav.scrollLeft) + 'px 0px 40px -40px inset'
+        }
+        function maxGrad(val) {
+            if (val >= 56) return 56
+            else return val
+        }
+        function stickyFooter() {
+            Main.style.minHeight = document.documentElement.clientHeight - Header.offsetHeight - Overflow.offsetHeight - 42 + 'px'
+        }
+
+        (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga')
+
+        ga('create', 'UA-100430191-1', 'auto')
+        ga('send', 'pageview')
+
+    </script>
+
+    <footer>
+        <a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a>
+        <a href="https://www.instagram.com/_u/the.t.u.r.n" class="fa fa-fw fa-instagram"></a>
+        <a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a>
+        <a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>
+    </footer>
+</body>
+<!--SCRIPT-ENTRY-->
+
+</html>

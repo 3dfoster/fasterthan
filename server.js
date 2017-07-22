@@ -1,20 +1,22 @@
 // Libraries
 const bodyParser = require('body-parser')
+const favicon = require('serve-favicon')
 const Filter = require('bad-words')
 const mongoose = require('mongoose')
 const express = require('express')
 const https = require('https')
+const path = require('path')
 const fs = require('fs')
 
 // Load Components
-const ui = fs.readFileSync('resources/views/ui.html')
-const addquote = fs.readFileSync('resources/views/addquote.html')
+const ui = fs.readFileSync('html/ui.html')
+const addquote = fs.readFileSync('html/components/addquote.html')
 
 // Load Pages
-const privacy = fs.readFileSync('resources/views/privacy.html')
-const resume = fs.readFileSync('resources/views/resume.html')
-const elastic = fs.readFileSync('resources/views/elastic.html')
-const research = fs.readFileSync('resources/views/research.html')
+const privacy = fs.readFileSync('html/pages/privacy.html')
+const resume = fs.readFileSync('html/pages/resume.html')
+const elastic = fs.readFileSync('html/pages/elastic.html')
+const research = fs.readFileSync('html/pages/research.html')
 
 // const passwordStrength = fs.readFileSync('resources/research/password-strength-vs-usability.pdf')
 
@@ -22,7 +24,6 @@ const research = fs.readFileSync('resources/views/research.html')
 const _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 const filter = new Filter({ placeHolder: '&#128520;'})
 let fasterQuote = "I am the mountain rising high."
-// const PORT = process.env.PORT || 8080
 
 // Initialize mongoDB
 let db
@@ -53,8 +54,9 @@ let ip = process.env.IP || '0.0.0.0'
 // Express app
 const app = express()
 
-// Serve static files
+// Serve static files and favicon
 app.use(express.static('public'))
+app.use(favicon(path.join(__dirname, 'public/icons', 'favicon.ico')))
 
 // Allow parsing of incoming XMLhttprequests
 app.use(bodyParser.json())

@@ -21,7 +21,8 @@
     "bad-words": "^1.5.1",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
-    "mongoose": "^4.10.3"
+    "mongoose": "^4.10.3",
+    "serve-favicon": "^2.4.3"
   },
   "devDependencies": {},
   "keywords": []
