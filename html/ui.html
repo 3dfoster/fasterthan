@@ -35,10 +35,11 @@
     var Header = document.getElementsByTagName('header')[0]
     var Nav = document.createElement('nav')
     var opened = false
+
+    TrayIcon.style.color = '#444'
     
-    Nav.style.position = 'absolute'
-    Nav.style.top = '24px'
-    Nav.style.right = '48px'
+    Nav.style.top = '56px'
+    Nav.style.right = '8px'
 
     var home = document.createElement('a')
     home.href = '/'
@@ -62,15 +63,12 @@
     Nav.appendChild(quotes)
 
     TrayIcon.addEventListener('click', function() {
-        var count = 0;
-        var focusToggle = false
-        // console.log(clicked)
-        
         if (opened == false) {
             Header.appendChild(Nav)
 
             document.addEventListener('click', lostfocus)
             document.addEventListener('scroll', lostfocus)
+            TrayIcon.style.color = '#0066ff'
 
             opened = true
         }
@@ -80,6 +78,7 @@
             
             document.removeEventListener('click', lostfocus)
             document.removeEventListener('scroll', lostfocus)
+            TrayIcon.style.color = '#444'
 
             opened = false
         }
@@ -93,6 +92,7 @@
 
             document.removeEventListener('click', lostfocus)
             document.removeEventListener('scroll', lostfocus)
+            TrayIcon.style.color = '#444'
 
             opened = false
         }
