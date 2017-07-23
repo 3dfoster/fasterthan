@@ -11,6 +11,7 @@ const fs = require('fs')
 // Load Components
 const ui = fs.readFileSync('html/ui.html')
 const addquote = fs.readFileSync('html/components/addquote.html')
+const header = fs.readFileSync('html/components/header.html')
 const aside = fs.readFileSync('html/components/aside.html')
 const footer = fs.readFileSync('html/components/footer.html')
 
@@ -64,6 +65,7 @@ app.get('/', (req, res) => {
     if (quote) fasterQuote = quote
     
     res.write(ui.toString()
+    .replace('<!--HEADER-ENTRY-->', header)
     .replace('<!--ASIDE-ENTRY-->', aside.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
     .replace('<!--MAIN-ENTRY-->', resume)
     .replace('<!--FOOTER-ENTRY-->', footer))
@@ -87,6 +89,7 @@ app.get('/quotes', (req, res) => {
     quotesInDatabase += addquote + "</main>"
 
     res.write(ui.toString()
+    .replace('<!--HEADER-ENTRY-->', header)
     .replace('<!--ASIDE-ENTRY-->', aside.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button" style="opacity: 0">➔</a>'))
     .replace('<!--MAIN-ENTRY-->', quotesInDatabase)
     .replace('<!--FOOTER-ENTRY-->', footer))
@@ -102,7 +105,9 @@ app.get('/photos', (req, res) => {
 
     instagramPhotos += "</main>"
 
-    res.write(ui.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos)
+    res.write(ui.toString()
+    .replace('<!--HEADER-ENTRY-->', header)
+    .replace('<!--MAIN-ENTRY-->', instagramPhotos)
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
   })
@@ -110,6 +115,7 @@ app.get('/photos', (req, res) => {
 
 app.get('/elastic', (req, res) => {
   res.write(ui.toString()
+  .replace('<!--HEADER-ENTRY-->', header)
   .replace('<!--MAIN-ENTRY-->', elastic)
   .replace('<!--FOOTER-ENTRY-->', footer))
   res.end()
@@ -117,6 +123,7 @@ app.get('/elastic', (req, res) => {
 
 app.get('/research', (req, res) => {
   res.write(ui.toString()
+  .replace('<!--HEADER-ENTRY-->', header)
   .replace('<!--MAIN-ENTRY-->', research)
   .replace('<!--FOOTER-ENTRY-->', footer))
   res.end()
@@ -126,6 +133,7 @@ app.get('/privacy', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/html' })
 
   res.write(ui.toString()
+  .replace('<!--HEADER-ENTRY-->', header)
   .replace('<!--MAIN-ENTRY-->', privacy)
   .replace('<!--FOOTER-ENTRY-->', footer))
   res.end()

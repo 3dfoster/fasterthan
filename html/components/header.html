@@ -1,0 +1,65 @@
+<header>
+    <a href="/photos"><img id="logo" src="/media/avatar_240.png" alt="David Alexander Foster"></a>
+    <h1><a href="/">F <span style="color: #cfcfd6">></span></a></h1>
+    <i class="fa fa-ellipsis-v tray-icon" aria-hidden="true"></i>
+</header>
+<script>
+    var TrayIcon = document.getElementsByClassName('tray-icon')[0]
+    var Header = document.getElementsByTagName('header')[0]
+    var Nav = document.createElement('nav')
+    var Overlay = document.createElement('div')
+    var opened = false
+    var activeColor = '#0066ff'
+    var inactiveColor = '#444'
+
+    Overlay.id = "overlay"
+    TrayIcon.style.color = inactiveColor
+
+
+    Overlay.addEventListener('click', function() {
+        document.documentElement.removeChild(document.documentElement.lastChild)
+        Header.removeChild(Header.lastChild)
+        opened = false
+    })
+
+    Nav.style.top = '56px'
+    Nav.style.right = '8px'
+
+    var home = document.createElement('a')
+    home.href = '/'
+    home.innerText = 'Home'
+
+    var photos = document.createElement('a')
+    photos.href = '/photos'
+    photos.innerText = 'Photos'
+
+    var elastic = document.createElement('a')
+    elastic.href = '/elastic'
+    elastic.innerText = 'Elastic'
+
+    var quotes = document.createElement('a')
+    quotes.href = '/quotes'
+    quotes.innerText = 'Quotes'
+
+    Nav.appendChild(home)
+    Nav.appendChild(photos)
+    Nav.appendChild(elastic)
+    Nav.appendChild(quotes)
+
+    TrayIcon.addEventListener('click', function() {
+        if (opened == false) {
+            Header.appendChild(Nav)
+            document.documentElement.appendChild(Overlay)
+            TrayIcon.style.color = activeColor
+
+            opened = true
+        }
+
+        else {
+            Header.removeChild(Header.lastChild)
+            TrayIcon.style.color = inactiveColor
+
+            opened = false
+        }
+    })
+</script>
