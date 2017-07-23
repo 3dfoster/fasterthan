@@ -100,34 +100,9 @@ app.get('/api/quotes/faster', (req, res) => {
 })
 
 app.get('/api/photos/square', (req, res) => {
-  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
-    const statusCode = resp.statusCode;
-    const contentType = resp.headers['content-type']
-
-    let error
-    if (statusCode !== 200)
-      error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
-    else if (!/^application\/json/.test(contentType))
-      error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
-    
-    if (error) {
-      console.log(error.message)
-      resp.respume()
-      return
-    }
-
-    resp.setEncoding('utf8')
-    let rawData = ''
-    resp.on('data', chunk => rawData += chunk)
-    resp.on('end', () => {
-      try {
-        res.set('content-type', 'application/json')
-        res.send(rawData)
-      } catch (e) {
-        console.log(e.message)
-      }
-    })
-  }).on('error', e => { console.log(`Got error: ${e.message}`)})
+  fetchInsta( data => {
+    res.send(data)
+  })
 })
 
 app.get('/api/photos/elastic', (req, res) => {
@@ -215,47 +190,48 @@ function connectMongo(mode, model, callback) {
 }
 
 function writeCSV() {
+  fetchInsta( rawData => {
+    let line = "thumbnailUrl,Url,likes\n"
+      for (let i = 0; i < rawData.data.length; i++) {
+        line += rawData.data[i].images.low_resolution.url + ',' + rawData.data[i].link + ',' + rawData.data[i].likes.count + '\n'
+      }
+
+    fs.writeFile('ig.csv', line, err => {
+      if (err) throw err
+    })
+  })
+}
+
+function fetchInsta(callback) {
   https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
     const statusCode = resp.statusCode;
     const contentType = resp.headers['content-type']
 
-    let error;
-    if (statusCode !== 200) {
-      error = new Error(`Request Failed.\n` +
-                        `Status Code: ${statusCode}`)
-    } else if (!/^application\/json/.test(contentType)) {
-      error = new Error(`Invalid content-type.\n` +
-                        `Expected application/json but received ${contentType}`)
-    }
+    let error
+    if (statusCode !== 200)
+      error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
+    else if (!/^application\/json/.test(contentType))
+      error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
+    
     if (error) {
       console.log(error.message)
-      // consume response data to free up memory
       resp.respume()
       return
     }
 
     resp.setEncoding('utf8')
     let rawData = ''
-    resp.on('data', (chunk) => rawData += chunk);
+    resp.on('data', chunk => rawData += chunk)
     resp.on('end', () => {
       try {
-        rawData = JSON.parse(rawData)
-        let line = "thumbnailUrl,Url,likes\n"
-          for (let i = 0; i < rawData.data.length; i++) {
-            line += rawData.data[i].images.low_resolution.url + ',' + rawData.data[i].link + ',' + rawData.data[i].likes.count + '\n'
-          }
-
-          fs.writeFile('ig.csv', line, err => {
-            if (err) throw err
-          })
+        callback(JSON.parse(rawData))
       } catch (e) {
         console.log(e.message)
       }
-    });
-  }).on('error', e => {
-    console.log(`Got error: ${e.message}`)
-  })
+    })
+  }).on('error', e => { console.log(`Got error: ${e.message}`)})
 }
+
 let Phia = {
   "name": "Sophia Maria Holmgren",
   "photo": "https://scontent-atl3-1.cdninstagram.com/t51.2885-19/s320x320/14727646_1169168589834186_6905304133377458176_a.jpg",
