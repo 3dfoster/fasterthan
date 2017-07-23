@@ -61,7 +61,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-  mongoConnect('faster', Quote, quote =>{
+  mongoConnect('faster', Quote, quote => {
     if (quote) fasterQuote = quote
     
     res.write(ui.toString()
@@ -235,6 +235,7 @@ function mongoConnect(mode, model, callback) {
       case 'save':
         model.save()
         mongoose.disconnect()
+        
         callback()
       break
 
