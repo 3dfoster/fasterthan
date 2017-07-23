@@ -6,24 +6,15 @@
 <script>
     var TrayIcon = document.getElementsByClassName('tray-icon')[0]
     var Header = document.getElementsByTagName('header')[0]
-    var Nav = document.createElement('nav')
     var Overlay = document.createElement('div')
-    var opened = false
+    var Nav = document.createElement('nav')
+    var Html = document.documentElement
+    var inactiveColor = '#666'
     var activeColor = '#0066ff'
-    var inactiveColor = '#444'
+    var opened = false
 
-    Overlay.id = "overlay"
     TrayIcon.style.color = inactiveColor
-
-
-    Overlay.addEventListener('click', function() {
-        document.documentElement.removeChild(document.documentElement.lastChild)
-        Header.removeChild(Header.lastChild)
-        opened = false
-    })
-
-    Nav.style.top = '56px'
-    Nav.style.right = '8px'
+    Overlay.id = "overlay"
 
     var home = document.createElement('a')
     home.href = '/'
@@ -46,20 +37,29 @@
     Nav.appendChild(elastic)
     Nav.appendChild(quotes)
 
+    Overlay.addEventListener('click', removeOverlay)
+    
     TrayIcon.addEventListener('click', function() {
         if (opened == false) {
             Header.appendChild(Nav)
             document.documentElement.appendChild(Overlay)
             TrayIcon.style.color = activeColor
 
+            window.addEventListener('scroll', removeOverlay)
             opened = true
         }
+    })
 
-        else {
+    function removeOverlay() {
+        if (opened) {
+            // Remove Overlay from HTML document
+            document.documentElement.removeChild(document.documentElement.lastChild)
+            // Remove Nav from Header
             Header.removeChild(Header.lastChild)
             TrayIcon.style.color = inactiveColor
-
+            
+            window.removeEventListener('scroll', removeOverlay)
             opened = false
         }
-    })
+    }
 </script>
