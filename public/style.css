@@ -25,15 +25,16 @@
   }
 
   header {
+      position: relative;
       height: 64px;
       border-bottom: 1px solid #eee;
   }
   header h1 {
-  line-height: 64px;
-  margin: 0;
+    line-height: 64px;
+    margin: 0;
+    display: inline-block;
   }
   header h1 a {
-      margin-left: -64px;
       color: #4d6394;
   }
   #logo {
@@ -45,22 +46,28 @@
       overflow: hidden;
       border-bottom: 2px solid #cfcfd6;
   }
-  nav {
+  aside {
       width: 100%;
+      line-height: 40px;
       overflow-x: scroll;
       white-space: nowrap;
       background-color: white;
   }
-  nav em {
-      line-height: 40px;
-      margin: 0 8px;
-  }
-  nav::-webkit-scrollbar {
+  aside::-webkit-scrollbar {
       display: none;
   }
-  nav a {
-      color: #4d6394;
-  }
+nav {
+    border: 1px solid #eee;
+    background-color: white;
+}
+nav a {
+    display: block;
+    padding: 4px 8px;
+    margin: 8px;
+    color: #4d6394;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
   nav a:hover {
       color: #4d6394;
   }
@@ -215,4 +222,12 @@
       border-bottom: 1px solid #bbb;
       margin: 16px auto;
       max-width: 640px
+  }
+
+  .tray-icon {
+      float: right;
+      width: 64px;
+      line-height: 64px;
+      color: #444;
+      cursor: pointer;
   }

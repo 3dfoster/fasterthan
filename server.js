@@ -11,7 +11,7 @@ const fs = require('fs')
 // Load Components
 const ui = fs.readFileSync('html/ui.html')
 const addquote = fs.readFileSync('html/components/addquote.html')
-const nav = fs.readFileSync('html/components/nav.html')
+const aside = fs.readFileSync('html/components/aside.html')
 const footer = fs.readFileSync('html/components/footer.html')
 
 // Load Pages
@@ -60,11 +60,11 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-  connectMongo('faster', Quote, quote =>{
+  mongoConnect('faster', Quote, quote =>{
     if (quote) fasterQuote = quote
     
     res.write(ui.toString()
-    .replace('<!--NAV-ENTRY-->', nav.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
+    .replace('<!--ASIDE-ENTRY-->', aside.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
     .replace('<!--MAIN-ENTRY-->', resume)
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
@@ -73,7 +73,7 @@ app.get('/', (req, res) => {
 
 app.get('/quotes', (req, res) => {
 
-  connectMongo('all', Quote, quotes => {
+  mongoConnect('all', Quote, quotes => {
     let quotesInDatabase = "<main>"
     let j = 0
 
@@ -87,7 +87,7 @@ app.get('/quotes', (req, res) => {
     quotesInDatabase += addquote + "</main>"
 
     res.write(ui.toString()
-    .replace('<!--NAV-ENTRY-->', nav.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
+    .replace('<!--ASIDE-ENTRY-->', aside.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button" style="opacity: 0">➔</a>'))
     .replace('<!--MAIN-ENTRY-->', quotesInDatabase)
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
@@ -122,13 +122,6 @@ app.get('/research', (req, res) => {
   res.end()
 })
 
-app.get('/api/get', (req, res) => {
-  const file = fs.readFile('ig.csv', (err, data) => {
-    res.write(data)
-    res.end()
-  })
-})
-
 app.get('/privacy', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/html' })
 
@@ -139,6 +132,10 @@ app.get('/privacy', (req, res) => {
 })
 
 app.get('/api/get', (req, res) => {
+  const file = fs.readFile('ig.csv', (err, data) => {
+    res.write(data)
+    res.end()
+  })
 })
 
 app.get('/api/write', (req, res) => {
@@ -159,7 +156,7 @@ app.post('/quotes/new', (req, res) => {
   else
     quote.quote = filter.clean(req.body.quote)
 
-  connectMongo('save', quote, () => {
+  mongoConnect('save', quote, () => {
     res.writeHead(200, { 'Content-Type': 'text/plain' })
     res.end()
   })
@@ -218,7 +215,7 @@ function writeCSV() {
   })
 }
 
-function connectMongo(mode, model, callback) {
+function mongoConnect(mode, model, callback) {
   mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
   db = mongoose.connection
 

@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Faster Than Me</title>
-
     <meta name="google-site-verification" content="l3BrFHMCWeUnr4pM3QZXyHk1dxsysnkdWLmEJRw9mYo" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -23,6 +20,7 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 
+    <script src="script.js"></script>
     <!--[if lt IE 9]> <script src="html5shiv.js"></script> <![endif]-->
 </head>
 
@@ -30,8 +28,78 @@
     <header>
         <a href="/photos"><img id="logo" src="/media/avatar_240.png" alt="David Alexander Foster"></a>
         <h1><a href="/">F <span style="color: #cfcfd6">></span></a></h1>
+        <i class="fa fa-ellipsis-v tray-icon" aria-hidden="true"></i>
     </header>
+<script>
+    var TrayIcon = document.getElementsByClassName('tray-icon')[0]
+    var Header = document.getElementsByTagName('header')[0]
+    var Nav = document.createElement('nav')
+    var opened = false
+    
+    Nav.style.position = 'absolute'
+    Nav.style.top = '24px'
+    Nav.style.right = '48px'
+
+    var home = document.createElement('a')
+    home.href = '/'
+    home.innerText = 'Home'
+
+    var photos = document.createElement('a')
+    photos.href = '/photos'
+    photos.innerText = 'Photos'
+
+    var elastic = document.createElement('a')
+    elastic.href = '/elastic'
+    elastic.innerText = 'Elastic'
+
+    var quotes = document.createElement('a')
+    quotes.href = '/quotes'
+    quotes.innerText = 'Quotes'
+
+    Nav.appendChild(home)
+    Nav.appendChild(photos)
+    Nav.appendChild(elastic)
+    Nav.appendChild(quotes)
+
+    TrayIcon.addEventListener('click', function() {
+        var count = 0;
+        var focusToggle = false
+        // console.log(clicked)
+        
+        if (opened == false) {
+            Header.appendChild(Nav)
+
+            document.addEventListener('click', lostfocus)
+            document.addEventListener('scroll', lostfocus)
+
+            opened = true
+        }
+
+        else {
+            Header.removeChild(Header.lastChild)
+            
+            document.removeEventListener('click', lostfocus)
+            document.removeEventListener('scroll', lostfocus)
+
+            opened = false
+        }
+    })
+    
+    function lostfocus(event) {
+        var isClickInside = TrayIcon.contains(event.target);
+
+        if (!isClickInside) {
+            Header.removeChild(Header.lastChild)
+
+            document.removeEventListener('click', lostfocus)
+            document.removeEventListener('scroll', lostfocus)
+
+            opened = false
+        }
+    }
+</script>
     <!--NAV-ENTRY-->
+    <!--ASIDE-ENTRY-->
     <!--MAIN-ENTRY-->
     <!--FOOTER-ENTRY-->
 </body>
