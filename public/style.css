@@ -209,3 +209,10 @@
   font-size: 12px;
   color: #ab1818;
   }
+
+  #a-research {
+      padding: 4px;
+      border-bottom: 1px solid #bbb;
+      margin: 16px auto;
+      max-width: 640px
+  }

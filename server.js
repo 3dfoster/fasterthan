@@ -11,6 +11,7 @@ const fs = require('fs')
 // Load Components
 const ui = fs.readFileSync('html/ui.html')
 const addquote = fs.readFileSync('html/components/addquote.html')
+const nav = fs.readFileSync('html/components/nav.html')
 
 // Load Pages
 const privacy = fs.readFileSync('html/pages/privacy.html')
@@ -18,20 +19,16 @@ const resume = fs.readFileSync('html/pages/resume.html')
 const elastic = fs.readFileSync('html/pages/elastic.html')
 const research = fs.readFileSync('html/pages/research.html')
 
-// const passwordStrength = fs.readFileSync('resources/research/password-strength-vs-usability.pdf')
-
 // Load global variables
 const _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 const filter = new Filter({ placeHolder: '&#128520;'})
 let fasterQuote = "I am the mountain rising high."
 
-// Initialize mongoDB
+// Initialize mongoDB & schema
+let Schema = mongoose.Schema
 let db
 
-// Initialize Schema
-let Schema = mongoose.Schema
-
-// Build ORM model
+// Build ORM models
 let quoteSchema = new Schema({
   quote: { type: String, maxlength: 128 },
   date: { type: Date, default: Date.now },
@@ -40,7 +37,6 @@ let quoteSchema = new Schema({
 })
 let Quote = mongoose.model('Quote', quoteSchema)
 
-// Build ORM model
 let InstagramAccountSchema = new Schema({
   account: { type: String, maxlength: 32 },
   date: { type: Date, default: Date.now }
@@ -76,7 +72,7 @@ app.get('/', (req, res) => {
       if (quote) fasterQuote = quote.quote
       
       res.write(ui.toString()
-      .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>')
+      .replace('<!--NAV-ENTRY-->', nav.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
       .replace('<!--MAIN-ENTRY-->', resume))
       res.end()
       mongoose.disconnect()
@@ -111,8 +107,9 @@ app.get('/quotes', (req, res) => {
       }
       quotesInDatabase += addquote + "</main>"
 
-      res.write(ui.toString().replace('<!--MAIN-ENTRY-->', quotesInDatabase)
-      .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em>  <a href="/quotes" style="opacity:0;" class="button">➔</a>'))
+      res.write(ui.toString()
+      .replace('<!--NAV-ENTRY-->', nav.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
+      .replace('<!--MAIN-ENTRY-->', quotesInDatabase))
       res.end()
     })
   })
@@ -159,8 +156,7 @@ app.get('/photos', (req, res) => {
             for (let i = 0; i < object.data.length; i++)
               instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
 
-            res.write(ui.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos)
-            .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
+            res.write(ui.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos))
             res.end()
           })
         })
@@ -192,7 +188,6 @@ app.get('/research', (req, res) => {
       
     res.writeHead(200, { 'Content-Type': 'text/html' })
       res.write(ui.toString()
-      .replace('<!--NAV-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>')
       .replace('<!--MAIN-ENTRY-->', research))
       res.end()
       mongoose.disconnect()
@@ -202,53 +197,13 @@ app.get('/research', (req, res) => {
 
 app.get('/api/get', (req, res) => {
   const file = fs.readFileSync('ig.csv')
-  res.writeHead(200, { 'Content-Type': 'text/html' })
   res.write(file)
   res.end()
 })
 
 app.get('/api/write', (req, res) => {
-  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
-    const statusCode = resp.statusCode;
-    const contentType = resp.headers['content-type']
-
-    let error;
-    if (statusCode !== 200) {
-      error = new Error(`Request Failed.\n` +
-                        `Status Code: ${statusCode}`)
-    } else if (!/^application\/json/.test(contentType)) {
-      error = new Error(`Invalid content-type.\n` +
-                        `Expected application/json but received ${contentType}`)
-    }
-    if (error) {
-      console.log(error.message)
-      // consume response data to free up memory
-      resp.respume()
-      return
-    }
-
-    resp.setEncoding('utf8')
-    let rawData = ''
-    resp.on('data', (chunk) => rawData += chunk);
-    resp.on('end', () => {
-      try {
-        rawData = JSON.parse(rawData)
-        let line = "thumbnailUrl,Url,likes\n"
-          for (let i = 0; i < rawData.data.length; i++) {
-            line += rawData.data[i].images.low_resolution.url + ',' + rawData.data[i].link + ',' + rawData.data[i].likes.count + '\n'
-          }
-
-          fs.writeFile('ig.csv', line, err => {
-            if (err) throw err
-            res.end('The file has been saved!')
-          })
-      } catch (e) {
-        console.log(e.message)
-      }
-    });
-  }).on('error', e => {
-    console.log(`Got error: ${e.message}`)
-  })
+  writeCSV()
+  res.end('File saved!')
 })
 
 app.get('/privacy', (req, res) => {
@@ -281,7 +236,7 @@ app.post('/quotes/new', (req, res) => {
     // We've successfully established a conection to the database
     console.log("Connection to Mongo database established")
 
-    // Store quote document in the database
+    // Store quote document in the database 
     quote.save( (err, quote) => {
       if (err) {
         res.end(ui.toString().replace('<!--MAIN-ENTRY-->', '<p>You encountered an error</p>'))
@@ -307,3 +262,81 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port)
 })
+
+function writeCSV() {
+  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
+    const statusCode = resp.statusCode;
+    const contentType = resp.headers['content-type']
+
+    let error
+    if (statusCode !== 200) {
+      error = new Error(`Request Failed.\n` +
+                        `Status Code: ${statusCode}`)
+    } else if (!/^application\/json/.test(contentType)) {
+      error = new Error(`Invalid content-type.\n` +
+                        `Expected application/json but received ${contentType}`)
+    }
+    if (error) {
+      console.log(error.message)
+      // consume response data to free up memory
+      resp.respume()
+      return
+    }
+
+    resp.setEncoding('utf8')
+    let rawData = ''
+    resp.on('data', (chunk) => rawData += chunk);
+    resp.on('end', () => {
+      try {
+        rawData = JSON.parse(rawData)
+        let line = "thumbnailUrl,Url,likes\n"
+          for (let i = 0; i < rawData.data.length; i++) {
+            line += rawData.data[i].images.low_resolution.url + ',' + rawData.data[i].link + ',' + rawData.data[i].likes.count + '\n'
+          }
+
+          fs.writeFile('ig.csv', line, err => {
+            if (err) throw err
+          })
+      } catch (e) {
+        console.log(e.message)
+      }
+    });
+  }).on('error', e => {
+    console.log(`Got error: ${e.message}`)
+  })
+}
+
+function connectMongo(mode, model, callback) {
+  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+  db = mongoose.connection
+
+  db.on('error', console.error.bind(console, 'connection error:'))
+  db.once('open', () => {
+    console.log("Connection to Mongo database established")
+
+    switch (mode) {
+      case 'save':
+        model.save()
+        mongoose.disconnect()
+      break
+
+      case 'getFaster':
+        model.findOne({ isFaster: true }).sort({date: -1}).exec( (err, documents) => {
+          mongoose.disconnect()
+          if (err) return console.error(err)
+        
+          callback(documents.quote)
+        })
+      break
+
+      case 'getAll':
+        model.find((err, documents) => {
+          mongoose.disconnect()
+          if (err) return console.error(err)
+        
+          callback(documents)
+        })
+      break
+    }
+  })
+}

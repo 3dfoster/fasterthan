@@ -17,15 +17,13 @@
 var canvas = document.getElementsByTagName('svg')[0]
 var main = document.getElementsByTagName('main')[0]
 var Header = document.getElementsByTagName('header')[0]
-var Overflow = document.getElementById('overflow')
 var Footer = 42 // document.getElementsByTagName('footer')[0]
 
-main.style.minHeight = document.documentElement.clientHeight - Header.offsetHeight - Overflow.offsetHeight - Footer + 'px'
+main.style.minHeight = document.documentElement.clientHeight - Header.offsetHeight - Footer + 'px'
 
-var canvasHeight = document.documentElement.clientHeight - Header.offsetHeight - Overflow.offsetHeight - Footer
+var canvasHeight = document.documentElement.clientHeight - Header.offsetHeight - Footer
 main.style.backgroundImage = 'url(https://s3-us-west-1.amazonaws.com/fasterthan/digital_ripple_white.gif)'
 
-document.body.removeChild(Overflow)
 
 if (canvasHeight > main.offsetWidth || window.orientation)
     canvas.setAttribute("height", main.offsetWidth)
