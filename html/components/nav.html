@@ -3,3 +3,34 @@
         <!--QUOTE-ENTRY-->
     </nav>
 </div>
+<script>
+    var Nav = document.getElementsByTagName('nav')[0]
+    var Main = document.getElementsByTagName('main')[0]
+    var Header = document.getElementsByTagName('header')[0]
+    var Overflow = document.getElementById('overflow')
+
+    var navHeight = 40
+    var noGradient = 'box-shadow: none'
+    var scrollbarHeight = Nav.offsetHeight - Nav.clientHeight
+    Nav.style.height = navHeight + scrollbarHeight + 'px'
+    Overflow.style.height = navHeight + 'px'
+
+    gradient()
+
+    Nav.onscroll = function () {
+        gradient()
+    }
+    window.addEventListener('resize', function () {
+        if (Nav.scrollLeft + Nav.scrollWidth - Nav.clientWidth == 0)
+            Nav.style.cssText += noGradient
+        else gradient()
+    })
+
+    function gradient() {
+        Nav.style.cssText += 'box-shadow: #888 -' + maxGrad(Nav.scrollWidth - Nav.clientWidth - Nav.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(Nav.scrollLeft) + 'px 0px 40px -40px inset'
+    }
+    function maxGrad(val) {
+        if (val >= 56) return 56
+        else return val
+    }
+</script>

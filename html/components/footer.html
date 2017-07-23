@@ -1,0 +1,24 @@
+<footer>
+  <a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a>
+  <a href="https://www.instagram.com/_u/the.t.u.r.n" class="fa fa-fw fa-instagram"></a>
+  <a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a>
+  <a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>
+</footer>
+<script>
+  var Main = document.getElementsByTagName('main')[0]
+  var Header = document.getElementsByTagName('header')[0]
+  var Overflow = document.getElementById('overflow')
+  var Footer = document.getElementsByTagName('footer')[0]
+
+  var OverflowHeight = 0
+  if (Overflow) OverflowHeight = Overflow.offsetHeight
+
+  stickyFooter()
+
+  window.addEventListener('resize', function () {
+      stickyFooter()
+  })
+  function stickyFooter() {
+      Main.style.minHeight = `${document.documentElement.clientHeight - Header.offsetHeight - OverflowHeight - Footer.offsetHeight}px`
+  }
+</script>

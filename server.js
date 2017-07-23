@@ -12,6 +12,7 @@ const fs = require('fs')
 const ui = fs.readFileSync('html/ui.html')
 const addquote = fs.readFileSync('html/components/addquote.html')
 const nav = fs.readFileSync('html/components/nav.html')
+const footer = fs.readFileSync('html/components/footer.html')
 
 // Load Pages
 const privacy = fs.readFileSync('html/pages/privacy.html')
@@ -59,159 +60,90 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' })
-
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-  db = mongoose.connection
-
-  db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', () => {
-    Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quote) => {
-      if (err) return console.error(err)
-
-      if (quote) fasterQuote = quote.quote
-      
-      res.write(ui.toString()
-      .replace('<!--NAV-ENTRY-->', nav.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
-      .replace('<!--MAIN-ENTRY-->', resume))
-      res.end()
-      mongoose.disconnect()
-    })
+  connectMongo('faster', Quote, quote =>{
+    if (quote) fasterQuote = quote
+    
+    res.write(ui.toString()
+    .replace('<!--NAV-ENTRY-->', nav.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
+    .replace('<!--MAIN-ENTRY-->', resume)
+    .replace('<!--FOOTER-ENTRY-->', footer))
+    res.end()
   })
 })
 
 app.get('/quotes', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' })
 
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-  db = mongoose.connection
+  connectMongo('all', Quote, quotes => {
+    let quotesInDatabase = "<main>"
+    let j = 0
 
-  db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', () => {
-    Quote.find((err, quotes) => {
-      if (err) return console.error(err)
-      mongoose.disconnect()
+    while (j <= quotes.length - 1) {
+        if (quotes[j].isFaster == true)
+          fasterQuote = quotes[j].quote
 
-      let quotesInDatabase = "<main>"
+        else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+      j++
+    }
+    quotesInDatabase += addquote + "</main>"
 
-      if (quotes.length) {
-        let j = 0
-
-        while (j <= quotes.length - 1) {
-            if (quotes[j].isFaster == true)
-              fasterQuote = quotes[j].quote
-
-            else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
-          j++
-        }
-      }
-      quotesInDatabase += addquote + "</main>"
-
-      res.write(ui.toString()
-      .replace('<!--NAV-ENTRY-->', nav.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
-      .replace('<!--MAIN-ENTRY-->', quotesInDatabase))
-      res.end()
-    })
+    res.write(ui.toString()
+    .replace('<!--NAV-ENTRY-->', nav.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
+    .replace('<!--MAIN-ENTRY-->', quotesInDatabase)
+    .replace('<!--FOOTER-ENTRY-->', footer))
+    res.end()
   })
 })
 
 app.get('/photos', (req, res) => {
-  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', (resp) => {
-    const statusCode = resp.statusCode;
-    const contentType = resp.headers['content-type']
+  fetchInsta( object => {
+    let instagramPhotos = "<main>"
+    for (let i = 0; i < object.data.length; i++)
+      instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
 
-    let error;
-    if (statusCode !== 200) {
-      error = new Error(`Request Failed.\n` +
-                        `Status Code: ${statusCode}`)
-    } else if (!/^application\/json/.test(contentType)) {
-      error = new Error(`Invalid content-type.\n` +
-                        `Expected application/json but received ${contentType}`)
-    }
-    if (error) {
-      console.log(error.message)
-      // consume respponse data to free up memory
-      resp.respume()
-      return
-    }
+    instagramPhotos += "</main>"
 
-    resp.setEncoding('utf8')
-    let rawData = ''
-    resp.on('data', (chunk) => rawData += chunk)
-    resp.on('end', () => {
-      try {
-        mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-        db = mongoose.connection
-
-        db.on('error', console.error.bind(console, 'connection error:'))
-        db.once('open', () => {
-          Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quote) => {
-            if (err) return console.error(err)
-
-            if (quote) fasterQuote = quote.quote
-            mongoose.disconnect()
-            
-            let instagramPhotos = ""
-            let object = JSON.parse(rawData)
-            for (let i = 0; i < object.data.length; i++)
-              instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
-
-            res.write(ui.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos))
-            res.end()
-          })
-        })
-      } catch (e) {
-        console.log(e.message)
-      }
-    });
-  }).on('error', e => {
-    console.log(`Got error: ${e.message}`)
+    res.write(ui.toString().replace('<!--MAIN-ENTRY-->', instagramPhotos)
+    .replace('<!--FOOTER-ENTRY-->', footer))
+    res.end()
   })
 })
 
 app.get('/elastic', (req, res) => {
   res.write(ui.toString()
-  .replace('<!--MAIN-ENTRY-->', elastic))
+  .replace('<!--MAIN-ENTRY-->', elastic)
+  .replace('<!--FOOTER-ENTRY-->', footer))
   res.end()
 })
 
 app.get('/research', (req, res) => {
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-  db = mongoose.connection
-
-  db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', () => {
-    Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quote) => {
-      if (err) return console.error(err)
-
-      if (quote) fasterQuote = quote.quote
-      
-    res.writeHead(200, { 'Content-Type': 'text/html' })
-      res.write(ui.toString()
-      .replace('<!--MAIN-ENTRY-->', research))
-      res.end()
-      mongoose.disconnect()
-    })
-  })
-})
-
-app.get('/api/get', (req, res) => {
-  const file = fs.readFileSync('ig.csv')
-  res.write(file)
+  res.write(ui.toString()
+  .replace('<!--MAIN-ENTRY-->', research)
+  .replace('<!--FOOTER-ENTRY-->', footer))
   res.end()
 })
 
-app.get('/api/write', (req, res) => {
-  writeCSV()
-  res.end('File saved!')
+app.get('/api/get', (req, res) => {
+  const file = fs.readFile('ig.csv', (err, data) => {
+    res.write(data)
+    res.end()
+  })
 })
 
 app.get('/privacy', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/html' })
 
   res.write(ui.toString()
-  .replace('<!--MAIN-ENTRY-->', privacy))
+  .replace('<!--MAIN-ENTRY-->', privacy)
+  .replace('<!--FOOTER-ENTRY-->', footer))
   res.end()
+})
+
+app.get('/api/get', (req, res) => {
+})
+
+app.get('/api/write', (req, res) => {
+  writeCSV()
+  res.end('File saved!')
 })
 
 app.post('/quotes/new', (req, res) => {
@@ -226,31 +158,11 @@ app.post('/quotes/new', (req, res) => {
   }
   else
     quote.quote = filter.clean(req.body.quote)
-  
-  // Connect to MongoDB
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-  db = mongoose.connection
 
-  db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', function () {
-    // We've successfully established a conection to the database
-    console.log("Connection to Mongo database established")
-
-    // Store quote document in the database 
-    quote.save( (err, quote) => {
-      if (err) {
-        res.end(ui.toString().replace('<!--MAIN-ENTRY-->', '<p>You encountered an error</p>'))
-        return console.error(err)
-      }
-      mongoose.disconnect()
-
-      res.writeHead(200, { 'Content-Type': 'text/plain' })
-      res.end()
-    })
+  connectMongo('save', quote, () => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' })
+    res.end()
   })
-})
-
-app.get('/api/get', (req, res) => {
 })
 
 app.get('*', (req, res) => {
@@ -318,9 +230,10 @@ function connectMongo(mode, model, callback) {
       case 'save':
         model.save()
         mongoose.disconnect()
+        callback()
       break
 
-      case 'getFaster':
+      case 'faster':
         model.findOne({ isFaster: true }).sort({date: -1}).exec( (err, documents) => {
           mongoose.disconnect()
           if (err) return console.error(err)
@@ -329,7 +242,7 @@ function connectMongo(mode, model, callback) {
         })
       break
 
-      case 'getAll':
+      case 'all':
         model.find((err, documents) => {
           mongoose.disconnect()
           if (err) return console.error(err)
@@ -339,4 +252,34 @@ function connectMongo(mode, model, callback) {
       break
     }
   })
+}
+
+function fetchInsta(callback) {
+  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
+    const statusCode = resp.statusCode;
+    const contentType = resp.headers['content-type']
+
+    let error
+    if (statusCode !== 200)
+      error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
+    else if (!/^application\/json/.test(contentType))
+      error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
+    
+    if (error) {
+      console.log(error.message)
+      resp.respume()
+      return
+    }
+
+    resp.setEncoding('utf8')
+    let rawData = ''
+    resp.on('data', chunk => rawData += chunk)
+    resp.on('end', () => {
+      try {
+        callback(JSON.parse(rawData))
+      } catch (e) {
+        console.log(e.message)
+      }
+    })
+  }).on('error', e => { console.log(`Got error: ${e.message}`)})
 }
