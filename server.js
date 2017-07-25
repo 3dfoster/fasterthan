@@ -23,21 +23,20 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-  console.log('user connected')
-  console.log(req.query.code)
-})
-
-app.get('/quotes', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html')
+  console.log()
 })
 
 app.get('/login', (req, res) => {
-  res.redirect('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=http://localhost:8080&response_type=code')
+  res.redirect('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=http://localhost:8080&response_type=token')
+})
+
+app.post('/authorization', (req, res) => {
+  console.log(req.body)
 })
 
 function instagramAuthorization(callback) {
-  https.get('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=https://fasterthan.me&response_type=code', resp => {
-    const statusCode = resp.statusCode;
+  https.get('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=http://localhost:3000&response_type=token', resp => {
+    const statusCode = resp.statusCode
     console.log(statusCode)
     const contentType = resp.headers['content-type']
 
@@ -65,13 +64,7 @@ function instagramAuthorization(callback) {
     })
   }).on('error', e => { console.log(`Got error: ${e.message}`)})
 }
-// https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=https://fasterthan.me&response_type=code
-app.get('/api/david', (req, res) => {
-  if (req.headers.loaded)
-    res.send(JSON.stringify(David))
-
-  else res.redirect('/')
-})
+// https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=https://fasterthan.me&response_type=token
 
 // Requests to any URL not defined is sent a 404
 app.get('*', (req, res) => {
