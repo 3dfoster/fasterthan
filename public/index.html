@@ -13,7 +13,8 @@
     <link type="text/css" href="/style.css" rel="stylesheet">
   </head>
 
-  <body></body>
+  <body>
+  </body>
 
   <script>
     var Html = new Html('#fff')
@@ -29,8 +30,6 @@
     Body.appendChild(Footer)
 
     window.onload = function() {
-      console.log(window.location.hash.substr(1))
-
       var token = window.location.hash.substr(1)
 
       var httpRequest = new XMLHttpRequest()
@@ -39,7 +38,13 @@
       // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
       httpRequest.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-          console.log(this.responseText)
+          console.log('response received')
+          request('/api/elastic', 'GET', '', function(res) {
+            Main.innerHTML = "<div style='display:inline-block;margin:16px auto 8px auto;letter-spacing:4px; font-size: 2em; text-transform: uppercase; font-weight: lighter;'> <span style='background-color: white;'>Elastic</span> <span style='background-color: white;'>Memories</span> </div><svg></svg>"
+            
+            elasticity()
+            Header.loading(false)
+          })
         }
       }
       httpRequest.open('POST', '/authorization')
@@ -65,20 +70,13 @@
       Header.loading(false)
     }
 
-    function elastic(res) {
-      Main.innerHTML = "<div style='display:inline-block;margin:16px auto 8px auto;letter-spacing:4px; font-size: 2em; text-transform: uppercase; font-weight: lighter;'> <span style='background-color: white;'>Elastic</span> <span style='background-color: white;'>Memories</span> </div><svg></svg>"
-      
-      elasticity()
-      Header.loading(false)
-    }
-
     function request(url, method, postData, callback) {
       // Header.loading(true)
       var httpRequest = new XMLHttpRequest()
 
       httpRequest.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
-          callback(this.responseText, this.getResponseHeader('content-type'))
+          callback(this.responseText)
           // console.log(this.responseText.split('\n', 1)[0])
           console.log('response recceived')
         }
@@ -86,7 +84,6 @@
       httpRequest.open(method, url)
       httpRequest.setRequestHeader("loaded", true)
       httpRequest.send(postData)
-      console.log('sent?')
     }
   </script>
 </html>

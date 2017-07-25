@@ -30,24 +30,18 @@ app.get('/login', (req, res) => {
   res.redirect('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=http://localhost:8080&response_type=token')
 })
 
-
-app.get('/api/elastic', (req, res) => {
-  writeCSV( () => {
-
-    const file = fs.readFile('ig.csv', (err, data) => {
-      console.log(data)
-      res.write(data)
-      res.end()
-    })
-  })
-})
-
 app.post('/authorization', (req, res) => {
   console.log(req.body.accessToken)
 
   fetchInsta(req.body.accessToken, data => {
-    res.send(data)
+  writeCSV(data)
+  res.send('warn')
   })
+})
+
+app.get('/api/elastic', (req, res) => {
+  var csv = fs.readFileSync('ig.csv')
+  res.send(csv)
 })
 
 // Requests to any URL not defined is sent a 404
@@ -93,18 +87,14 @@ function connectMongo(mode, model, callback) {
   })
 }
 
-function writeCSV(callback) {
-  fetchInsta( rawData => {
-    let line = "thumbnailUrl,Url,likes\n"
-      for (let i = 0; i < rawData.data.length; i++) {
-        line += rawData.data[i].images.low_resolution.url + ',' + rawData.data[i].link + ',' + rawData.data[i].likes.count + '\n'
-      }
+function writeCSV(instaGramData) {
+  let line = "thumbnailUrl,Url,likes\n"
+    for (let i = 0; i < instaGramData.data.length; i++) {
+      line += instaGramData.data[i].images.low_resolution.url + ',' + instaGramData.data[i].link + ',' + instaGramData.data[i].likes.count + '\n'
+    }
 
-    fs.writeFile('ig.csv', line, err => {
-      if (err) throw err
-        
-      callback()
-    })
+  fs.writeFile('ig.csv', line, err => {
+    if (err) throw err
   })
 }
 

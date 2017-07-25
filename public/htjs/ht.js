@@ -275,7 +275,7 @@ function elasticity() {
         .size([width, height])
         .padding(1.5)
 
-    d3.csv(window.location.origin + "/api/elastic/get", function(d) {
+    d3.csv(window.location.origin + "/api/elastic", function(d) {
         d.likes = +d.likes
         if (d.likes) return d
     }, function(error, classes) {
@@ -320,17 +320,3 @@ function elasticity() {
             .attr("height", function(d) { return d.r * 2 })
     })
 }
-
-// function request(url, method, callback) {
-//   Header.loading(true)
-//   var httpRequest = new XMLHttpRequest()
-
-//   httpRequest.onreadystatechange = function () {
-//     if (this.readyState == 4 && this.status == 200)
-//       callback(this.responseText)
-//     alert(this.getResonseHeader('content-type'))
-//   }
-//   httpRequest.open(method, url)
-//   httpRequest.setRequestHeader("loaded", true)
-//   httpRequest.send()
-// }
