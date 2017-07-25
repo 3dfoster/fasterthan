@@ -30,6 +30,18 @@ app.get('/login', (req, res) => {
   res.redirect('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=http://localhost:8080&response_type=token')
 })
 
+
+app.get('/api/elastic', (req, res) => {
+  writeCSV( () => {
+
+    const file = fs.readFile('ig.csv', (err, data) => {
+      console.log(data)
+      res.write(data)
+      res.end()
+    })
+  })
+})
+
 app.post('/authorization', (req, res) => {
   console.log(req.body.accessToken)
 
@@ -81,7 +93,7 @@ function connectMongo(mode, model, callback) {
   })
 }
 
-function writeCSV() {
+function writeCSV(callback) {
   fetchInsta( rawData => {
     let line = "thumbnailUrl,Url,likes\n"
       for (let i = 0; i < rawData.data.length; i++) {
@@ -90,6 +102,8 @@ function writeCSV() {
 
     fs.writeFile('ig.csv', line, err => {
       if (err) throw err
+        
+      callback()
     })
   })
 }
