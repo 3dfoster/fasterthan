@@ -1,35 +1,16 @@
 // Libraries
 const bodyParser = require('body-parser')
-const Filter = require('bad-words')
-const mongoose = require('mongoose')
 const express = require('express')
 const https = require('https')
 const fs = require('fs')
 
 // Static HTML files
-const resume = fs.readFileSync('views/resume.html')
-const addquote = fs.readFileSync('views/addquote.html')
 const privacy = fs.readFileSync('views/privacy.html')
-const elastic = fs.readFileSync('views/elastic.js')
 
 // Ports
 const port = process.env.PORT || 8080
 const ip = process.env.IP   || '0.0.0.0'
 
-// Initialize Schema
-const Schema = mongoose.Schema
-
-// Build Quote ORM model
-const quoteSchema = new Schema({
-  quote: { type: String, maxlength: 128 },
-  date: { type: Date, default: Date.now },
-  isFaster: { type: Boolean, default: false },
-  addr: { type: String, maxlength: 160 }
-})
-const Quote = mongoose.model('Quote', quoteSchema)
-
-// Swearjar
-const filter = new Filter({ placeHolder: '&#128520;'})
 
 // Express app
 const app = express()
@@ -41,109 +22,55 @@ app.use(express.static('public'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+app.get('/', (req, res) => {
+  console.log('user connected')
+  console.log(req.query.code)
+})
+
 app.get('/quotes', (req, res) => {
   res.sendFile(__dirname + '/public/index.html')
 })
 
-app.get('/photos/*', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html')
+app.get('/login', (req, res) => {
+  res.redirect('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=http://localhost:8080&response_type=code')
 })
 
-app.get('/privacy', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html')
-})
+function instagramAuthorization(callback) {
+  https.get('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=https://fasterthan.me&response_type=code', resp => {
+    const statusCode = resp.statusCode;
+    console.log(statusCode)
+    const contentType = resp.headers['content-type']
 
-app.get('/api/resume', (req, res) => {
-  if (req.headers.loaded)
-    res.send(resume)
+    let error
+    if (statusCode !== 200)
+      error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
+    else if (!/^application\/json/.test(contentType))
+      error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
+    
+    if (error) {
+      console.log(error.message)
+      resp.respume()
+      return
+    }
 
-  else res.redirect('/')
-})
-
+    resp.setEncoding('utf8')
+    let rawData = ''
+    resp.on('data', chunk => rawData += chunk)
+    resp.on('end', () => {
+      try {
+        callback(rawData)
+      } catch (e) {
+        console.log(e.message)
+      }
+    })
+  }).on('error', e => { console.log(`Got error: ${e.message}`)})
+}
+// https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=https://fasterthan.me&response_type=code
 app.get('/api/david', (req, res) => {
   if (req.headers.loaded)
     res.send(JSON.stringify(David))
 
   else res.redirect('/')
-})
-
-app.get('/api/privacy', (req, res) => {
-  if (req.headers.loaded)
-    res.send(privacy)
-
-  else res.redirect('/')
-})
-
-app.get('/api/quotes', (req, res) => {
-  connectMongo('getAll', Quote, quotes => {
-    let quotesInDatabase = ""
-
-
-    for (let i = 0; i < quotes.length; i++) {
-        if (!quotes[i].isFaster)
-          quotesInDatabase += '<p>' + quotes[i].quote + '</p>\n'
-    }
-
-    quotesInDatabase += addquote
-    
-    res.send(quotesInDatabase)
-  })
-})
-
-app.get('/api/quotes/faster', (req, res) => {
-  if (!req.headers.loaded)
-    res.redirect('/')
-  
-  connectMongo('getFaster', Quote, quote => {
-    res.end(quote)
-  })
-})
-
-app.get('/api/photos/square', (req, res) => {
-  fetchInsta( data => {
-    res.send(data)
-  })
-})
-
-app.get('/api/photos/elastic', (req, res) => {
-  if (req.headers.loaded) {
-    res.set('content-type', 'application/javascript')
-    res.send(elastic)
-  }
-
-  else res.redirect('/')
-})
-
-app.get('/api/elastic/write', (req, res) => {
-  writeCSV()
-  res.end('File saved!')
-})
-
-app.get('/api/elastic/get', (req, res) => {
-  let file = fs.readFileSync('ig.csv')
-  res.write(file)
-  res.end()
-})
-
-app.post('/quotes/new', (req, res) => {
-  if (!req.headers.loaded)
-    res.redirect('/')
-    
-  let quote = new Quote
-  let secret = req.body.quote.substring(0, 3)
-
-  if (secret == '!ft') {
-    req = req.body.quote.substring(4, req.length)
-    quote.isFaster = true
-    quote.quote = req
-  }
-  else
-    quote.quote = filter.clean(req.body.quote)
-  
-  // Save quote in Mongo database
-  connectMongo('save', quote, () => {
-    res.status(200).send()
-  })
 })
 
 // Requests to any URL not defined is sent a 404
