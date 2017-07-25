@@ -33,9 +33,20 @@
 
       var token = window.location.hash.substr(1)
 
-      request('/authorization', 'POST', token, function() {
-
-      })
+      var httpRequest = new XMLHttpRequest()
+      var data = { accessToken: token }
+      // Retrieve data in quote input field and convert to lower case
+      // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
+      httpRequest.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          console.log(this.responseText)
+        }
+      }
+      httpRequest.open('POST', '/authorization')
+      // Setting request header is required
+      httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+      // Send quote to server
+      httpRequest.send(JSON.stringify(data))
 
       Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
     }

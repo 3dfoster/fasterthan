@@ -11,7 +11,6 @@ const privacy = fs.readFileSync('views/privacy.html')
 const port = process.env.PORT || 8080
 const ip = process.env.IP   || '0.0.0.0'
 
-
 // Express app
 const app = express()
 
@@ -27,44 +26,17 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login', (req, res) => {
+  // clean up url with nodejs url function
   res.redirect('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=http://localhost:8080&response_type=token')
 })
 
 app.post('/authorization', (req, res) => {
-  console.log(req.body)
+  console.log(req.body.accessToken)
+
+  fetchInsta(req.body.accessToken, data => {
+    res.send(data)
+  })
 })
-
-function instagramAuthorization(callback) {
-  https.get('https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=http://localhost:3000&response_type=token', resp => {
-    const statusCode = resp.statusCode
-    console.log(statusCode)
-    const contentType = resp.headers['content-type']
-
-    let error
-    if (statusCode !== 200)
-      error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
-    else if (!/^application\/json/.test(contentType))
-      error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
-    
-    if (error) {
-      console.log(error.message)
-      resp.respume()
-      return
-    }
-
-    resp.setEncoding('utf8')
-    let rawData = ''
-    resp.on('data', chunk => rawData += chunk)
-    resp.on('end', () => {
-      try {
-        callback(rawData)
-      } catch (e) {
-        console.log(e.message)
-      }
-    })
-  }).on('error', e => { console.log(`Got error: ${e.message}`)})
-}
-// https://www.instagram.com/oauth/authorize/?client_id=77670228764a4e71ae8d39403e87447f&redirect_uri=https://fasterthan.me&response_type=token
 
 // Requests to any URL not defined is sent a 404
 app.get('*', (req, res) => {
@@ -122,8 +94,8 @@ function writeCSV() {
   })
 }
 
-function fetchInsta(callback) {
-  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
+function fetchInsta(token, callback) {
+  https.get(`https://api.instagram.com/v1/users/self/media/recent/?${token}`, resp => {
     const statusCode = resp.statusCode;
     const contentType = resp.headers['content-type']
 
@@ -152,26 +124,6 @@ function fetchInsta(callback) {
   }).on('error', e => { console.log(`Got error: ${e.message}`)})
 }
 
-let Phia = {
-  "name": "Sophia Maria Holmgren",
-  "photo": "https://scontent-atl3-1.cdninstagram.com/t51.2885-19/s320x320/14727646_1169168589834186_6905304133377458176_a.jpg",
-  "major": "Art",
-  "degree": "associate student",
-  "school": "Sacramento City College",
-  "googleID": "none",
-  "style": {
-    "font": {
-      "family": "sans-serif",
-      "alignment": "center",
-      "color": "#cc3300"
-    },
-    "colors": {
-      "accent": "pink",
-      "background": "#f5f5f0"
-    },
-    "icon": "❀"
-  }
-}
 let David = {
   "name": "David Alexander Foster",
   "photo": "/images/avatar_240.png",
