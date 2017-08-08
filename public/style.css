@@ -76,10 +76,9 @@
             cursor: initial !important;
         }
     }
-    .tray-icon {
+    #tray-icon {
         float: right;
-        width: 64px;
-        line-height: 64px;
+        padding: 24px;
         cursor: pointer;
     }
     #overlay {

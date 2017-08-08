@@ -19,6 +19,6 @@
       stickyFooter()
   })
   function stickyFooter() {
-      Main.style.minHeight = `${document.documentElement.clientHeight - Header.offsetHeight - OverflowHeight - Footer.offsetHeight}px`
+      Main.style.minHeight = document.documentElement.clientHeight - Header.offsetHeight - OverflowHeight - Footer.offsetHeight + 'px'
   }
 </script>

@@ -1,10 +1,13 @@
 <header>
     <a href="/photos"><img id="logo" src="/media/avatar_240.png" alt="David Alexander Foster"></a>
     <h1><a href="/">F <span style="color: #cfcfd6">></span></a></h1>
-    <i class="fa fa-ellipsis-v tray-icon" aria-hidden="true"></i>
+
+    <svg id="tray-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="0 0 408 408"  xml:space="preserve">
+        <g><path d="M204,102c28.05,0,51-22.95,51-51S232.05,0,204,0s-51,22.95-51,51S175.95,102,204,102z M204,153c-28.05,0-51,22.95-51,51    s22.95,51,51,51s51-22.95,51-51S232.05,153,204,153z M204,306c-28.05,0-51,22.95-51,51s22.95,51,51,51s51-22.95,51-51    S232.05,306,204,306z"/></g>
+    </svg>
 </header>
 <script>
-    var TrayIcon = document.getElementsByClassName('tray-icon')[0]
+    var TrayIcon = document.getElementsByTagName('svg')[0]
     var Header = document.getElementsByTagName('header')[0]
     var Overlay = document.createElement('div')
     var Nav = document.createElement('nav')
