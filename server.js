@@ -26,24 +26,10 @@ const _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 const filter = new Filter({ placeHolder: '&#128520;'})
 let fasterQuote = "I am the mountain rising high."
 
-// Initialize mongoDB & schema
-let Schema = mongoose.Schema
+// Initialize mongoDB
 let db
-
-// Build ORM models
-let quoteSchema = new Schema({
-  quote: { type: String, maxlength: 128 },
-  date: { type: Date, default: Date.now },
-  isFaster: { type: Boolean, default: false },
-  addr: { type: String, maxlength: 160 }
-})
-let Quote = mongoose.model('Quote', quoteSchema)
-
-let InstagramAccountSchema = new Schema({
-  account: { type: String, maxlength: 32 },
-  date: { type: Date, default: Date.now }
-})
-let InstagramAccount = mongoose.model('InstagramAccount', InstagramAccountSchema)
+let Quote = require('./models/quote.js')
+let InstagramAccount = require('./models/instagram_account.js')
 
 // Ports
 let port = process.env.PORT || 8080
