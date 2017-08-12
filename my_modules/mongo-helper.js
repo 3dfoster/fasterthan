@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 
 exports.retrieve = (mode, model, callback) => {
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
+  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster')
   db = mongoose.connection
 
   db.on('error', console.error.bind(console, 'connection error:'))

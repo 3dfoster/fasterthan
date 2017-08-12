@@ -2,7 +2,6 @@
 const bodyParser = require('body-parser')
 const favicon = require('serve-favicon')
 const Filter = require('bad-words')
-const mongoose = require('mongoose')
 const express = require('express')
 const path = require('path')
 const fs = require('fs')
@@ -90,7 +89,7 @@ app.get('/quotes', (req, res) => {
 })
 
 app.get('/photos', (req, res) => {
-  instaHelper.fetchTwenty( object => {
+  instaHelper.lastTwenty( object => {
     let instagramPhotos = "<main>"
     for (let i = 0; i < object.data.length; i++)
       instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
