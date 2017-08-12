@@ -4,7 +4,6 @@ const favicon = require('serve-favicon')
 const Filter = require('bad-words')
 const mongoose = require('mongoose')
 const express = require('express')
-const https = require('https')
 const path = require('path')
 const fs = require('fs')
 
@@ -26,10 +25,17 @@ const _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 const filter = new Filter({ placeHolder: '&#128520;'})
 let fasterQuote = "I am the mountain rising high."
 
-// Initialize mongoDB
+// Database
 let db
+let mongoHelper = require('./my_modules/mongo-helper')
+
+// Database models
 let Quote = require('./models/quote.js')
+let Post = require('./models/post.js')
 let InstagramAccount = require('./models/instagram_account.js')
+
+// Instagram helper module
+let instaHelper = require('./my_modules/insta-helper')
 
 // Ports
 let port = process.env.PORT || 8080
@@ -47,7 +53,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-  mongoConnect('faster', Quote, quote => {
+  mongoHelper.retrieve('faster', Quote, quote => {
     if (quote) fasterQuote = quote
     
     res.write(ui.toString()
@@ -61,7 +67,7 @@ app.get('/', (req, res) => {
 
 app.get('/quotes', (req, res) => {
 
-  mongoConnect('all', Quote, quotes => {
+  mongoHelper.retrieve('all', Quote, quotes => {
     let quotesInDatabase = "<main>"
     let j = 0
 
@@ -84,7 +90,7 @@ app.get('/quotes', (req, res) => {
 })
 
 app.get('/photos', (req, res) => {
-  fetchInsta( object => {
+  instaHelper.fetchTwenty( object => {
     let instagramPhotos = "<main>"
     for (let i = 0; i < object.data.length; i++)
       instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
@@ -150,7 +156,7 @@ app.post('/quotes/new', (req, res) => {
   else
     quote.quote = filter.clean(req.body.quote)
 
-  mongoConnect('save', quote, () => {
+  mongoHelper.retrieve('save', quote, () => {
     res.writeHead(200, { 'Content-Type': 'text/plain' })
     res.end()
   })
@@ -207,71 +213,4 @@ function writeCSV() {
   }).on('error', e => {
     console.log(`Got error: ${e.message}`)
   })
-}
-
-function mongoConnect(mode, model, callback) {
-  mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster/quotes')
-  db = mongoose.connection
-
-  db.on('error', console.error.bind(console, 'connection error:'))
-  db.once('open', () => {
-    console.log("Connection to Mongo database established")
-
-    switch (mode) {
-      case 'save':
-        model.save()
-        mongoose.disconnect()
-        
-        callback()
-      break
-
-      case 'faster':
-        model.findOne({ isFaster: true }).sort({date: -1}).exec( (err, documents) => {
-          mongoose.disconnect()
-          if (err) return console.error(err)
-        
-          callback(documents.quote)
-        })
-      break
-
-      case 'all':
-        model.find((err, documents) => {
-          mongoose.disconnect()
-          if (err) return console.error(err)
-        
-          callback(documents)
-        })
-      break
-    }
-  })
-}
-
-function fetchInsta(callback) {
-  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
-    const statusCode = resp.statusCode;
-    const contentType = resp.headers['content-type']
-
-    let error
-    if (statusCode !== 200)
-      error = new Error(`Request Failed.\n` + `Status Code: ${statusCode}`)
-    else if (!/^application\/json/.test(contentType))
-      error = new Error(`Invalid content-type.\n` + `Expected application/json but received ${contentType}`)
-    
-    if (error) {
-      console.log(error.message)
-      resp.respume()
-      return
-    }
-
-    resp.setEncoding('utf8')
-    let rawData = ''
-    resp.on('data', chunk => rawData += chunk)
-    resp.on('end', () => {
-      try {
-        callback(JSON.parse(rawData))
-      } catch (e) {
-        console.log(e.message)
-      }
-    })
-  }).on('error', e => { console.log(`Got error: ${e.message}`)})
 }

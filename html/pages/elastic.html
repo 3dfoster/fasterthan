@@ -1,6 +1,6 @@
 <main>
     <h1 style="display:inline-block; margin-bottom: 0px;">Elastic Memories</h1>
-    <svg style="display: block"></svg>
+    <svg id="elastic-entry"></svg>
 <!-- 
     <span style="background-color: white; padding: 2px 4px;">Request your own:</span><br>
 <form id="form" style="background-color: white; margin-top: 0px; display: inline-block; padding: 2px" action="javascript:signup()">
@@ -10,7 +10,7 @@
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
-    var canvas = document.getElementsByTagName('svg')[0]
+    var canvas = document.getElementById('elastic-entry')
     var Header = document.getElementsByTagName('header')[0]
     var main = document.getElementsByTagName('main')[0]
     var Footer = 42 // document.getElementsByTagName('footer')[0]
@@ -27,8 +27,9 @@
         canvas.setAttribute("height", canvasHeight)
 
     canvas.setAttribute("width", main.offsetWidth)
+    canvas.style.display = 'block'
 
-    var svg = d3.select("svg"),
+    var svg = d3.select(canvas),
         width = +svg.attr("width"),
         height = +svg.attr("height")
 
