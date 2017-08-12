@@ -1,19 +1,19 @@
-var title = 'f> '
+var title = ' > Faster Than Me'
 
 switch (window.location.pathname) {
     case '/photos':
-        document.title = title + 'Photos'
+        document.title = 'Photos' + title
     break
 
     case '/photos':
-        document.title = title + 'Elastic Memories'
+        document.title = 'Elastic Memories' + title
     break
 
     case '/blog':
-        document.title = title + 'Blog'
+        document.title = 'Blog' + title
     break
 
     default:
-        document.title = title + 'Faster Than Me'
+        document.title = 'Faster Than Me' + title
     break
 }
