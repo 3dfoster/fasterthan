@@ -14,6 +14,6 @@ switch (window.location.pathname) {
     break
 
     default:
-        document.title = 'Faster Than Me' + title
+        document.title = 'Faster Than Me'
     break
 }
