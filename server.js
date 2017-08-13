@@ -23,18 +23,20 @@ const research = fs.readFileSync('html/pages/research.html')
 const _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 const filter = new Filter({ placeHolder: '&#128520;'})
 let fasterQuote = "I am the mountain rising high."
+let fasterToken = 'https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7'
 
 // Database
 let db
+
+// My libraries
+let getHelper = require('./my_modules/get-helper')
 let mongoHelper = require('./my_modules/mongo-helper')
+let instaHelper = require('./my_modules/insta-helper')
 
 // Database models
 let Quote = require('./models/quote.js')
 let Post = require('./models/post.js')
 let InstagramAccount = require('./models/instagram_account.js')
-
-// Instagram helper module
-let instaHelper = require('./my_modules/insta-helper')
 
 // Ports
 let port = process.env.PORT || 8080
@@ -89,7 +91,7 @@ app.get('/quotes', (req, res) => {
 })
 
 app.get('/photos', (req, res) => {
-  instaHelper.lastTwenty( object => {
+  getHelper.json( fasterToken, object => {
     let instagramPhotos = "<main>"
     for (let i = 0; i < object.data.length; i++)
       instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
@@ -138,7 +140,7 @@ app.get('/api/get', (req, res) => {
 })
 
 app.get('/api/write', (req, res) => {
-  writeCSV()
+  instaHelper.writeCSV(fasterToken)
   res.end('File saved!')
 })
 
@@ -170,46 +172,3 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
   console.log("Server started at http://localhost:" + port)
 })
-
-function writeCSV() {
-  https.get('https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7', resp => {
-    const statusCode = resp.statusCode;
-    const contentType = resp.headers['content-type']
-
-    let error
-    if (statusCode !== 200) {
-      error = new Error(`Request Failed.\n` +
-                        `Status Code: ${statusCode}`)
-    } else if (!/^application\/json/.test(contentType)) {
-      error = new Error(`Invalid content-type.\n` +
-                        `Expected application/json but received ${contentType}`)
-    }
-    if (error) {
-      console.log(error.message)
-      // consume response data to free up memory
-      resp.respume()
-      return
-    }
-
-    resp.setEncoding('utf8')
-    let rawData = ''
-    resp.on('data', (chunk) => rawData += chunk);
-    resp.on('end', () => {
-      try {
-        rawData = JSON.parse(rawData)
-        let line = "thumbnailUrl,Url,likes\n"
-          for (let i = 0; i < rawData.data.length; i++) {
-            line += rawData.data[i].images.low_resolution.url + ',' + rawData.data[i].link + ',' + rawData.data[i].likes.count + '\n'
-          }
-
-          fs.writeFile('ig.csv', line, err => {
-            if (err) throw err
-          })
-      } catch (e) {
-        console.log(e.message)
-      }
-    });
-  }).on('error', e => {
-    console.log(`Got error: ${e.message}`)
-  })
-}
