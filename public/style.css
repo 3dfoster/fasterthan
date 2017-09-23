@@ -28,17 +28,17 @@
 /* BEGIN header*/
     header {
         position: relative;
-        height: 64px;
+        height: 56px;
         border-bottom: 1px solid #eee;
     }
     #logo {
         float: left;
-        width: 64px;
+        width: 56px;
         height: 100%;
         background-color: #b4b5ca;
     }
     header h1 {
-        line-height: 64px;
+        line-height: 56px;
         margin: 0;
         display: inline-block;
     }
@@ -78,7 +78,7 @@
     }
     #tray-icon {
         float: right;
-        padding: 24px;
+        padding: 20px;
         cursor: pointer;
     }
     #overlay {

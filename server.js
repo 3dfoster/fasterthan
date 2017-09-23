@@ -94,7 +94,7 @@ app.get('/photos', (req, res) => {
   getHelper.json( fasterToken, object => {
     let instagramPhotos = "<main>"
     for (let i = 0; i < object.data.length; i++)
-      instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.low_resolution.url}" /></a>`
+      instagramPhotos += `<a href="${object.data[i].link}"><img class="ig" src="${object.data[i].images.thumbnail.url}" /></a>`
 
     instagramPhotos += "</main>"
 
