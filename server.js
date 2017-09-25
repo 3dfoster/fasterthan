@@ -17,6 +17,7 @@ const footer = fs.readFileSync('html/components/footer.html')
 const privacy = fs.readFileSync('html/pages/privacy.html')
 const resume = fs.readFileSync('html/pages/resume.html')
 const elastic = fs.readFileSync('html/pages/elastic.html')
+const vr = fs.readFileSync('html/pages/vrview.html')
 const research = fs.readFileSync('html/pages/research.html')
 
 // Load global variables
@@ -104,6 +105,12 @@ app.get('/photos', (req, res) => {
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
   })
+})
+
+app.get('/vr', (req, res) => {
+  res.write(ui.toString()
+  .replace('<!--MAIN-ENTRY-->', vr))
+  res.end()
 })
 
 app.get('/elastic', (req, res) => {
