@@ -17,8 +17,9 @@ const footer = fs.readFileSync('html/components/footer.html')
 const privacy = fs.readFileSync('html/pages/privacy.html')
 const resume = fs.readFileSync('html/pages/resume.html')
 const elastic = fs.readFileSync('html/pages/elastic.html')
-const vr = fs.readFileSync('html/pages/vrview.html')
 const research = fs.readFileSync('html/pages/research.html')
+const three = fs.readFileSync('html/pages/thr3.html')
+const vr = fs.readFileSync('html/pages/vrview.html')
 
 // Load global variables
 const _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
@@ -62,6 +63,18 @@ app.get('/', (req, res) => {
     .replace('<!--HEADER-ENTRY-->', header)
     .replace('<!--ASIDE-ENTRY-->', aside.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
     .replace('<!--MAIN-ENTRY-->', resume)
+    .replace('<!--FOOTER-ENTRY-->', footer))
+    res.end()
+  })
+})
+
+app.get('/three', (req, res) => {
+  mongoHelper.retrieve('faster', Quote, quote => {
+    if (quote) fasterQuote = quote
+    
+    res.write(ui.toString()
+    .replace('<!--HEADER-ENTRY-->', header)
+    .replace('<!--MAIN-ENTRY-->', three)
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
   })

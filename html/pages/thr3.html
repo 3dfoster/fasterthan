@@ -1,0 +1,87 @@
+<main style="overflow: hidden;">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.min.js"></script>
+
+<style> canvas { width: 100%; height: 100% } </style>
+<script>
+    var socket = io.connect('https://wolfsden.herokuapp.com');
+    socket.on('rotate', function () {
+        changeCubeRotation();
+    });
+
+    var main = document.getElementsByTagName('main')[0]
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera( 75, main.offsetWidth / window.innerHeight, 0.1, 1000 );
+    var cubeRotationDegrees = 0.01
+    var renderer = new THREE.WebGLRenderer();
+
+    var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+    var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+    var cube = new THREE.Mesh( geometry, material );
+
+    renderer.setSize( main.offsetWidth, window.innerHeight );
+    
+    main.appendChild( renderer.domElement );
+    scene.add( cube );
+
+    camera.position.z = 5;
+    animate();
+
+    function rotateCube() {
+        cube.rotation.x += cubeRotationDegrees;
+        cube.rotation.y += cubeRotationDegrees;
+    }
+
+    function changeCubeRotation() {
+        if (cubeRotationDegrees == 0.01)
+            cubeRotationDegrees = -0.01
+        else
+            cubeRotationDegrees = 0.01
+    }
+
+    function animate() {
+        requestAnimationFrame( animate );
+        rotateCube();
+        renderer.render( scene, camera );
+    }
+    
+    window.addEventListener("keydown", function (event) {
+        if (event.defaultPrevented) {
+        return; // Do nothing if the event was already processed
+        }
+    
+        switch (event.key) {
+        case "ArrowDown":
+            // Do something for "down arrow" key press.
+            break;
+        case "ArrowUp":
+            // Do something for "up arrow" key press.
+            break;
+        case "ArrowLeft":
+            // Do something for "left arrow" key press.
+            break;
+        case "ArrowRight":
+            // Do something for "right arrow" key press.
+            break;
+        case "Enter":
+            // Do something for "enter" or "return" key press.
+            socket.emit('change rotation');
+            break;
+        case "Escape":
+            window.close();
+            break;
+        default:
+            return; // Quit when this doesn't handle the key event.
+        }
+    
+        // Cancel the default action to avoid it being handled twice
+        event.preventDefault();
+    }, true);
+    window.addEventListener('touchstart', function(event) {
+        socket.emit('change rotation');
+    })
+    main.addEventListener("click", function(){
+        socket.emit('change rotation');
+    })
+</script>
+</main>
