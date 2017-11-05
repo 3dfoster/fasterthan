@@ -173,6 +173,12 @@
     }
 /* END main /*
 
+/* BEGIN canvas */
+    canvas {
+        display: block;
+    }
+/* END canvas /*
+    
 /* BEGIN quotes page*/
     #form {
         margin: 16px 0;
