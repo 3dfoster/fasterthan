@@ -40,7 +40,7 @@ let Quote = require('./models/quote.js')
 let Post = require('./models/post.js')
 let InstagramAccount = require('./models/instagram_account.js')
 
-// Ports
+// Ports !
 let port = process.env.PORT || 8080
 let ip = process.env.IP || '0.0.0.0'
 
