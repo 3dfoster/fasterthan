@@ -68,7 +68,7 @@ var Body = function(width, fontFamily, color, backgroundColor) {
   var body = document.body
 
   body.changeWidth = function(_width) {
-    body.style.maxWidth = `${_width}px`
+    body.style.maxWidth = _width + 'px'
   }
 
   // Initialize styling
@@ -87,7 +87,7 @@ var Header = function(height, borderColor, backgroundColor) {
   var Header = new header(height)
   var heading = new h1('ht.js')
   var logo = document.createElement('img')
-  var photoggle = document.createElement('img')
+  var TrayIcon = document.createElement('img')
   
   Header.heading = function(_heading, themeColor) {
     heading.innerHTML = _heading
@@ -104,37 +104,90 @@ var Header = function(height, borderColor, backgroundColor) {
       heading.classList.remove('loading')
   }
   Header.borderColor = function(_borderColor) {
-    Header.style.borderBottom = `1px solid ${_borderColor}`
+    Header.style.borderBottom = '1px solid' + _borderColor
   }
 
   // Not sure why setting header height in header function doesn't work but it doesn't
-  Header.style.height = `${height}px`
+  Header.style.height = height + 'px'
   Header.borderColor(borderColor)
   Header.style.backgroundColor = backgroundColor
 
   logo.style.position = 'absolute'
   logo.style.left = 0
-  logo.style.width = `${height}px`
-  logo.style.height = `${height}px`
+  logo.style.width = height + 'px'
+  logo.style.height = height + 'px'
   logo.style.cursor = 'pointer'
   logo.style.backgroundColor = '#b4b5ca'
   logo.onclick = function() {
     request('/api/photos/square', 'GET', photos)
   }
+  // var TrayIcon = document.getElementsByTagName('svg')[0]
+  // var Header = document.getElementsByTagName('header')[0]
+  var Overlay = document.createElement('div')
+  var Nav = document.createElement('nav')
+  // var Html = document.documentElement
+  var inactiveColor = '#666'
+  var activeColor = '#0066ff'
+  var opened = false
 
-  photoggle.style.position = 'absolute'
-  photoggle.style.right = 0
-  photoggle.style.width = `${height}px`
-  photoggle.style.height = `${height}px`
-  photoggle.style.cursor = 'pointer'
-  photoggle.src = '/images/squares_icon.png'
-  photoggle.onclick = function() {
-    request('/api/photos/elastic', 'GET', elastic)
+  TrayIcon.style.color = inactiveColor
+  TrayIcon.style.position = 'absolute'
+  TrayIcon.style.right = 0
+  TrayIcon.style.padding = '20px'
+  TrayIcon.style.cursor = 'pointer'
+  TrayIcon.src = '/images/menu.png'
+  Overlay.id = "overlay"
+
+  var home = document.createElement('a')
+  home.href = '/'
+  home.innerText = 'Home'
+
+  var photos = document.createElement('a')
+  photos.href = '/photos'
+  photos.innerText = 'Photos'
+
+  var elastic = document.createElement('a')
+  elastic.href = '/elastic'
+  elastic.innerText = 'Elastic'
+
+  var quotes = document.createElement('a')
+  quotes.href = '/quotes'
+  quotes.innerText = 'Quotes'
+
+  Nav.appendChild(home)
+  Nav.appendChild(photos)
+  Nav.appendChild(elastic)
+  Nav.appendChild(quotes)
+
+  Overlay.addEventListener('click', removeOverlay)
+  
+  TrayIcon.addEventListener('click', function() {
+      if (opened == false) {
+          Header.appendChild(Nav)
+          document.documentElement.appendChild(Overlay)
+          TrayIcon.style.color = activeColor
+
+          window.addEventListener('scroll', removeOverlay)
+          opened = true
+      }
+  })
+
+  function removeOverlay() {
+      if (opened) {
+          // Remove Overlay from HTML document
+          document.documentElement.removeChild(document.documentElement.lastChild)
+          // Remove Nav from Header
+          Header.removeChild(Header.lastChild)
+          TrayIcon.style.color = inactiveColor
+          
+          window.removeEventListener('scroll', removeOverlay)
+          opened = false
+      }
   }
 
   heading.style.display = 'inline-block'
   heading.style.margin = '0px auto'
-  heading.style.lineHeight = `${height}px`
+  heading.style.lineHeight = height + 'px'
   heading.style.padding = '0 16px'
   heading.style.cursor = 'pointer'
   heading.style.color = '#444'
@@ -144,7 +197,7 @@ var Header = function(height, borderColor, backgroundColor) {
 
   Header.appendChild(logo)
   Header.appendChild(heading)
-  Header.appendChild(photoggle)
+  Header.appendChild(TrayIcon)
 
   return Header
 }
@@ -168,7 +221,7 @@ var Ticker = function(navHeight, accentColor) {
   innerflow.style.whiteSpace = 'nowrap'
 
   var quote = document.createElement('em')
-  quote.style.lineHeight = `${navHeight}px`
+  quote.style.lineHeight = navHeight + 'px'
   quote.style.margin = '0 8px'
 
   var arrow = new span()
@@ -184,8 +237,8 @@ var Ticker = function(navHeight, accentColor) {
   
   var noGradient = 'box-shadow: none'
   var scrollbarHeight = 30 // innerflow.offsetHeight - innerflow.clientHeight
-  innerflow.style.height = `${navHeight + scrollbarHeight}px`
-  ticker.style.height = `${navHeight}px`
+  innerflow.style.height = navHeight + scrollbarHeight + 'px'
+  ticker.style.height = navHeight + 'px'
   ticker.arrowColor(accentColor)
 
   innerflow.appendChild(quote)
@@ -200,14 +253,14 @@ var Main = function() {
   main.style.overflow = 'auto'
 
   window.onresize = function () {
-      Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
+      Main.style.minHeight = Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight + 'px'
   }
   return main
 }
 
 var Footer = function(height, color, backgroundColor) {
   var footer = document.createElement('footer')
-  footer.style.lineHeight = `${height}px`
+  footer.style.lineHeight = height + 'px'
   footer.style.borderTop = '2px solid #e3e3e8'
   footer.style.backgroundColor = backgroundColor
 
