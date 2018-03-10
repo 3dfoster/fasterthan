@@ -102,33 +102,23 @@ var Header = function(height, borderColor, backgroundColor) {
   }
 
   // Not sure why setting header height in header function doesn't work but it doesn't
-  Header.style.height = `${height}px`
+  Header.style.height = height + 'px'
   Header.borderColor(borderColor)
   Header.style.backgroundColor = backgroundColor
 
   logo.style.position = 'absolute'
   logo.style.left = 0
-  logo.style.width = `${height}px`
-  logo.style.height = `${height}px`
+  logo.style.width = height + 'px'
+  logo.style.height = height + 'px'
   logo.style.cursor = 'pointer'
   logo.style.backgroundColor = '#b4b5ca'
   logo.onclick = function() {
     request('/api/photos/square', 'GET', photos)
   }
 
-  photoggle.style.position = 'absolute'
-  photoggle.style.right = 0
-  photoggle.style.width = `${height}px`
-  photoggle.style.height = `${height}px`
-  photoggle.style.cursor = 'pointer'
-  photoggle.src = '/images/squares_icon.png'
-  photoggle.onclick = function() {
-    request('/api/photos/elastic', 'GET', elastic)
-  }
-
   heading.style.display = 'inline-block'
   heading.style.margin = '0px auto'
-  heading.style.lineHeight = `${height}px`
+  heading.style.lineHeight = height + 'px'
   heading.style.padding = '0 16px'
   heading.style.cursor = 'pointer'
   heading.style.color = '#444'
@@ -171,7 +161,7 @@ var Ticker = function(navHeight, accentColor) {
   arrow.style.padding = '0px 8px'
   arrow.style.opacity = 0
   arrow.onclick = function() {
-    request('/api/quotes', 'GET', quotes)
+    get('/api/quotes', quotes)
   }
   arrow.innerText = '➔'
   
@@ -321,16 +311,17 @@ function elasticity() {
     })
 }
 
-// function request(url, method, callback) {
-//   Header.loading(true)
-//   var httpRequest = new XMLHttpRequest()
+function get(url, callback) {
+  Header.loading(true)
+  var httpRequest = new XMLHttpRequest()
 
-//   httpRequest.onreadystatechange = function () {
-//     if (this.readyState == 4 && this.status == 200)
-//       callback(this.responseText)
-//     alert(this.getResonseHeader('content-type'))
-//   }
-//   httpRequest.open(method, url)
-//   httpRequest.setRequestHeader("loaded", true)
-//   httpRequest.send()
-// }
+  httpRequest.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      callback(this.responseText, this.getResponseHeader('content-type'))
+      // console.log(this.responseText.split('\n', 1)[0])
+    }
+  }
+  httpRequest.open('GET', url)
+  httpRequest.setRequestHeader("loaded", true)
+  httpRequest.send()
+}

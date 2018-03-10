@@ -13,7 +13,7 @@ const privacy = fs.readFileSync('views/privacy.html')
 const elastic = fs.readFileSync('views/elastic.js')
 
 // Ports
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8081
 const ip = process.env.IP   || '0.0.0.0'
 
 // Initialize Schema
@@ -41,15 +41,8 @@ app.use(express.static('public'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.get('/quotes', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html')
-})
-
-app.get('/photos/*', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html')
-})
-
-app.get('/privacy', (req, res) => {
+// Send app's HTML file to any request that doesn't have the /user/ route prefix
+app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(__dirname + '/public/index.html')
 })
 
@@ -62,8 +55,8 @@ app.get('/api/resume', (req, res) => {
 
 app.get('/api/david', (req, res) => {
   if (req.headers.loaded)
-    res.send(JSON.stringify(David))
-
+    res.json(David)
+  
   else res.redirect('/')
 })
 
@@ -77,7 +70,6 @@ app.get('/api/privacy', (req, res) => {
 app.get('/api/quotes', (req, res) => {
   connectMongo('getAll', Quote, quotes => {
     let quotesInDatabase = ""
-
 
     for (let i = 0; i < quotes.length; i++) {
         if (!quotes[i].isFaster)
@@ -232,26 +224,6 @@ function fetchInsta(callback) {
   }).on('error', e => { console.log(`Got error: ${e.message}`)})
 }
 
-let Phia = {
-  "name": "Sophia Maria Holmgren",
-  "photo": "https://scontent-atl3-1.cdninstagram.com/t51.2885-19/s320x320/14727646_1169168589834186_6905304133377458176_a.jpg",
-  "major": "Art",
-  "degree": "associate student",
-  "school": "Sacramento City College",
-  "googleID": "none",
-  "style": {
-    "font": {
-      "family": "sans-serif",
-      "alignment": "center",
-      "color": "#cc3300"
-    },
-    "colors": {
-      "accent": "pink",
-      "background": "#f5f5f0"
-    },
-    "icon": "❀"
-  }
-}
 let David = {
   "name": "David Alexander Foster",
   "photo": "/images/avatar_240.png",

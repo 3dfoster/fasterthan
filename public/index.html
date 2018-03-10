@@ -1,194 +1,317 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta charset="UTF-8">
 
-    <script type="text/javascript" src="/htjs/ht.js"></script>
-    <script src='https://d3js.org/d3.v4.min.js'></script>
-    <link rel="stylesheet" type="text/css" href="https://s3-us-west-1.amazonaws.com/fasterthan/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link type="text/css" href="/style.css" rel="stylesheet">
-  </head>
+<head>
+  <!--
+    Website by David Alexander Foster
+    faster@ucdavis.edu
+  -->
+  <meta name="google-site-verification" content="l3BrFHMCWeUnr4pM3QZXyHk1dxsysnkdWLmEJRw9mYo" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#3A5EAB">
+  <meta charset="UTF-8">
 
-  <body></body>
+  <meta name="description" content="Faster than me? David Alexander Foster is faster than you.">
 
+  <link rel="stylesheet" type="text/css" href="/fonts/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="/style.css">
+
+  <script src="/scripts/ht.js"></script>
+  <!--[if lt IE 9]> <script src="html5shiv.js"></script> <![endif]-->
+</head>
+
+<body>
+  <header>
+    <a href="/photos">
+      <img id="logo" src="/media/avatar_240.png" alt="David Alexander Foster">
+    </a>
+    <h1>
+      <a href="/">F
+        <span style="color: #cfcfd6">></span>
+      </a>
+    </h1>
+
+    <svg id="tray-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px"
+      width="16px" height="16px" viewBox="0 0 408 408" xml:space="preserve">
+      <g>
+        <path d="M204,102c28.05,0,51-22.95,51-51S232.05,0,204,0s-51,22.95-51,51S175.95,102,204,102z M204,153c-28.05,0-51,22.95-51,51    s22.95,51,51,51s51-22.95,51-51S232.05,153,204,153z M204,306c-28.05,0-51,22.95-51,51s22.95,51,51,51s51-22.95,51-51    S232.05,306,204,306z"
+        />
+      </g>
+    </svg>
+  </header>
   <script>
-    var Html = new Html('#fff')
-    var Body = new Body(760, 'sans-serif')
-    var Header = new Header(64)
-    var Ticker = new Ticker(40, 'blue')
-    var Main = new Main()
-    var Footer = new Footer(40)
+    var TrayIcon = document.getElementsByTagName('svg')[0]
+    var Header = document.getElementsByTagName('header')[0]
+    var Overlay = document.createElement('div')
+    var Nav = document.createElement('nav')
+    var Html = document.documentElement
+    var inactiveColor = '#666'
+    var activeColor = '#0066ff'
+    var opened = false
 
-    Body.appendChild(Header)
-    Body.appendChild(Ticker)
-    Body.appendChild(Main)
-    Body.appendChild(Footer)
+    Header.loading = function (_isLoading) {
+      if (_isLoading)
+        this.className = 'loading'
 
-    window.onload = load(location.pathname)
-    
-    function load(url) {
-      switch (url) {
-        case '/photos/square':
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
-          request('/api/photos/square', 'GET', function(_photos, responseHeader) {
-            photos(_photos, responseHeader)
-          })
-          Ticker.addQuote("Memories, reverberating across the echo chamber of my mind...")
-        break
-        
-        case '/photos/elastic':
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
-          request('/api/photos/elastic', 'GET', function(_photos, responseHeader) {
-            elastic(_photos, responseHeader)
-          })
-          Ticker.addQuote("Memories, reverberating across the echo chamber of my mind...")
-        break
+      else
+        this.classList.remove('loading')
+    }
 
-        case '/quotes':
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
-          request('/api/quotes', 'GET', function(_quotes) {
-            quotes(_quotes)
-          })
-          request('/api/quotes/faster', 'GET', function(quote) {
-            Ticker.addQuote(quote)
-          })
-        break
+    TrayIcon.style.color = inactiveColor
+    Overlay.id = "overlay"
 
-        case '/privacy':
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
-          request('/api/privacy', 'GET', function(privacy) {
-            home(privacy)
-          })
-        break
+    var home = document.createElement('a')
+    home.href = '/'
+    home.innerText = 'Home'
 
-        default:
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
-          request('/api/resume', 'GET', function(resume) {
-            home(resume)
-          })
-          request('/api/quotes/faster', 'GET', function(quote) {
-            Ticker.addQuote(quote)
-          })
-        break
+    var photos = document.createElement('a')
+    photos.href = '/photos'
+    photos.innerText = 'Photos'
+
+    var elastic = document.createElement('a')
+    elastic.href = '/elastic'
+    elastic.innerText = 'Elastic'
+
+    var quotes = document.createElement('a')
+    quotes.href = '/quotes'
+    quotes.innerText = 'Quotes'
+
+    Nav.appendChild(home)
+    Nav.appendChild(photos)
+    Nav.appendChild(elastic)
+    Nav.appendChild(quotes)
+
+    Overlay.addEventListener('click', removeOverlay)
+
+    TrayIcon.addEventListener('click', function () {
+      if (opened == false) {
+        Header.appendChild(Nav)
+        document.documentElement.appendChild(Overlay)
+        TrayIcon.style.color = activeColor
+
+        window.addEventListener('scroll', removeOverlay)
+        opened = true
       }
+    })
 
-      Main.style.minHeight = `${Html.height - Header.offsetHeight - Ticker.offsetHeight - Footer.offsetHeight}px`
-    }
+    function removeOverlay() {
+      if (opened) {
+        // Remove Overlay from HTML document
+        document.documentElement.removeChild(document.documentElement.lastChild)
+        // Remove Nav from Header
+        Header.removeChild(Header.lastChild)
+        TrayIcon.style.color = inactiveColor
 
-    window.onpopstate = function() {
-      load(location.pathname)
-    }
-    
-    function loadPage(res) {
-      var Person = JSON.parse(res)
-
-      Html.changeTitle(Person.name)
-      Html.backgroundColor('#fff')
-      Header.logo(Person.photo)
-      Header.heading(Person.style.icon, Person.style.colors.accent)
-      Header.borderColor('#eee')
-      Ticker.arrowColor(Person.style.colors.accent)
-      Footer.color(Person.style.colors.accent)
-
-      Header.loading(false)
-    }
-
-    function home(res) {
-      Main.innerHTML = res
-
-      window.history.pushState('', 'Home', '/')
-      Header.loading(false)
-    }
-
-    function quotes(res) {
-      Main.innerHTML = res
-
-      window.history.pushState('', 'Quotes', '/quotes')
-      Header.loading(false)
-    }
-
-    function photos(res, resHeader) {
-      var object = JSON.parse(res)
-      var instagramPhotos = ""
-      Main.textContent = ''
-
-      for (let i = 0; i < object.data.length; i++) {
-        var tmp = document.createElement('img')
-        tmp.style.cursor = 'pointer'
-        tmp.className = 'ig'
-        tmp.src = object.data[i].images.low_resolution.url
-        tmp.onclick = function() { location.href = object.data[i].link }
-        Main.appendChild(tmp)
+        window.removeEventListener('scroll', removeOverlay)
+        opened = false
       }
-
-      window.history.pushState('', 'Square Photos', '/photos/square')
-      Header.loading(false)
-    }
-
-    function elastic(res) {
-      Main.innerHTML = "<div style='display:inline-block;margin:16px auto 8px auto;letter-spacing:4px; font-size: 2em; text-transform: uppercase; font-weight: lighter;'> <span style='background-color: white;'>Elastic</span> <span style='background-color: white;'>Memories</span> </div><svg></svg>"
-      
-      elasticity()
-      window.history.pushState('', 'Quotes', '/quotes')
-
-      window.history.pushState('', 'Elastic Photos', '/photos/elastic')
-      Header.loading(false)
-    }
-
-    function addQuote() {
-      var main = document.getElementsByTagName('main')[0]
-      var quote = document.getElementById('input')
-      var quoteForm = document.getElementById('form')
-      if (!quote.value)
-        quote.placeholder = "Write something!"
-
-      else {
-        var httpRequest = new XMLHttpRequest()
-
-        var data = { quote: quote.value }
-        // Retrieve data in quote input field and convert to lower case
-        // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
-        httpRequest.onreadystatechange = function () {
-          if (this.readyState == 4 && this.status == 200) {
-            var newQuote = document.createElement('p')
-            quoteForm.innerHTML = quote.value
-          }
-        }
-        httpRequest.open('POST', '/quotes/new')
-        // Setting request header is required
-        httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-        // Send quote to server
-        httpRequest.send(JSON.stringify(data))
-      }
-    }
-
-    function request(url, method, callback) {
-      Header.loading(true)
-      var httpRequest = new XMLHttpRequest()
-
-      httpRequest.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          callback(this.responseText, this.getResponseHeader('content-type'))
-          // console.log(this.responseText.split('\n', 1)[0])
-        }
-      }
-      httpRequest.open(method, url)
-      httpRequest.setRequestHeader("loaded", true)
-      httpRequest.send()
     }
   </script>
+
+  <div id="overflow">
+    <aside>
+    </aside>
+  </div>
+  <script>
+    var Aside = document.getElementsByTagName('aside')[0]
+    var Main = document.getElementsByTagName('main')[0]
+    var Header = document.getElementsByTagName('header')[0]
+    var Overflow = document.getElementById('overflow')
+
+    var asideHeight = 40
+    var noGradient = 'box-shadow: none'
+    var scrollbarHeight = Aside.offsetHeight - Aside.clientHeight
+    Aside.style.height = asideHeight + scrollbarHeight + 'px'
+    Overflow.style.height = asideHeight + 'px'
+
+    Aside.addQuote = function(quote) {
+      Aside.innerText = quote
+    }
+
+    gradient()
+    Aside.onscroll = function () {
+      gradient()
+    }
+    window.addEventListener('resize', function () {
+      if (Aside.scrollLeft + Aside.scrollWidth - Aside.clientWidth == 0)
+        Aside.style.cssText += noGradient
+      else gradient()
+    })
+
+    function gradient() {
+      Aside.style.cssText += 'box-shadow: #888 -' + maxGrad(Aside.scrollWidth - Aside.clientWidth - Aside.scrollLeft) + 'px 0px 40px -40px inset, #888 ' + maxGrad(Aside.scrollLeft) + 'px 0px 40px -40px inset'
+    }
+    function maxGrad(val) {
+      if (val >= 56) return 56
+      else return val
+    }
+  </script>
+
+  <main></main>
+
+  <footer>
+    <a href="mailto:faster@ucdavis.edu" class="fa fa-fw fa-envelope-o"></a>
+    <a href="https://www.instagram.com/_u/the.t.u.r.n" class="fa fa-fw fa-instagram"></a>
+    <a href="https://gitlab.com/dfoster" class="fa fa-fw fa-gitlab"></a>
+    <a href="https://github.com/fasterthan" class="fa fa-fw fa-github"></a>
+  </footer>
+  <script>
+    var Main = document.getElementsByTagName('main')[0]
+    var Header = document.getElementsByTagName('header')[0]
+    var Overflow = document.getElementById('overflow')
+    var Footer = document.getElementsByTagName('footer')[0]
+
+    var OverflowHeight = 0
+    if (Overflow) OverflowHeight = Overflow.offsetHeight
+
+    stickyFooter()
+
+    window.addEventListener('resize', function () {
+      stickyFooter()
+    })
+    function stickyFooter() {
+      Main.style.minHeight = document.documentElement.clientHeight - Header.offsetHeight - OverflowHeight - Footer.offsetHeight + 'px'
+    }
+  </script>
+</body>
+<script>
+  var Main = document.getElementsByTagName('main')[0]
+  window.onload = load(location.pathname)
+
+  function load(url) {
+    get('/api/david', function (Person) {
+      loadPage(Person)
+    })
+
+    switch (url) {
+      case '/photos/square':
+        get('/api/photos/square', function (_photos, responseHeader) {
+          photos(_photos, responseHeader)
+        })
+        Aside.addQuote("Memories, reverberating across the echo chamber of my mind")
+        break
+
+      case '/photos/elastic':
+        get('/api/photos/elastic', function (_photos, responseHeader) {
+          elastic(_photos, responseHeader)
+        })
+        Aside.addQuote("Memories, reverberating across the echo chamber of my mind")
+        break
+
+      case '/quotes':
+        get('/api/quotes', function (_quotes) {
+          quotes(_quotes)
+        })
+        get('/api/quotes/faster', function (quote) {
+          Aside.addQuote(quote)
+        })
+        break
+
+      case '/privacy':
+        get('/api/privacy', function (privacy) {
+          home(privacy)
+        })
+        break
+
+      default:
+        get('/api/resume', function (resume) {
+          home(resume)
+        })
+        get('/api/quotes/faster', function (quote) {
+          Aside.addQuote(quote)
+        })
+        break
+    }
+  }
+
+  window.onpopstate = function () {
+    load(location.pathname)
+  }
+
+  function loadPage(res) {
+    Header.loading(false)
+  }
+
+  function home(res) {
+    Main.innerHTML = res
+
+    window.history.pushState('', 'Home', '/')
+    Header.loading(false)
+  }
+
+  function quotes(res) {
+    Main.innerHTML = res
+
+    window.history.pushState('', 'Quotes', '/quotes')
+    Header.loading(false)
+  }
+
+  function photos(res, resHeader) {
+    var object = JSON.parse(res)
+    var instagramPhotos = ""
+    Main.textContent = ''
+
+    for (let i = 0; i < object.data.length; i++) {
+      var tmp = document.createElement('img')
+      tmp.style.cursor = 'pointer'
+      tmp.className = 'ig'
+      tmp.src = object.data[i].images.thumbnail.url
+      tmp.onclick = function () { location.href = object.data[i].link }
+      Main.appendChild(tmp)
+    }
+
+    window.history.pushState('', 'Square Photos', '/photos/square')
+    Header.loading(false)
+  }
+
+  function elastic(res) {
+    Main.innerHTML = "<div style='display:inline-block;margin:16px auto 8px auto;letter-spacing:4px; font-size: 2em; text-transform: uppercase; font-weight: lighter;'> <span style='background-color: white;'>Elastic</span> <span style='background-color: white;'>Memories</span> </div><svg></svg>"
+
+    elasticity()
+    window.history.pushState('', 'Quotes', '/quotes')
+
+    window.history.pushState('', 'Elastic Photos', '/photos/elastic')
+    Header.loading(false)
+  }
+
+  function addQuote() {
+    var quote = document.getElementById('input')
+    var quoteForm = document.getElementById('form')
+    if (!quote.value)
+      quote.placeholder = "Write something!"
+
+    else {
+      var httpRequest = new XMLHttpRequest()
+
+      var data = { quote: quote.value }
+      // Retrieve data in quote input field and convert to lower case
+      // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
+      httpRequest.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var newQuote = document.createElement('p')
+          quoteForm.innerHTML = quote.value
+        }
+      }
+      httpRequest.open('POST', '/quotes/new')
+      // Setting request header is required
+      httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+      // Send quote to server
+      httpRequest.send(JSON.stringify(data))
+    }
+  }
+
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+      (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date(); a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga')
+
+  ga('create', 'UA-100430191-1', 'auto')
+  ga('send', 'pageview')
+</script>
+
 </html>
