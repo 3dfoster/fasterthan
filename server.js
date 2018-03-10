@@ -37,10 +37,9 @@ let instaHelper = require('./my_modules/insta-helper')
 
 // Database models
 let Quote = require('./models/quote.js')
-let Post = require('./models/post.js')
-let InstagramAccount = require('./models/instagram_account.js')
+let Post = require('./models/poem.js')
 
-// Ports !
+// Ports
 let port = process.env.PORT || 8080
 let ip = process.env.IP || '0.0.0.0'
 
@@ -75,6 +74,30 @@ app.get('/three', (req, res) => {
     res.write(ui.toString()
     .replace('<!--HEADER-ENTRY-->', header)
     .replace('<!--MAIN-ENTRY-->', three)
+    .replace('<!--FOOTER-ENTRY-->', footer))
+    res.end()
+  })
+})
+
+app.get('/poetry', (req, res) => {
+
+  mongoHelper.retrieve('all', Quote, quotes => {
+    let quotesInDatabase = "<main>"
+    let j = 0
+
+    while (j <= quotes.length - 1) {
+        if (quotes[j].isFaster == true)
+          fasterQuote = quotes[j].quote
+
+        else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+      j++
+    }
+    quotesInDatabase += addquote + "</main>"
+
+    res.write(ui.toString()
+    .replace('<!--HEADER-ENTRY-->', header)
+    .replace('<!--ASIDE-ENTRY-->', aside.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button" style="opacity: 0">➔</a>'))
+    .replace('<!--MAIN-ENTRY-->', quotesInDatabase)
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
   })
