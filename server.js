@@ -9,11 +9,10 @@ const fs = require('fs')
 // Static HTML files
 const resume = fs.readFileSync('views/resume.html')
 const addquote = fs.readFileSync('views/addquote.html')
-const privacy = fs.readFileSync('views/privacy.html')
 const elastic = fs.readFileSync('views/elastic.js')
 
 // Ports
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8083
 const ip = process.env.IP   || '0.0.0.0'
 
 // Initialize Schema
@@ -63,13 +62,6 @@ app.get('/api/resume', (req, res) => {
 app.get('/api/david', (req, res) => {
   if (req.headers.loaded)
     res.send(JSON.stringify(David))
-
-  else res.redirect('/')
-})
-
-app.get('/api/privacy', (req, res) => {
-  if (req.headers.loaded)
-    res.send(privacy)
 
   else res.redirect('/')
 })

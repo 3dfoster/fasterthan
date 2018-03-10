@@ -19,6 +19,12 @@ var a = function() {
   return A
 }
 
+var span = function() {
+  var Span = document.createElement('span')
+
+  return Span
+}
+
 var aside = function() {
   var Aside = document.createElement('aside')
 
@@ -165,7 +171,8 @@ var Ticker = function(navHeight, accentColor) {
   quote.style.lineHeight = `${navHeight}px`
   quote.style.margin = '0 8px'
 
-  var arrow = document.createElement('span')
+  var arrow = new span()
+  arrow.id = 'arrow'
   arrow.style.cursor = 'pointer'
   arrow.style.marginRight = '8px'
   arrow.style.padding = '0px 8px'

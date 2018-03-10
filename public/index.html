@@ -18,7 +18,7 @@
   <script>
     var Html = new Html('#fff')
     var Body = new Body(760, 'sans-serif')
-    var Header = new Header(64)
+    var Header = new Header(56)
     var Ticker = new Ticker(40, 'blue')
     var Main = new Main()
     var Footer = new Footer(40)
@@ -31,11 +31,11 @@
     window.onload = load(location.pathname)
     
     function load(url) {
+      request('/api/david', 'GET', function(Person) {
+        loadPage(Person)
+      })
       switch (url) {
         case '/photos/square':
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
           request('/api/photos/square', 'GET', function(_photos, responseHeader) {
             photos(_photos, responseHeader)
           })
@@ -43,9 +43,6 @@
         break
         
         case '/photos/elastic':
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
           request('/api/photos/elastic', 'GET', function(_photos, responseHeader) {
             elastic(_photos, responseHeader)
           })
@@ -53,9 +50,6 @@
         break
 
         case '/quotes':
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
           request('/api/quotes', 'GET', function(_quotes) {
             quotes(_quotes)
           })
@@ -65,18 +59,12 @@
         break
 
         case '/privacy':
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
           request('/api/privacy', 'GET', function(privacy) {
             home(privacy)
           })
         break
 
         default:
-          request('/api/david', 'GET', function(Person) {
-            loadPage(Person)
-          })
           request('/api/resume', 'GET', function(resume) {
             home(resume)
           })
@@ -130,7 +118,7 @@
         var tmp = document.createElement('img')
         tmp.style.cursor = 'pointer'
         tmp.className = 'ig'
-        tmp.src = object.data[i].images.low_resolution.url
+        tmp.src = object.data[i].images.thumbnail.url
         tmp.onclick = function() { location.href = object.data[i].link }
         Main.appendChild(tmp)
       }
