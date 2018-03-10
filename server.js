@@ -14,18 +14,21 @@ const aside = fs.readFileSync('html/components/aside.html')
 const footer = fs.readFileSync('html/components/footer.html')
 
 // Load Pages
-const privacy = fs.readFileSync('html/pages/privacy.html')
 const resume = fs.readFileSync('html/pages/resume.html')
 const elastic = fs.readFileSync('html/pages/elastic.html')
 const research = fs.readFileSync('html/pages/research.html')
 const three = fs.readFileSync('html/pages/thr3.html')
 const vr = fs.readFileSync('html/pages/vrview.html')
 
-// Load global variables
+// Global variables
 const _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
 const filter = new Filter({ placeHolder: '&#128520;'})
 let fasterQuote = "I am the mountain rising high."
 let fasterToken = 'https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7'
+const rootDir = __dirname
+
+// Load route handling files
+var poetry = require('./routes/poetry')
 
 // Database
 let db
@@ -38,9 +41,8 @@ let instaHelper = require('./my_modules/insta-helper')
 // Database models
 let Quote = require('./models/quote.js')
 let Post = require('./models/post.js')
-let InstagramAccount = require('./models/instagram_account.js')
 
-// Ports !
+// Ports
 let port = process.env.PORT || 8080
 let ip = process.env.IP || '0.0.0.0'
 
@@ -54,6 +56,9 @@ app.use(favicon(path.join(__dirname, 'public/icons', 'favicon.ico')))
 // Allow parsing of incoming XMLhttprequests
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+
+// Proper route handling
+app.use('/poetry', poetry)
 
 app.get('/', (req, res) => {
   mongoHelper.retrieve('faster', Quote, quote => {
@@ -138,16 +143,6 @@ app.get('/research', (req, res) => {
   res.write(ui.toString()
   .replace('<!--HEADER-ENTRY-->', header)
   .replace('<!--MAIN-ENTRY-->', research)
-  .replace('<!--FOOTER-ENTRY-->', footer))
-  res.end()
-})
-
-app.get('/privacy', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' })
-
-  res.write(ui.toString()
-  .replace('<!--HEADER-ENTRY-->', header)
-  .replace('<!--MAIN-ENTRY-->', privacy)
   .replace('<!--FOOTER-ENTRY-->', footer))
   res.end()
 })
