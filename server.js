@@ -6,11 +6,13 @@ const express = require('express')
 const https = require('https')
 const fs = require('fs')
 
+// My libraries
+var getHelper = require('./my_modules/get-helper')
+
 // Static HTML files
 const resume = fs.readFileSync('views/resume.html')
 const addquote = fs.readFileSync('views/addquote.html')
-const privacy = fs.readFileSync('views/privacy.html')
-const elastic = fs.readFileSync('views/elastic.js')
+const elastic = fs.readFileSync('views/elastic.html')
 
 // Ports
 const port = process.env.PORT || 8081
@@ -53,20 +55,6 @@ app.get('/api/resume', (req, res) => {
   else res.redirect('/')
 })
 
-app.get('/api/david', (req, res) => {
-  if (req.headers.loaded)
-    res.json(David)
-  
-  else res.redirect('/')
-})
-
-app.get('/api/privacy', (req, res) => {
-  if (req.headers.loaded)
-    res.send(privacy)
-
-  else res.redirect('/')
-})
-
 app.get('/api/quotes', (req, res) => {
   connectMongo('getAll', Quote, quotes => {
     let quotesInDatabase = ""
@@ -91,30 +79,23 @@ app.get('/api/quotes/faster', (req, res) => {
   })
 })
 
-app.get('/api/photos/square', (req, res) => {
+app.get('/api/photos', (req, res) => {
   fetchInsta( data => {
     res.send(data)
   })
 })
 
-app.get('/api/photos/elastic', (req, res) => {
-  if (req.headers.loaded) {
-    res.set('content-type', 'application/javascript')
+app.get('/api/elastic', (req, res) => {
+  if (req.headers.loaded)
     res.send(elastic)
-  }
 
   else res.redirect('/')
 })
 
-app.get('/api/elastic/write', (req, res) => {
-  writeCSV()
-  res.end('File saved!')
-})
-
-app.get('/api/elastic/get', (req, res) => {
-  let file = fs.readFileSync('ig.csv')
-  res.write(file)
-  res.end()
+app.get('/api/elastic/data', (req, res) => {
+  var file = fs.readFile('ig.tsv', (err, data) => {
+    res.send(data)
+  })
 })
 
 app.post('/quotes/new', (req, res) => {

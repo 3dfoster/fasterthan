@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <!--
     Website by David Alexander Foster
@@ -20,7 +19,7 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
 
   <script src="/scripts/ht.js"></script>
-  <!--[if lt IE 9]> <script src="html5shiv.js"></script> <![endif]-->
+  <script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 
 <body>
@@ -29,7 +28,7 @@
       <img id="logo" src="/media/avatar_240.png" alt="David Alexander Foster">
     </a>
     <h1>
-      <a href="/">F
+      <a id="the-f" href="/">F
         <span style="color: #cfcfd6">></span>
       </a>
     </h1>
@@ -45,6 +44,7 @@
   <script>
     var TrayIcon = document.getElementsByTagName('svg')[0]
     var Header = document.getElementsByTagName('header')[0]
+    var theF = document.getElementById('the-f')
     var Overlay = document.createElement('div')
     var Nav = document.createElement('nav')
     var Html = document.documentElement
@@ -54,10 +54,10 @@
 
     Header.loading = function (_isLoading) {
       if (_isLoading)
-        this.className = 'loading'
+        theF.className = 'loading'
 
       else
-        this.classList.remove('loading')
+        theF.classList.remove('loading')
     }
 
     TrayIcon.style.color = inactiveColor
@@ -182,24 +182,20 @@
   window.onload = load(location.pathname)
 
   function load(url) {
-    get('/api/david', function (Person) {
-      loadPage(Person)
-    })
-
     switch (url) {
-      case '/photos/square':
-        get('/api/photos/square', function (_photos, responseHeader) {
-          photos(_photos, responseHeader)
+      case '/photos':
+        get('/api/photos', function (_photos) {
+          photos(_photos)
         })
         Aside.addQuote("Memories, reverberating across the echo chamber of my mind")
-        break
+      break
 
-      case '/photos/elastic':
-        get('/api/photos/elastic', function (_photos, responseHeader) {
-          elastic(_photos, responseHeader)
-        })
+      case '/elastic':
         Aside.addQuote("Memories, reverberating across the echo chamber of my mind")
-        break
+        // get('api/elastic', function (page) {
+          elastic()
+        // })
+      break
 
       case '/quotes':
         get('/api/quotes', function (_quotes) {
@@ -208,13 +204,7 @@
         get('/api/quotes/faster', function (quote) {
           Aside.addQuote(quote)
         })
-        break
-
-      case '/privacy':
-        get('/api/privacy', function (privacy) {
-          home(privacy)
-        })
-        break
+      break
 
       default:
         get('/api/resume', function (resume) {
@@ -223,16 +213,12 @@
         get('/api/quotes/faster', function (quote) {
           Aside.addQuote(quote)
         })
-        break
+      break
     }
   }
 
   window.onpopstate = function () {
     load(location.pathname)
-  }
-
-  function loadPage(res) {
-    Header.loading(false)
   }
 
   function home(res) {
@@ -249,7 +235,7 @@
     Header.loading(false)
   }
 
-  function photos(res, resHeader) {
+  function photos(res) {
     var object = JSON.parse(res)
     var instagramPhotos = ""
     Main.textContent = ''
@@ -263,45 +249,113 @@
       Main.appendChild(tmp)
     }
 
-    window.history.pushState('', 'Square Photos', '/photos/square')
+    window.history.pushState('', 'Photos', '/photos')
     Header.loading(false)
   }
 
-  function elastic(res) {
-    Main.innerHTML = "<div style='display:inline-block;margin:16px auto 8px auto;letter-spacing:4px; font-size: 2em; text-transform: uppercase; font-weight: lighter;'> <span style='background-color: white;'>Elastic</span> <span style='background-color: white;'>Memories</span> </div><svg></svg>"
+  // function elastic() {
+  //   Main.innerHTML = res
 
-    elasticity()
-    window.history.pushState('', 'Quotes', '/quotes')
+  //   window.history.pushState('', 'Elastic', '/elastic')
+  //   Header.loading(false)
+  // }
 
-    window.history.pushState('', 'Elastic Photos', '/photos/elastic')
-    Header.loading(false)
-  }
+function elastic() {
 
-  function addQuote() {
-    var quote = document.getElementById('input')
-    var quoteForm = document.getElementById('form')
-    if (!quote.value)
-      quote.placeholder = "Write something!"
+// Bubble chart inspired by https://bl.ocks.org/mbostock/4063269
+var canvas = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+var headerDimensions = Main.getBoundingClientRect()
+canvasWidth = headerDimensions.width
+canvasHeight = canvasWidth * 1.25 + 56 // Instagram portrait photos are 1080*1350 for a 1.25 ratio
 
-    else {
-      var httpRequest = new XMLHttpRequest()
+canvas.setAttribute("height", canvasHeight)
+canvas.setAttribute("width", canvasWidth)
+canvas.style.display = 'block'
+canvas.style.margin = 'auto'
 
-      var data = { quote: quote.value }
-      // Retrieve data in quote input field and convert to lower case
-      // This function gets called once httprequest.send has sent data to the server AND we received a response back form the server (res.send)
-      httpRequest.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          var newQuote = document.createElement('p')
-          quoteForm.innerHTML = quote.value
+Main.appendChild(canvas)
+
+var svg = d3.select(canvas),
+  width = +svg.attr("width"),
+  height = +svg.attr("height")
+
+var format = d3.format(",d")
+
+var pack = d3.pack()
+  .size([width, height])
+  .padding(1)
+
+d3.tsv('/api/elastic/data', function(d) {
+  d.comments = +d.comments
+  d.likes = Math.pow(d.likes, 8/5) // Raise likes by exponent of 1.6 to emphasize differencee between like counts 
+  d.ln = +d.ln
+  return d
+}, function(error, classes) {
+    if (error) throw error
+
+    var root = d3.hierarchy({children: classes})
+      .sum(function(d) { return d.likes })
+      .each(function(d) {
+        if (thumbnailUrl = d.data.thumbnailUrl) {
+          var thumbnailUrl, i = thumbnailUrl.lastIndexOf(".")
+          d.thumbnailUrl = thumbnailUrl
+          d.package = thumbnailUrl.slice(0, i)
+          d.class = thumbnailUrl.slice(i + 1)
         }
-      }
-      httpRequest.open('POST', '/quotes/new')
-      // Setting request header is required
-      httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
-      // Send quote to server
-      httpRequest.send(JSON.stringify(data))
-    }
-  }
+        if (Url = d.data.Url) {
+          var Url, i = Url.lastIndexOf(".")
+          d.Url = Url
+          d.package = Url.slice(0, i)
+          d.class = Url.slice(i + 1)
+        }
+      })
+
+    var node = svg.selectAll(".node")
+    .data(pack(root).leaves())
+    .enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")" })
+      .on('click', function(d) {
+
+        var imgOverlay = document.createElement('div')
+        imgOverlay.style.position = 'absolute'
+        imgOverlay.style.top = 0
+        imgOverlay.style.width = '100%'
+        imgOverlay.style.height = '100%'
+        imgOverlay.style.backgroundColor = '#fff'
+        
+        var closeButton = document.createElement('img')
+        closeButton.src = '/media/close_button.png'
+        closeButton.style.width = '48px'
+        closeButton.style.cssFloat = 'right'
+        closeButton.style.marginTop = '-5px'
+        closeButton.onclick = function() { Main.removeChild(Main.lastChild) }
+
+        var img = document.createElement('img')
+        img.src = d.Url
+        img.style.width = '100%'
+
+        imgOverlay.appendChild(img)
+        imgOverlay.appendChild(closeButton)
+        
+        Main.appendChild(imgOverlay)
+      })
+
+    node.append("clipPath")
+      .attr("id", function(d) { return "clip-" + d.thumbnailUrl })
+    .append("circle")
+      .attr("r", function(d) { return d.r })
+
+    node.append("a")
+    .append("image")
+      .attr("clip-path", function(d) { return "url(#clip-" + d.thumbnailUrl + ")" })
+      .attr("xlink:href", function(d) { return d.thumbnailUrl })
+      .attr("x", function(d) { return -d.r })
+      .attr("y", function(d) { return -d.r })
+      .attr("width", function(d) { return d.r * 2 })
+      .attr("height", function(d) { return d.r * 2 })
+})
+}
 
   (function (i, s, o, g, r, a, m) {
     i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
@@ -313,5 +367,4 @@
   ga('create', 'UA-100430191-1', 'auto')
   ga('send', 'pageview')
 </script>
-
 </html>

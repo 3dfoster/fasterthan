@@ -317,8 +317,7 @@ function get(url, callback) {
 
   httpRequest.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-      callback(this.responseText, this.getResponseHeader('content-type'))
-      // console.log(this.responseText.split('\n', 1)[0])
+      callback(this.responseText)
     }
   }
   httpRequest.open('GET', url)

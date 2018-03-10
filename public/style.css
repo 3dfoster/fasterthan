@@ -116,6 +116,7 @@ aside::-webkit-scrollbar {
 /* BEGIN main */
 main {
     overflow: auto;
+    position: relative;
 }
 main h1, main h2 {
     margin: 16px 0px;
