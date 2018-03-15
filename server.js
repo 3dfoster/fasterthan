@@ -5,6 +5,7 @@ const Filter = require('bad-words')
 const express = require('express')
 const path = require('path')
 const fs = require('fs')
+var mongoose = require('mongoose')
 
 // Load Components
 const ui = fs.readFileSync('html/ui.html')
@@ -14,11 +15,10 @@ const aside = fs.readFileSync('html/components/aside.html')
 const footer = fs.readFileSync('html/components/footer.html')
 
 // Load Pages
-const privacy = fs.readFileSync('html/pages/privacy.html')
 const resume = fs.readFileSync('html/pages/resume.html')
 const elastic = fs.readFileSync('html/pages/elastic.html')
 const research = fs.readFileSync('html/pages/research.html')
-const three = fs.readFileSync('html/pages/thr3.html')
+const add_poem = fs.readFileSync('html/pages/add_poem.html')
 const vr = fs.readFileSync('html/pages/vrview.html')
 
 // Load global variables
@@ -28,7 +28,12 @@ let fasterQuote = "I am the mountain rising high."
 let fasterToken = 'https://api.instagram.com/v1/users/self/media/recent/?access_token=2343501318.7767022.c73f1316ae944651b78adb3b2f18fff7'
 
 // Database
-let db
+mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster')
+var db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'))
+db.once('open', function() {
+  console.log('Connected to mLab database')
+})
 
 // My libraries
 let getHelper = require('./my_modules/get-helper')
@@ -37,7 +42,7 @@ let instaHelper = require('./my_modules/insta-helper')
 
 // Database models
 let Quote = require('./models/quote.js')
-let Post = require('./models/poem.js')
+let Poem = require('./models/poem.js')
 
 // Ports
 let port = process.env.PORT || 8080
@@ -55,50 +60,51 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-  mongoHelper.retrieve('faster', Quote, quote => {
-    if (quote) fasterQuote = quote
-    
+  Quote.findOne({ isFaster: true }).sort({date: -1}).exec( (err, quotes) => {
+    if (err) return console.error(err)
+  
     res.write(ui.toString()
     .replace('<!--HEADER-ENTRY-->', header)
-    .replace('<!--ASIDE-ENTRY-->', aside.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button">➔</a>'))
+    .replace('<!--ASIDE-ENTRY-->', aside.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + quotes.quote + '</em> <a href="/quotes" class="button">➔</a>'))
     .replace('<!--MAIN-ENTRY-->', resume)
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
   })
 })
 
-app.get('/three', (req, res) => {
-  mongoHelper.retrieve('faster', Quote, quote => {
-    if (quote) fasterQuote = quote
-    
+app.get('/poetry', (req, res) => {
+  Poem.find((err, poems) => {
+    if (err) return console.error(err)
+
+    let poemsDb = "<main>"
+    poems.forEach( poem => {
+      poemsDb += `<h2>${poem.title}</h2>`
+    })
+    poemsDb += "</main>"
+
     res.write(ui.toString()
     .replace('<!--HEADER-ENTRY-->', header)
-    .replace('<!--MAIN-ENTRY-->', three)
+    .replace('<!--MAIN-ENTRY-->', poemsDb)
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
   })
 })
 
-app.get('/poetry', (req, res) => {
-
-  mongoHelper.retrieve('all', Quote, quotes => {
-    let quotesInDatabase = "<main>"
-    let j = 0
-
-    while (j <= quotes.length - 1) {
-        if (quotes[j].isFaster == true)
-          fasterQuote = quotes[j].quote
-
-        else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
-      j++
-    }
-    quotesInDatabase += addquote + "</main>"
-
+app.get('/poetry/new', (req, res, next) => {
     res.write(ui.toString()
     .replace('<!--HEADER-ENTRY-->', header)
-    .replace('<!--ASIDE-ENTRY-->', aside.toString().replace('<!--QUOTE-ENTRY-->', '<em>' + fasterQuote + '</em> <a href="/quotes" class="button" style="opacity: 0">➔</a>'))
-    .replace('<!--MAIN-ENTRY-->', quotesInDatabase)
+    .replace('<!--MAIN-ENTRY-->', add_poem)
     .replace('<!--FOOTER-ENTRY-->', footer))
+    res.end()
+})
+
+app.post('/poetry/new', (req, res, next) => {
+  var poem = new Poem
+  poem.title = req.body.title
+  poem.body = req.body.body
+  poem.url = req.body.url
+  mongoHelper.retrieve('save', poem, () => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' })
     res.end()
   })
 })
@@ -161,16 +167,6 @@ app.get('/research', (req, res) => {
   res.write(ui.toString()
   .replace('<!--HEADER-ENTRY-->', header)
   .replace('<!--MAIN-ENTRY-->', research)
-  .replace('<!--FOOTER-ENTRY-->', footer))
-  res.end()
-})
-
-app.get('/privacy', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' })
-
-  res.write(ui.toString()
-  .replace('<!--HEADER-ENTRY-->', header)
-  .replace('<!--MAIN-ENTRY-->', privacy)
   .replace('<!--FOOTER-ENTRY-->', footer))
   res.end()
 })
