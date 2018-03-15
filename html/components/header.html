@@ -63,10 +63,10 @@
     }
   })
 
-  window.addEventListener('keyup', function(e) {
+  window.addEventListener('keydown', function(e) {
     if (e.key == 'Escape') removeOverlay()
   })
-  
+
   function removeOverlay() {
     if (opened) {
       // Remove Overlay from HTML document

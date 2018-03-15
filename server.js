@@ -37,7 +37,6 @@ db.once('open', function() {
 
 // My libraries
 let getHelper = require('./my_modules/get-helper')
-let mongoHelper = require('./my_modules/mongo-helper')
 let instaHelper = require('./my_modules/insta-helper')
 
 // Database models
@@ -103,24 +102,27 @@ app.post('/poetry/new', (req, res, next) => {
   poem.title = req.body.title
   poem.body = req.body.body
   poem.url = req.body.url
-  mongoHelper.retrieve('save', poem, () => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' })
-    res.end()
-  })
+  poem.img_filename = req.body.img_filename
+  poem.save()
+  
+  res.writeHead(200)
+  res.end()
 })
 
 app.get('/quotes', (req, res) => {
 
-  mongoHelper.retrieve('all', Quote, quotes => {
+  Quote.find().sort({date: 1}).exec( (err, quotes) => {
+    if (err) return console.error(err)
+
     let quotesInDatabase = "<main>"
     let j = 0
 
     while (j <= quotes.length - 1) {
-        if (quotes[j].isFaster == true)
-          fasterQuote = quotes[j].quote
+      if (quotes[j].isFaster == true)
+        fasterQuote = quotes[j].quote
 
-        else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
-      j++
+      else quotesInDatabase += '<p>' + quotes[j].quote + '</p>\n'
+    j++
     }
     quotesInDatabase += addquote + "</main>"
 
@@ -195,11 +197,10 @@ app.post('/quotes/new', (req, res) => {
   }
   else
     quote.quote = filter.clean(req.body.quote)
-
-  mongoHelper.retrieve('save', quote, () => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' })
-    res.end()
-  })
+  
+  quote.save()
+  res.writeHead(200)
+  res.end()
 })
 
 app.get('*', (req, res) => {
