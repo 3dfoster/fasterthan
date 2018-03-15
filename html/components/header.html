@@ -41,6 +41,10 @@
   elastic.href = '/elastic'
   elastic.innerText = 'Elastic'
 
+  var poetry = document.createElement('a')
+  poetry.href = '/poetry'
+  poetry.innerText = 'Poetry'
+
   var quotes = document.createElement('a')
   quotes.href = '/quotes'
   quotes.innerText = 'Quotes'
@@ -48,6 +52,7 @@
   Nav.appendChild(home)
   Nav.appendChild(photos)
   Nav.appendChild(elastic)
+  Nav.appendChild(poetry)
   Nav.appendChild(quotes)
 
   Overlay.addEventListener('click', removeOverlay)

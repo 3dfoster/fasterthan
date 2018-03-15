@@ -18,7 +18,7 @@ const footer = fs.readFileSync('html/components/footer.html')
 const resume = fs.readFileSync('html/pages/resume.html')
 const elastic = fs.readFileSync('html/pages/elastic.html')
 const research = fs.readFileSync('html/pages/research.html')
-const add_poem = fs.readFileSync('html/pages/add_poem.html')
+const addpoem = fs.readFileSync('html/pages/addpoem.html')
 const vr = fs.readFileSync('html/pages/vrview.html')
 
 // Load global variables
@@ -75,9 +75,9 @@ app.get('/poetry', (req, res) => {
   Poem.find((err, poems) => {
     if (err) return console.error(err)
 
-    let poemsDb = "<main>"
+    let poemsDb = "<main>\n\t\t<h1>Poetry</h1>"
     poems.forEach( poem => {
-      poemsDb += `<h2>${poem.title}</h2>`
+      poemsDb += `<a href="/poetry/${poem.url}"><div class="poem-preview"><img src="/media/${poem.img_filename}"><h2>${poem.title}</h2></div></a>`
     })
     poemsDb += "</main>"
 
@@ -90,23 +90,34 @@ app.get('/poetry', (req, res) => {
 })
 
 app.get('/poetry/new', (req, res, next) => {
-    res.write(ui.toString()
-    .replace('<!--HEADER-ENTRY-->', header)
-    .replace('<!--MAIN-ENTRY-->', add_poem)
-    .replace('<!--FOOTER-ENTRY-->', footer))
-    res.end()
+  res.write(ui.toString()
+  .replace('<!--HEADER-ENTRY-->', header)
+  .replace('<!--MAIN-ENTRY-->', addpoem)
+  .replace('<!--FOOTER-ENTRY-->', footer))
+  res.end()
 })
 
 app.post('/poetry/new', (req, res, next) => {
-  var poem = new Poem
-  poem.title = req.body.title
-  poem.body = req.body.body
-  poem.url = req.body.url
-  poem.img_filename = req.body.img_filename
+  var poem = new Poem(req.body)
   poem.save()
-  
   res.writeHead(200)
   res.end()
+})
+
+app.get('/poetry/:poem', (req, res) => {
+  Poem.findOne({ 'url': req.params.poem }, (err, poem) => {
+    if (err) return console.error(err)
+
+    var main = `<main><h1>${poem.title}</h1>`
+    main += `<img style="width:100%;" src="/media/${poem.img_filename}"/>`
+    main += `<p style="white-space:pre-wrap; text-align:left; margin-left:16px;">${poem.body}</p></main>`
+
+    res.write(ui.toString()
+    .replace('<!--HEADER-ENTRY-->', header)
+    .replace('<!--MAIN-ENTRY-->', main)
+    .replace('<!--FOOTER-ENTRY-->', footer))
+    res.end()
+  })
 })
 
 app.get('/quotes', (req, res) => {
