@@ -45,7 +45,7 @@ let Quote = require('./models/quote.js')
 let Poem = require('./models/poem.js')
 
 // Ports
-let port = process.env.PORT || 8080
+let port = process.env.PORT || 3000
 let ip = process.env.IP || '0.0.0.0'
 
 // Express app
@@ -76,7 +76,7 @@ app.get('/poetry', (req, res) => {
   Poem.find((err, poems) => {
     if (err) return console.error(err)
 
-    let poemsDb = "<main>\n\t\t<h1>Poetry</h1>"
+    let poemsDb = `<main style="margin:0px auto; max-width: 480px;"><h1>Poetry</h1>`
     poems.forEach( poem => {
       poemsDb += `<a href="/poetry/${poem.url}"><div class="poem-preview"><img src="/media/${poem.img_filename}"><h2>${poem.title}</h2></div></a>`
     })
@@ -109,9 +109,9 @@ app.get('/poetry/:poem', (req, res) => {
   Poem.findOne({ 'url': req.params.poem }, (err, poem) => {
     if (err) return console.error(err)
 
-    var main = `<main><h1>${poem.title}</h1>`
-    main += `<img style="width:100%;" src="/media/${poem.img_filename}"/>`
-    main += `<p style="white-space:pre-wrap; text-align:left; margin-left:16px;">${poem.body}</p></main>`
+    var main = `<main><div class="poem">`
+    main += `<img src="/media/${poem.img_filename}"/><h1>${poem.title}</h1>`
+    main += `<p style="white-space:pre-wrap; text-align:left; margin-left:16px;">${poem.body}</p></div></main>`
 
     res.write(ui.toString()
     .replace('<!--HEADER-ENTRY-->', header)
