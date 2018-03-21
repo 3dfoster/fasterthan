@@ -94,22 +94,13 @@
 /* END header */
 
 /* BEGIN aside */
-    #overflow {
-        overflow: hidden;
-        border-bottom: 2px solid #cfcfd6;
-    }
     aside {
-        width: 100%;
-        line-height: 40px;
-        overflow-x: scroll;
-        white-space: nowrap;
-        background-color: white;
+      width: 100%;
+      line-height: 40px;
+      border-bottom: 2px solid #cfcfd6;
     }
-    aside::-webkit-scrollbar {
-        display: none;
-    }
-    .button {
-        margin-right: 12px;
+    aside a {
+      color: #4d6394;
     }
 /* END aside */
 
@@ -257,13 +248,15 @@
   }
   .poem {
     max-width: 480px;
-    margin: 16px auto;
+    margin: 0px auto;
+    padding: 16px;
   }
   .poem img {
     width: 100%;
   }
   .poem p {
     padding-bottom: 12px;
+    /* margin-left: 0px */
   }
 /* END poetry page */
 

@@ -111,7 +111,7 @@ app.get('/poetry/:poem', (req, res) => {
 
     var main = `<main><div class="poem">`
     main += `<img src="/media/${poem.img_filename}"/><h1>${poem.title}</h1>`
-    main += `<p style="white-space:pre-wrap; text-align:left; margin-left:16px;">${poem.body}</p></div></main>`
+    main += `<p style="white-space:pre-wrap; text-align:left;">${poem.body}</p></div></main>`
 
     res.write(ui.toString()
     .replace('<!--HEADER-ENTRY-->', header)
