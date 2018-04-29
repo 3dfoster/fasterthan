@@ -58,11 +58,13 @@
         display: block;
         margin: 4px;
         color: #4d6394;
-        text-transform: uppercase;
         text-align: left;
         letter-spacing: 1px;
         padding: 16px 48px;
         margin: 8px;
+    }
+    nav a svg {
+      margin-right: 6px;
     }
     nav a:hover {
         color: #4d6394;
