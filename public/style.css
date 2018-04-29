@@ -257,13 +257,17 @@
   }
   .poem {
     max-width: 480px;
-    margin: 16px auto;
+    margin: 0px auto;
+    padding: 0px 8px;
   }
   .poem img {
     width: 100%;
+    margin-top: 8px;
   }
   .poem p {
-    padding-bottom: 12px;
+    white-space: pre-wrap;
+    text-align: left;
+    margin-left: 8px;
   }
 /* END poetry page */
 

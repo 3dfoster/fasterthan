@@ -37,10 +37,6 @@
   photos.href = '/photos'
   photos.innerText = 'Photos'
 
-  var elastic = document.createElement('a')
-  elastic.href = '/elastic'
-  elastic.innerText = 'Elastic'
-
   var poetry = document.createElement('a')
   poetry.href = '/poetry'
   poetry.innerText = 'Poetry'
@@ -49,11 +45,16 @@
   quotes.href = '/quotes'
   quotes.innerText = 'Quotes'
 
+  var elastic = document.createElement('a')
+  elastic.href = 'http://photographics.online/the.t.u.r.n'
+  elastic.innerHTML = 'photo<span style="color:#ff0000">G</span><span style="color:#00ff00">F</span><span style="color:#0000ff">X</span>'
+  elastic.style.textTransform = 'none'
+
   Nav.appendChild(home)
   Nav.appendChild(photos)
-  Nav.appendChild(elastic)
   Nav.appendChild(poetry)
   Nav.appendChild(quotes)
+  Nav.appendChild(elastic)
 
   Overlay.addEventListener('click', removeOverlay)
 
