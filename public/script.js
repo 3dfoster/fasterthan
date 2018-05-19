@@ -21,3 +21,6 @@ switch (window.location.pathname) {
         document.title = 'David Alexander Foster'
     break
 }
+window.addEventListener("orientationchange", function() {
+    alert("the orientation of the device is now " + screen.orientation.angle);
+});

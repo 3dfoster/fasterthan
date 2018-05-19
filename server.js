@@ -10,6 +10,7 @@ var mongoose = require('mongoose')
 // Load Components
 const ui = fs.readFileSync('html/ui.html')
 const addquote = fs.readFileSync('html/components/addquote.html')
+const addcomment = fs.readFileSync('html/components/addComment.html')
 const header = fs.readFileSync('html/components/header.html')
 const aside = fs.readFileSync('html/components/aside.html')
 const footer = fs.readFileSync('html/components/footer.html')
@@ -115,7 +116,7 @@ app.get('/poetry/:poem', (req, res) => {
 
     res.write(ui.toString()
     .replace('<!--HEADER-ENTRY-->', header)
-    .replace('<!--MAIN-ENTRY-->', main)
+    .replace('<!--MAIN-ENTRY-->', main + addcomment)
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
   })
