@@ -21,16 +21,3 @@ switch (window.location.pathname) {
         document.title = 'David Alexander Foster'
     break
 }
-
-function doOnOrientationChange() {
-    switch(window.orientation) {  
-      case -90 || 90:
-        alert('landscape');
-        break; 
-      default:
-        alert('portrait');
-        break; 
-    }
-}
-  
-window.addEventListener('orientationchange', doOnOrientationChange);
