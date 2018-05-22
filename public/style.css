@@ -280,11 +280,22 @@
     }
 /* End site wide */
 
-#read-button {
-    color: white;
-    background-color: #4d6394;
-    padding: 6px 12px;
-    position: absolute;
-    right: 16px;
-    bottom: 7px;
+@media screen and (max-width: 600px) {
+    #read-button {
+        color: white;
+        background-color: #4d6394;
+        padding: 6px 12px;
+        margin-top: 8px;
+    }
+}
+
+@media screen and (min-width: 600px) {
+    #read-button {
+        color: white;
+        background-color: #4d6394;
+        padding: 6px 12px;
+        position: absolute;
+        right: 16px;
+        bottom: 7px;
+    }
 }
