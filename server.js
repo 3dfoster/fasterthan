@@ -12,6 +12,7 @@ const ui = fs.readFileSync('html/ui.html')
 const addquote = fs.readFileSync('html/components/addquote.html')
 const addcomment = fs.readFileSync('html/components/addComment.html')
 const header = fs.readFileSync('html/components/header.html')
+const fateHeader = fs.readFileSync('html/components/fateheader.html')
 const aside = fs.readFileSync('html/components/aside.html')
 const footer = fs.readFileSync('html/components/footer.html')
 
@@ -21,6 +22,7 @@ const elastic = fs.readFileSync('html/pages/elastic.html')
 const research = fs.readFileSync('html/pages/research.html')
 const addpoem = fs.readFileSync('html/pages/addpoem.html')
 const vr = fs.readFileSync('html/pages/vrview.html')
+const pistol = fs.readFileSync('html/pages/pistol.html')
 
 // Global variables
 const _404 = "<h1>404</h1><p>The page you're requesting doesn't exist</p>"
@@ -71,6 +73,14 @@ app.get('/', (req, res) => {
     .replace('<!--FOOTER-ENTRY-->', footer))
     res.end()
   })
+})
+
+app.get('/stories/fate/chapter-1', (req, res) => {
+  res.write(ui.toString()
+  .replace('<!--HEADER-ENTRY-->', fateHeader)
+  .replace('<!--MAIN-ENTRY-->', pistol)
+  .replace('<!--FOOTER-ENTRY-->', footer))
+  res.end()
 })
 
 app.get('/poetry', (req, res) => {

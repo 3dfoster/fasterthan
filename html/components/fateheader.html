@@ -1,0 +1,84 @@
+<header>
+  <a href="/photos">
+    <img id="logo" src="/media/avatar_240.png" alt="David Alexander Foster">
+  </a>
+  <a href="/"><h1 style="letter-spacing:3px; color:#555">FATE</h1></a>
+
+  <svg id="tray-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px"
+    width="16px" height="16px" viewBox="0 0 408 408" xml:space="preserve">
+    <g>
+      <path d="M204,102c28.05,0,51-22.95,51-51S232.05,0,204,0s-51,22.95-51,51S175.95,102,204,102z M204,153c-28.05,0-51,22.95-51,51    s22.95,51,51,51s51-22.95,51-51S232.05,153,204,153z M204,306c-28.05,0-51,22.95-51,51s22.95,51,51,51s51-22.95,51-51    S232.05,306,204,306z"
+      />
+    </g>
+  </svg>
+</header>
+<script>
+  var TrayIcon = document.getElementsByTagName('svg')[0]
+  var Header = document.getElementsByTagName('header')[0]
+  var Overlay = document.createElement('div')
+  var Nav = document.createElement('nav')
+  var Html = document.documentElement
+  var inactiveColor = '#666'
+  var activeColor = '#0066ff'
+  var opened = false
+
+  TrayIcon.style.color = inactiveColor
+  Overlay.id = "overlay"
+
+  var home = document.createElement('a')
+  home.href = '/'
+  home.innerText = 'Home'
+
+  var photos = document.createElement('a')
+  photos.href = '/photos'
+  photos.innerText = 'Photos'
+
+  var poetry = document.createElement('a')
+  poetry.href = '/poetry'
+  poetry.innerText = 'Poetry'
+
+  var quotes = document.createElement('a')
+  quotes.href = '/quotes'
+  quotes.innerText = 'Quotes'
+
+  var elastic = document.createElement('a')
+  elastic.href = 'http://photographics.online/the.t.u.r.n'
+  elastic.innerHTML = 'photo<span style="color:#ff0000">G</span><span style="color:#00ff00">F</span><span style="color:#0000ff">X</span>'
+  elastic.style.textTransform = 'none'
+
+  Nav.appendChild(home)
+  Nav.appendChild(photos)
+  Nav.appendChild(poetry)
+  Nav.appendChild(quotes)
+  Nav.appendChild(elastic)
+
+  Overlay.addEventListener('click', removeOverlay)
+
+  TrayIcon.addEventListener('click', function () {
+    if (opened == false) {
+      Header.appendChild(Nav)
+      document.documentElement.appendChild(Overlay)
+      TrayIcon.style.color = activeColor
+
+      window.addEventListener('scroll', removeOverlay)
+      opened = true
+    }
+  })
+
+  window.addEventListener('keydown', function(e) {
+    if (e.key == 'Escape') removeOverlay()
+  })
+
+  function removeOverlay() {
+    if (opened) {
+      // Remove Overlay from HTML document
+      document.documentElement.removeChild(document.documentElement.lastChild)
+      // Remove Nav from Header
+      Header.removeChild(Header.lastChild)
+      TrayIcon.style.color = inactiveColor
+
+      window.removeEventListener('scroll', removeOverlay)
+      opened = false
+    }
+  }
+</script>
