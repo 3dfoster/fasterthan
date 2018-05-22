@@ -29,7 +29,7 @@
     header {
         position: relative;
         height: 56px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 2px solid #cfcfd6;
     }
     #logo {
         float: left;
