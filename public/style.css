@@ -284,6 +284,7 @@
     #read-button {
         color: white;
         background-color: #4d6394;
+        font-size: 14px;
         padding: 6px 12px;
         margin-top: 8px;
     }
@@ -293,9 +294,16 @@
     #read-button {
         color: white;
         background-color: #4d6394;
+        font-size: 14px;
         padding: 6px 12px;
         position: absolute;
         right: 16px;
-        bottom: 7px;
+        bottom: 8px;
     }
+}
+
+#etsy-icon {
+    height: 19px;
+    float: right;
+    margin-left: 4px;
 }
