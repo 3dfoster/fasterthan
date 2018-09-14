@@ -30,7 +30,7 @@ let fasterToken = 'https://api.instagram.com/v1/users/self/media/recent/?access_
 const rootDir = __dirname
 
 // Database
-mongoose.connect('mongodb://genericos:retsfa@ds151461.mlab.com:51461/faster')
+mongoose.connect('mongodb://<mlab>')
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function() {
